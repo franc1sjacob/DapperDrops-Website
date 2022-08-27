@@ -7,6 +7,10 @@ body{
     font-weight: bold;
 }
 
+.cust-landing-img{
+    border-radius: 2%;
+}
+
 .cust-title-text{
     font-weight: bold;
 }
@@ -14,5 +18,9 @@ body{
 /* Product Card Text */
 .cust-prod-text{
     font-weight: bold;
+}
+
+.img-logo{
+    width: 60px;
 }
 

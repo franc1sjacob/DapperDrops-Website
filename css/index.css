@@ -1,0 +1,18 @@
+body{
+    font-family: 'Montserrat', sans-serif;
+}
+
+.cust-landing-text{
+    font-size: 10vw;
+    font-weight: bold;
+}
+
+.cust-title-text{
+    font-weight: bold;
+}
+
+/* Product Card Text */
+.cust-prod-text{
+    font-weight: bold;
+}
+

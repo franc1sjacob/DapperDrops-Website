@@ -1,0 +1,23 @@
+{
+  "name": "dapperdrops-website",
+  "version": "1.0.0",
+  "description": "Ecommerce website for shoe retail online store Dapper Drops.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cisjacob/DapperDrops-Website.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cisjacob/DapperDrops-Website/issues"
+  },
+  "homepage": "https://github.com/cisjacob/DapperDrops-Website#readme",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "express": "^4.18.1"
+  }
+}

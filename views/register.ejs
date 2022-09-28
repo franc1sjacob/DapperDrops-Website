@@ -1,28 +1,31 @@
     
 <%- include('partials/header'); %>
-
 <div class="container">
     <div class="card mx-auto border-0" style="width: 22.5rem;">
         <div class="card-body">
             <h1 class="fw-bold mb-3">Create Account</h1>
-            <form action="<%= request.mainURL %>/Register" method="POST">
-
+            <form action="/register" method="POST">
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label fw-bold">First Name</label>
+                    <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="First Name" name="firstName">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label fw-bold">Last Name</label>
+                    <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Last Name" name="lastName">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label fw-bold">Email address</label>
+                    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Email" name="email">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label fw-bold">Password</label>
+                    <input type="password" class="form-control" id="exampleFormControlInput1" placeholder="Password" name="password">
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-dark" value="register">Create Account</button>
+                </div>
             </form>
-            <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label fw-bold">Name</label>
-                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Name" name="name">
-            </div>
-            <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label fw-bold">Email address</label>
-                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Email" name="email">
-            </div>
-            <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label fw-bold">Password</label>
-                <input type="password" class="form-control" id="exampleFormControlInput1" placeholder="Password" password="password">
-            </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-dark" value="Register">Create Account</button>
-            </div>
+            
             <div class="row">
                 <div class="col-6 me-auto">
                     <a href="/login" class="fw-bold" style="text-decoration: none; color:black;">Login</a>

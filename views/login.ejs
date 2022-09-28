@@ -4,7 +4,7 @@
         <div class="card mx-auto border-0" style="width: 22.5rem;">
             <div class="card-body">
                 <h1 class="fw-bold mb-3">Login</h1>
-                <form action="<%= request.mainURL %>/Login" method="POST">
+                <form action="/login" method="POST">
                     <div class="mb-3">
                         <label for="exampleFormControlInput1" class="form-label fw-bold">Email address</label>
                         <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Email" name="email">
@@ -14,7 +14,7 @@
                         <input type="password" class="form-control" id="exampleFormControlInput1" placeholder="Password" name="password">
                     </div>
                     <div class="mb-3">
-                        <button type="submit" value="Login" class="btn btn-dark">Sign In</button>
+                        <button type="submit" value="login" class="btn btn-dark">Sign In</button>
                     </div>
                 </form>
 

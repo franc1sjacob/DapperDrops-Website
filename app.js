@@ -130,15 +130,19 @@ app.post("/register", function(req, res){
                 res.render('admin/dashboard');
             }
         });
-    })
-    
-
+    });
 });
 
-app.get("/admin/products", function(req, res){
-    Product.find({}, function(err, foundProducts){
-    res.render("admin/products", newListItems: foundItems});
-}
+app.get("/admin/products", function (req, res) {   
+    Product.find({}, function (err, allProducts) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("admin/products", { newListProducts: allProducts })
+        }
+    });
+});
+
 
 app.get("/admin/product/add", function(req, res){
     res.render('admin/add-product');
@@ -156,13 +160,11 @@ app.post("/addProduct", function(req, res){
     product.save(function(err){
         if(err){
             console.log(err);
-        } else {
-            res.render('admin/products');
         }
-    })
-})
-
+        res.redirect("/admin/products");
+    });
+});
 
 app.listen(port, function(){
     console.log("Server started on port " + port);
-})
+});

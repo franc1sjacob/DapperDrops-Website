@@ -144,7 +144,7 @@ app.get("/admin/products", function (req, res) {
 });
 
 
-app.get("/admin/product/add", function(req, res){
+app.get("/admin/add-product", function(req, res){
     res.render('admin/add-product');
 });
 

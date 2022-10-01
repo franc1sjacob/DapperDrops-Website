@@ -1,0 +1,60 @@
+<%- include('../partials/admin/header'); %>
+<h1 class="text-center mt-2 mb-3">Accounts</h1> 
+<nav class="navbar p-0">
+    <div class="container justify-content-end">
+        <div class="float-end ms-3 mb-1">
+            <form action="" method="post" class="row d-flex">
+                <input class="form-control col me-3" type="search" placeholder="Search" name="">
+                <input class= "btn btn-outline-dark col-2 me-3" type="button" name="" value = "Go">  
+                <a class="btn btn-light col-3 me-3" href="#" name="">Sort<i class="fa-solid fa-filter"></i></a>
+            </form>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="col-lg col-md">
+        <div class="card shadow p-3 bg-body rounded">
+            <div class="card-body">
+                <div class="table table-responsive">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Account ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Account Type</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr>
+                            <td>001</td>
+                            <td>johnsims</td>
+                            <td>jordan</td>
+                            <td>Admin</td>
+                            <td>
+                                <!-- <a class="btn btn-sm btn-danger" href="#">Downgrade</a> -->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>lebron james</td>
+                            <td>jordan</td>
+                            <td>Admin</td>
+                            <td>
+                                <a class="btn btn-sm btn-danger" href="#">Downgrade</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>003</td>
+                            <td>johnsims</td>
+                            <td>jordan</td>
+                            <td>Registered User</td>
+                            <td>
+                                <a class="btn btn-sm btn-success" href="#">Upgrade</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../partials/admin/footer'); %>

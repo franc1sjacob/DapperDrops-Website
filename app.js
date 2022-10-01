@@ -133,6 +133,10 @@ app.post("/register", function(req, res){
     });
 });
 
+app.get("/admin/dashboard", function(req, res){
+    res.render('admin/dashboard');
+});
+
 app.get("/admin/products", function (req, res) {   
     Product.find({}, function (err, allProducts) {
         if (err) {
@@ -142,7 +146,6 @@ app.get("/admin/products", function (req, res) {
         }
     });
 });
-
 
 app.get("/admin/add-product", function(req, res){
     res.render('admin/add-product');
@@ -163,6 +166,34 @@ app.post("/addProduct", function(req, res){
         }
         res.redirect("/admin/products");
     });
+});
+
+app.get("/admin/onhand-products", function(req, res){
+    res.render("admin/onhand-products");
+});
+
+app.get("/admin/preorder-products", function(req, res){
+    res.render("admin/preorder-products");
+});
+
+app.get("/admin/apparel-products", function(req, res){
+    res.render("admin/apparel-products");
+});
+
+app.get("/admin/accessories-products", function(req, res){
+    res.render("admin/accessories-products");
+});
+
+app.get("/admin/inventory", function(req, res){
+    res.render('admin/inventory');
+});
+
+app.get("/admin/orders", function(req, res){
+    res.render('admin/orders');
+});
+
+app.get("/admin/accounts", function(req, res){
+    res.render('admin/accounts');
 });
 
 app.listen(port, function(){

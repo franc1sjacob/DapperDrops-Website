@@ -25,7 +25,13 @@
                     <button type="submit" class="btn btn-dark" value="register">Create Account</button>
                 </div>
             </form>
-            
+
+            <%
+                if(typeof message !== "undefined"){ %>
+                    <p style="color: green;"><%= message %></p>
+                <% }
+            %>
+
             <div class="row">
                 <div class="col-6 me-auto">
                     <a href="/login" class="fw-bold" style="text-decoration: none; color:black;">Login</a>

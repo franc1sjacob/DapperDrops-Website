@@ -18,6 +18,12 @@
                     </div>
                 </form>
 
+                <%
+                    if(typeof message !== "undefined"){ %>
+                        <p style="color: green;"><%= message %></p>
+                    <% }
+                %>
+
                 <div class="row">
                     <div class="col-6 me-auto">
                         <a href="/register" class="fw-bold" style="text-decoration: none; color:black;">Register</a>

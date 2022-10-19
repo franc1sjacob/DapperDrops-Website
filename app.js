@@ -7,6 +7,8 @@ const mongoose = require('mongoose');
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+const nodemailer = require("nodemailer");
+
 const app = express();
 const port = 3000 || process.env.PORT;
 
@@ -34,8 +36,12 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({
     extended:false
 }));
+<<<<<<< HEAD
 app.use(bodyParser.json())
 
+=======
+app.use(bodyParser.json());
+>>>>>>> test-branchv2
 app.use(express.static("public"));
 
 
@@ -73,8 +79,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+<<<<<<< HEAD
     
     
+=======
+    isVerified: {
+        type: String,
+        default: false
+    }
+>>>>>>> test-branchv2
 });
 
 const productSchema = new mongoose.Schema({
@@ -83,8 +96,11 @@ const productSchema = new mongoose.Schema({
     price: Number,
     description: String,
     quantity: Number,
+<<<<<<< HEAD
     image: String,
     type: String,
+=======
+>>>>>>> test-branchv2
 });
 
 //Models
@@ -156,9 +172,23 @@ app.post("/login", function(req, res){
             if(foundUser){
                 bcrypt.compare(userPassword, foundUser.password, function(err, result){
                     if(result === true){
-                        res.render('admin/dashboard');
+                        if(foundUser.isVerified === "false"){
+                            res.render('login', {message: "Please check and verify your account in your email."});
+                        }
+                        else if(foundUser.accountType === "admin"){
+                            res.render('admin/dashboard');
+                        }
+                        else{
+                            res.render('index');
+                        }
+                    }
+                    else{
+                        res.render('login', {message: "Incorrect login credentials!"});
                     }
                 });
+            }
+            else{
+                res.render('login', {message: "Incorrect email and password!"});
             }
         }});
 });
@@ -181,10 +211,59 @@ app.post("/register", function(req, res){
             if(err){
                 console.log(err);
             } else {
-                res.render('admin/dashboard');
+                sendVerifyMail(req.body.firstName, req.body.email, user._id);
+                res.render('register', {message: "Your registration has been successful. Please check and verify your account."});
             }
         });
     });
+});
+
+const sendVerifyMail = async(name, email, user_id) =>{
+    try{
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port:465,
+            secure: true,
+            auth:{
+                user: process.env.SECRETEMAIL,
+                pass: process.env.SECRETPASSWORD
+            }
+        });
+        
+        const mailOptions= {
+            from: process.env.SECRETEMAIL,
+            to: email,
+            subject: "For verification",
+            html:'<p>Hi '+name+', please click here to <a href="http://localhost:3000/verify?id='+user_id+'"> Verify </a> your mail</p>'
+        }
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            }
+            else{
+                console.log("Email has been sent:- ", info.response);
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+app.get("/verify", function(req, res){
+    User.findByIdAndUpdate({_id:req.query.id}, {$set:{isVerified: true}}, function(err, user){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.render('email-verified');
+        }
+    });
+});
+
+app.get("/admin/dashboard", function(req, res){
+    res.render('admin/dashboard');
 });
 
 app.get("/admin/products", function (req, res) {   
@@ -192,13 +271,12 @@ app.get("/admin/products", function (req, res) {
         if (err) {
             console.log(err);
         } else {
-            res.render("admin/products", { newListProducts: allProducts })
+            res.render('admin/products', { newListProducts: allProducts })
         }
     });
 });
 
-
-app.get("/admin/product/add", function(req, res){
+app.get("/admin/add-product", function(req, res){
     res.render('admin/add-product');
 });
 
@@ -209,10 +287,14 @@ app.post("/addProduct", upload,function(req, res){
         price: req.body.productPrice,
         description: req.body.productDescription,
         quantity: req.body.productQuantity,
+<<<<<<< HEAD
         image: req.file.filename,
         type: req.body.productType
     });
     
+=======
+    });
+>>>>>>> test-branchv2
     product.save(function(err){
         if(err){
             console.log(err);
@@ -220,6 +302,74 @@ app.post("/addProduct", upload,function(req, res){
         res.redirect("/admin/products");
     });
 });
+
+app.get("/admin/onhand-products", function(req, res){
+    res.render('admin/onhand-products');
+});
+
+app.get("/admin/preorder-products", function(req, res){
+    res.render('admin/preorder-products');
+});
+
+app.get("/admin/apparel-products", function(req, res){
+    res.render('admin/apparel-products');
+});
+
+app.get("/admin/accessories-products", function(req, res){
+    res.render('admin/accessories-products');
+});
+
+app.get("/admin/inventory", function(req, res){
+    res.render('admin/inventory');
+});
+
+app.get("/admin/orders", function(req, res){
+    res.render('admin/orders');
+});
+
+app.get("/admin/accounts", function(req, res){
+    User.find({}, function(err, foundAccounts){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.render('admin/accounts', {accounts: foundAccounts});
+        }
+    });
+});
+
+app.get("/upgrade-account", function(req, res){
+    res.render('admin/accounts');
+});
+
+app.get("/downgrade-account", function(req, res){
+    res.render('admin/accounts');
+});
+
+app.post("/upgrade-account", function(req, res){
+    const upgradeId = req.body.upgradeId;
+    User.findByIdAndUpdate(upgradeId, {$set: {accountType: "admin"}}, function(err, foundAccounts){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.redirect('/admin/accounts');
+        }
+    });
+});
+
+app.post("/downgrade-account", function(req, res){
+    const downgradeId = req.body.downgradeId;
+    User.findByIdAndUpdate(downgradeId, {$set: {accountType: "user"}}, function(err, foundAccounts){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.redirect('/admin/accounts');
+        }
+    });
+});
+
 
 app.listen(port, function(){
     console.log("Server started on port " + port);

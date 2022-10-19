@@ -14,6 +14,7 @@ const randomstring = require("randomstring");
 const app = express();
 const port = 3000 || process.env.PORT;
 
+//FOR IMAGE DISPLAY
 var fs = require('fs');
 var path = require('path');
 
@@ -40,7 +41,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
-
 
 
 //MongoDB
@@ -100,10 +100,14 @@ const productSchema = new mongoose.Schema({
 const User = new mongoose.model("User", userSchema);
 const Product = new mongoose.model("Product", productSchema);
 
+//ROUTES
+
+//INDEX
 app.get("/", function(req, res){
     res.render('index');
 });
 
+//PRODUCTS
 app.get("/onhand", function(req, res){
     Product.find({type:"On-Hand"}, function (err, allProducts) {
         if (err) {
@@ -113,8 +117,6 @@ app.get("/onhand", function(req, res){
         }
     });
 });
-
-
 
 app.get("/preorder", function(req, res){
     Product.find({type:"Pre-Order"}, function (err, allProducts) {
@@ -150,6 +152,7 @@ app.get("/about", function(req, res){
     res.render('about');
 });
 
+//LOGIN/REGISTER/FORGOT PASSWORD
 app.get("/login", function(req, res){
     res.render('login');
 });
@@ -215,6 +218,7 @@ app.post("/register", function(req, res){
     });
 });
 
+//EMAIL FUNCTIONALITIES
 const sendVerifyMail = async(name, email, user_id) =>{
     try{
         const transporter = nodemailer.createTransport({
@@ -224,6 +228,9 @@ const sendVerifyMail = async(name, email, user_id) =>{
             auth:{
                 user: process.env.SECRETEMAIL,
                 pass: process.env.SECRETPASSWORD
+            },
+            tls:{
+                rejectUnauthorized: false
             }
         });
         
@@ -291,6 +298,9 @@ const sendResetPasswordMail = async(name, email, token) =>{
             auth:{
                 user: process.env.SECRETEMAIL,
                 pass: process.env.SECRETPASSWORD
+            },
+            tls:{
+                rejectUnauthorized: false
             }
         });
         

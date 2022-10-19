@@ -10,11 +10,35 @@ const saltRounds = 10;
 const app = express();
 const port = 3000 || process.env.PORT;
 
+var fs = require('fs');
+var path = require('path');
+
+const multer = require("multer")
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/uploads')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '_' + Date.now() + "_" + file.originalname)
+    }
+});
+  
+
+const upload = multer({
+    storage: storage, 
+}).single('productImage')
+
+
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({
-    extended:true
+    extended:false
 }));
+app.use(bodyParser.json())
+
 app.use(express.static("public"));
+
+
 
 //MongoDB
 main().catch(err => console.log(err));
@@ -48,7 +72,9 @@ const userSchema = new mongoose.Schema({
     accountType: {
         type: String,
         required: true
-    }
+    },
+    
+    
 });
 
 const productSchema = new mongoose.Schema({
@@ -56,7 +82,9 @@ const productSchema = new mongoose.Schema({
     name: String,
     price: Number,
     description: String,
-    quantity: Number
+    quantity: Number,
+    image: String,
+    type: String,
 });
 
 //Models
@@ -68,19 +96,45 @@ app.get("/", function(req, res){
 });
 
 app.get("/onhand", function(req, res){
-    res.render('onhand');
+    Product.find({type:"On-Hand"}, function (err, allProducts) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("onhand", { newOnHandProducts: allProducts })
+        }
+    });
 });
 
+
+
 app.get("/preorder", function(req, res){
-    res.render('preorder');
+    Product.find({type:"Pre-Order"}, function (err, allProducts) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("preorder", { newPreOrderProducts: allProducts })
+        }
+    });
 });
 
 app.get("/accessories", function(req, res){
-    res.render('accessories');
+    Product.find({type:"Accessories"}, function (err, allProducts) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("accessories", { newAccessoriesProducts: allProducts })
+        }
+    });
 });
 
 app.get("/apparel", function(req, res){
-    res.render('apparel');
+    Product.find({type:"Apparel"}, function (err, allProducts) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("apparel", { newApparelProducts: allProducts })
+        }
+    });
 });
 
 app.get("/about", function(req, res){
@@ -148,15 +202,17 @@ app.get("/admin/product/add", function(req, res){
     res.render('admin/add-product');
 });
 
-app.post("/addProduct", function(req, res){
+app.post("/addProduct", upload,function(req, res){
     const product = new Product({
         brand: req.body.productBrand,
         name: req.body.productName,
         price: req.body.productPrice,
         description: req.body.productDescription,
-        quantity: req.body.productQuantity
+        quantity: req.body.productQuantity,
+        image: req.file.filename,
+        type: req.body.productType
     });
-
+    
     product.save(function(err){
         if(err){
             console.log(err);

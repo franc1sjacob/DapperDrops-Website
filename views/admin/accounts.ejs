@@ -18,39 +18,31 @@
                 <div class="table table-responsive">
                     <table class="table table-sm">
                         <tr>
-                            <th>Account ID</th>
                             <th>Username</th>
                             <th>Email</th>
                             <th>Account Type</th>
                             <th>Action</th>
                         </tr>
-                        <tr>
-                            <td>001</td>
-                            <td>johnsims</td>
-                            <td>jordan</td>
-                            <td>Admin</td>
-                            <td>
-                                <!-- <a class="btn btn-sm btn-danger" href="#">Downgrade</a> -->
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>002</td>
-                            <td>lebron james</td>
-                            <td>jordan</td>
-                            <td>Admin</td>
-                            <td>
-                                <a class="btn btn-sm btn-danger" href="#">Downgrade</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>003</td>
-                            <td>johnsims</td>
-                            <td>jordan</td>
-                            <td>Registered User</td>
-                            <td>
-                                <a class="btn btn-sm btn-success" href="#">Upgrade</a>
-                            </td>
-                        </tr>
+                        <%accounts.forEach(function(account){%>
+                            <tr>
+                                <td><%= account.firstName + " " + account.lastName %></td>
+                                <td><%= account.email %></td>
+                                <td><%= account.accountType %></td>
+                                <td>
+                                    <% if(account.email === "sammygarma26@gmail.com" && account.accountType === "admin"){ %>
+                                    <%} else if(account.accountType === "admin"){ %>
+                                        <form action="/downgrade-account" method="post">
+                                            <button type="submit" class="btn btn-sm btn-danger" name="downgradeId" value="<%= account._id %>">Downgrade</button>
+                                        </form>
+                                    <% } else { %>
+                                        <form action="/upgrade-account" method="post">
+                                            <button type="submit" class="btn btn-sm btn-success" name="upgradeId" value="<%= account._id %>">Upgrade</button>
+                                        </form>
+                                    <% } %>
+
+                                </td>
+                            </tr>
+                        <% }) %>
                     </table>
                 </div>
             </div>

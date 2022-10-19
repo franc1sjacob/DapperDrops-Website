@@ -38,12 +38,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({
     extended:false
 }));
-<<<<<<< HEAD
-app.use(bodyParser.json())
-
-=======
 app.use(bodyParser.json());
->>>>>>> test-branchv2
 app.use(express.static("public"));
 
 
@@ -81,10 +76,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-<<<<<<< HEAD
-    
-    
-=======
     isVerified: {
         type: String,
         default: false
@@ -93,7 +84,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     }
->>>>>>> test-branchv2
 });
 
 const productSchema = new mongoose.Schema({
@@ -102,11 +92,8 @@ const productSchema = new mongoose.Schema({
     price: Number,
     description: String,
     quantity: Number,
-<<<<<<< HEAD
     image: String,
     type: String,
-=======
->>>>>>> test-branchv2
 });
 
 //Models
@@ -380,14 +367,10 @@ app.post("/addProduct", upload,function(req, res){
         price: req.body.productPrice,
         description: req.body.productDescription,
         quantity: req.body.productQuantity,
-<<<<<<< HEAD
         image: req.file.filename,
         type: req.body.productType
     });
     
-=======
-    });
->>>>>>> test-branchv2
     product.save(function(err){
         if(err){
             console.log(err);

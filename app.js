@@ -162,13 +162,13 @@ const sendVerifyMail = async(name, email, user_id) =>{
             port:465,
             secure: true,
             auth:{
-                user: "sammygarma26@gmail.com",
-                pass: "qglbjuxabnylswro"
+                user: process.env.SECRETEMAIL,
+                pass: process.env.SECRETPASSWORD
             }
         });
         
         const mailOptions= {
-            from: "sammygarma26@gmail.com",
+            from: process.env.SECRETEMAIL,
             to: email,
             subject: "For verification",
             html:'<p>Hi '+name+', please click here to <a href="http://localhost:3000/verify?id='+user_id+'"> Verify </a> your mail</p>'

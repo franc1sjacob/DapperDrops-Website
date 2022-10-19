@@ -352,6 +352,7 @@ app.post("/forget-password", function(req, res){
     });
 });
 
+//ADMIN DASHBOARD
 app.get("/admin/dashboard", function(req, res){
     res.render('admin/dashboard');
 });
@@ -370,6 +371,47 @@ app.get("/admin/add-product", function(req, res){
     res.render('admin/add-product');
 });
 
+app.get("/admin/products/:productId/edit", function(req, res){
+    const productId = req.params.productId;
+
+    Product.findOne({ _id:productId }, function(err, product){
+        res.render('admin/update-product', {
+            _id: productId,
+            brand: product.brand,
+            name: product.name,
+            price: product.price,
+            description: product.description,
+            quantity: product.quantity,
+            image: product.image,
+            type: product.type,
+        });
+    })
+});
+
+app.post("/admin/products/:productId", upload, function(req, res){
+    const productId = req.params.productId;
+    console.log(productId);
+    Product.updateOne(
+        {_id: productId},
+        {$set:{
+            brand: req.body.productBrand,
+            name: req.body.productName,
+            price: req.body.productPrice,
+            description: req.body.productDescription,
+            quantity: req.body.productQuantity,
+            image: req.file.filename,
+            type: req.body.productType
+        }}, function(err, results){
+            if(!err){
+                res.redirect("/admin/products");
+            } else {
+                console.log(err);
+            }
+        }
+    ); 
+    
+});
+
 app.post("/addProduct", upload,function(req, res){
     const product = new Product({
         brand: req.body.productBrand,
@@ -386,6 +428,18 @@ app.post("/addProduct", upload,function(req, res){
             console.log(err);
         }
         res.redirect("/admin/products");
+    });
+});
+
+app.post("/delete-product", function(req, res){
+    const productId = req.body.deleteId;
+    Product.findByIdAndRemove({ _id:productId }, function(err, user){
+        if(err){
+            console.log(err);
+        } else {
+            console.log("Deleted!" + productId);
+            res.redirect("/admin/products");
+        }
     });
 });
 

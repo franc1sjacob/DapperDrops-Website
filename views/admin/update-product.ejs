@@ -1,0 +1,49 @@
+<%- include('../partials/admin/header'); %>
+
+<div class="container">
+    <h1 class="text-center mt-2 mb-3">Update Product</h1> 
+    <form action="/admin/products/<%= _id %>" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="inputIdName" class="form-label">ID:</label>
+            <input type="text" class="form-control" id="inputBrandName" name="productId" value="<%= _id %>">
+        </div>
+        <div class="mb-3">
+          <label for="inputBrandName" class="form-label">Brand Name:</label>
+          <input type="text" class="form-control" id="inputBrandName" name="productBrand" value="<%= brand %>">
+        </div>
+        <div class="mb-3">
+            <label for="inputName" class="form-label">Name:</label>
+            <input type="text" class="form-control" id="inputName" name="productName" value="<%= name %>">
+        </div>
+        <div class="mb-3">
+            <label for="inputPrice" class="form-label">Price:</label>
+            <input type="number" class="form-control" id="inputPrice" name="productPrice" value="<%= price %>">
+        </div>
+        <div class="mb-3">
+            <label for="inputDescription" class="form-label">Description:</label>
+            <input type="text" class="form-control" id="inputDescription" name="productDescription" value="<%= description %>">
+        </div>
+        <div class="mb-3">
+            <label for="inputQuantity" class="form-label">Quantity:</label>
+            <input type="number" class="form-control" id="inputQuantity" name="productQuantity" value="<%= quantity %>">
+        </div>
+        <div class="mb-3">
+            <label for="inputImage" class="form-label">Image:</label>
+            <input type="file" class="form-control" id="inputImage" name="productImage" value="">
+        </div>
+
+        <div class="mb-3">
+            <label for="inputProductType" class="form-label">Image:</label>
+            <select name="productType" id="productType" class="form-control" value="<%= type %>">
+                <option value="On-Hand">On-hand</option>
+                <option value="Pre-Order">Pre-Order</option>
+                <option value="Apparel">Apparel</option>
+                <option value="Accessories">Accessories</option>
+              </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+</div>
+
+<%- include('../partials/admin/footer'); %>

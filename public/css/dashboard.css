@@ -72,3 +72,7 @@
   .list-group-item.logout-link:hover{
     color: #EB4747;
   }
+
+  .form-flex{
+    flex-direction: row;
+  }

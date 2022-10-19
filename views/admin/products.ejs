@@ -38,6 +38,8 @@
                             <th>Price</th>
                             <th>Description</th>
                             <th>Quantity</th>
+                            <th>Type</th>
+                            <th>Image</th>
                         </tr>
                         <%newListProducts.forEach(function(product){%>
                             <tr>
@@ -46,6 +48,8 @@
                                 <td><%= product.price %> </td>
                                 <td><%= product.description %> </td>
                                 <td><%= product.quantity %> </td>
+                                <td><%= product.type %> </td>
+                                <td><img src="/uploads/<%= product.image %>" width="50"></td>
                                 <td>
                                     <a class="" href="#"><i class="fa-solid fa-pen-to-square me-1"></i></i></a>
                                     <a class="" href="#"><i class="fa-solid fa-eye me-1"></i></a>

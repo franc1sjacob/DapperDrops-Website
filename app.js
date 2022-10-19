@@ -8,6 +8,8 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const nodemailer = require("nodemailer");
+// const session = require("express-session");
+const randomstring = require("randomstring");
 
 const app = express();
 const port = 3000 || process.env.PORT;
@@ -18,6 +20,8 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
+
+// app.use(session({secret: process.env.secret}));
 
 //MongoDB
 main().catch(err => console.log(err));
@@ -55,6 +59,10 @@ const userSchema = new mongoose.Schema({
     isVerified: {
         type: String,
         default: false
+    },
+    token: {
+        type: String,
+        default: ''
     }
 });
 
@@ -113,9 +121,11 @@ app.post("/login", function(req, res){
                             res.render('login', {message: "Please check and verify your account in your email."});
                         }
                         else if(foundUser.accountType === "admin"){
+                            // req.session.userId = foundUser._id;
                             res.render('admin/dashboard');
                         }
                         else{
+                            // req.session.userId = foundUser._id;
                             res.render('index');
                         }
                     }
@@ -129,6 +139,8 @@ app.post("/login", function(req, res){
             }
         }});
 });
+
+
 
 app.get("/register", function(req, res){
     res.render('register');
@@ -170,7 +182,7 @@ const sendVerifyMail = async(name, email, user_id) =>{
         const mailOptions= {
             from: process.env.SECRETEMAIL,
             to: email,
-            subject: "For verification",
+            subject: "For Verification",
             html:'<p>Hi '+name+', please click here to <a href="http://localhost:3000/verify?id='+user_id+'"> Verify </a> your mail</p>'
         }
 
@@ -196,6 +208,89 @@ app.get("/verify", function(req, res){
         else{
             res.render('email-verified');
         }
+    });
+});
+
+app.get("/forgot", function(req, res){
+    res.render('forgot');
+});
+
+app.post("/forgot", function(req, res){
+    
+    const forgotEmail = req.body.email;
+    User.findOne({email: forgotEmail}, function(err, foundUser){
+        if(foundUser){
+            if(foundUser.isVerified === "false"){
+                res.render('forgot', {message: "Please check and verify your email."});
+            } else{
+                const randomString = randomstring.generate();
+                User.updateOne({email: forgotEmail}, {$set: {token: randomString}}, function(err, user){});
+                sendResetPasswordMail(foundUser.firstName, foundUser.email, randomString);
+                res.render('forgot', {message: "Please check your email for the reset link of forgotten password."});
+            }
+        } else {
+            res.render('forgot', {message: "User email is incorrect."});
+        }
+    });
+});
+
+const sendResetPasswordMail = async(name, email, token) =>{
+    try{
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port:465,
+            secure: true,
+            auth:{
+                user: process.env.SECRETEMAIL,
+                pass: process.env.SECRETPASSWORD
+            }
+        });
+        
+        const mailOptions= {
+            from: process.env.SECRETEMAIL,
+            to: email,
+            subject: "For Reset Password",
+            html:'<p>Hi '+name+', please click here to <a href="http://localhost:3000/forget-password?token='+token+'"> Reset </a> your password.</p>'
+        }
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            }
+            else{
+                console.log("Email has been sent:- ", info.response);
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+app.get("/forget-password", function(req, res){
+    const forgotToken = req.query.token;
+    User.findOne({token: forgotToken}, function(err, foundToken){
+        if(foundToken){
+            res.render('forget-password', {userId: foundToken._id});
+        } else {
+            res.render('404', {message: "Token is invalid"});
+        }
+    });
+});
+
+app.post("/forget-password", function(req, res){
+    const newPassword = req.body.password;
+    const userId = req.body.userId;
+
+    bcrypt.hash(newPassword, saltRounds, function(err, hash){
+        User.findByIdAndUpdate({_id: userId}, {$set: {password: hash}, token:''}, function(err, user){
+            if(err){
+                console.log(err);
+            }
+            else{
+                res.render('login', {message: "Your password is now reset, you can now login."});
+            }
+        });
     });
 });
 

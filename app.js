@@ -104,7 +104,13 @@ const Product = new mongoose.model("Product", productSchema);
 
 //INDEX
 app.get("/", function(req, res){
-    res.render('index');
+    Product.find({}, function (err, allProducts) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('index', { newProducts: allProducts });
+        }
+    });
 });
 
 //PRODUCTS
@@ -113,7 +119,7 @@ app.get("/onhand", function(req, res){
         if (err) {
             console.log(err);
         } else {
-            res.render("onhand", { newOnHandProducts: allProducts })
+            res.render("onhand", { newOnHandProducts: allProducts });
         }
     });
 });
@@ -123,7 +129,7 @@ app.get("/preorder", function(req, res){
         if (err) {
             console.log(err);
         } else {
-            res.render("preorder", { newPreOrderProducts: allProducts })
+            res.render("preorder", { newPreOrderProducts: allProducts });
         }
     });
 });
@@ -133,7 +139,7 @@ app.get("/accessories", function(req, res){
         if (err) {
             console.log(err);
         } else {
-            res.render("accessories", { newAccessoriesProducts: allProducts })
+            res.render("accessories", { newAccessoriesProducts: allProducts });
         }
     });
 });
@@ -147,6 +153,24 @@ app.get("/apparel", function(req, res){
         }
     });
 });
+
+app.get("/item/:productId", function(req, res){
+    const productId = req.params.productId;
+    
+    Product.findOne({_id:productId}, function(err, item){
+        res.render('view-item', {
+            _id: productId,
+            brand: item.brand,
+            name: item.name,
+            price: item.price,
+            description: item.description,
+            quantity: item.quantity,
+            image: item.image,
+            type: item.type
+        });
+    });
+});
+
 
 app.get("/about", function(req, res){
     res.render('about');
@@ -383,12 +407,12 @@ app.get("/admin/products/:productId/edit", function(req, res){
             description: product.description,
             quantity: product.quantity,
             image: product.image,
-            type: product.type,
+            type: product.type
         });
     })
 });
 
-app.post("/admin/products/:productId", upload, function(req, res){
+app.post("/admin/products/:productId/edit", upload, function(req, res){
     const productId = req.params.productId;
     console.log(productId);
     Product.updateOne(

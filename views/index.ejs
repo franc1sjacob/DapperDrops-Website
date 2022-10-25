@@ -35,39 +35,20 @@
   <h1 class="cust-title-text">New Arrivals</h1>
   
   <div class="row">
+    <%newProducts.forEach(function(product){%>
       <div class="col-lg-4 col-sm-6">
+        <a href="/item/<%= product._id %>" class="cust-prod-link">
           <div class="card border-0 " style="width: 18rem;">
-              <img src="images/image1.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <p class="card-text">NIKE</p>
-                <p class="card-text cust-prod-text">Dunk Low 'Black'</p>
-                <p class="card-text cust-prod-text">₱10,995</p>
-              </div>
+            <img src="/uploads/<%= product.image %>" class="card-img-top" alt="...">
+            <div class="card-body">
+              <p class="card-text"> <%= product.brand %></p>
+              <p class="card-text cust-prod-text"> <%= product.name %> </p>
+              <p class="card-text cust-prod-text">₱ <%= product.price %> </p>
+            </div>
           </div>
+        </a>  
       </div>
-
-      <div class="col-lg-4 col-sm-6">
-          <div class="card border-0" style="width: 18rem;">
-              <img src="images/image1.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <p class="card-text">NIKE</p>
-                <p class="card-text cust-prod-text">Dunk Low 'Black'</p>
-                <p class="card-text cust-prod-text">₱10,995</p>
-              </div>
-          </div>
-      </div>
-
-      <div class="col-lg-4 col-sm-6">
-          <div class="card border-0" style="width: 18rem;">
-              <img src="images/image1.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <p class="card-text">NIKE</p>
-                <p class="card-text cust-prod-text">Dunk Low 'Black'</p>
-                <p class="card-text cust-prod-text">₱10,995</p>
-              </div>
-          </div>
-      </div>
-
+    <% }) %>
   </div>
 </div>
 
@@ -75,38 +56,20 @@
   <h1 class="cust-title-text">Featured Products</h1>
   
   <div class="row">
+    <%newProducts.forEach(function(product){%>
       <div class="col-lg-4 col-sm-6">
-          <div class="card border-0" style="width: 18rem;">
-              <img src="images/image1.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <p class="card-text">NIKE</p>
-                <p class="card-text cust-prod-text">Dunk Low 'Black'</p>
-                <p class="card-text cust-prod-text">₱10,995</p>
-              </div>
+        <a href="/item/<%= product._id %>" class="cust-prod-link">
+          <div class="card border-0 " style="width: 18rem;">
+            <img src="/uploads/<%= product.image %>" class="card-img-top" alt="...">
+            <div class="card-body">
+              <p class="card-text"> <%= product.brand %></p>
+              <p class="card-text cust-prod-text"> <%= product.name %> </p>
+              <p class="card-text cust-prod-text">₱ <%= product.price %> </p>
+            </div>
           </div>
+        </a>  
       </div>
-
-      <div class="col-lg-4 col-sm-6">
-          <div class="card border-0" style="width: 18rem;">
-              <img src="images/image1.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <p class="card-text">NIKE</p>
-                <p class="card-text cust-prod-text">Dunk Low 'Black'</p>
-                <p class="card-text cust-prod-text">₱10,995</p>
-              </div>
-          </div>
-      </div>
-
-      <div class="col-lg-4 col-sm-6">
-          <div class="card border-0" style="width: 18rem;">
-              <img src="images/image1.jpg" class="card-img-top" alt="...">
-              <div class="card-body">
-                <p class="card-text">NIKE</p>
-                <p class="card-text cust-prod-text">Dunk Low 'Black'</p>
-                <p class="card-text cust-prod-text">₱10,995</p>
-              </div>
-          </div>
-      </div>
+    <% }) %>
       
   </div>
 </div>

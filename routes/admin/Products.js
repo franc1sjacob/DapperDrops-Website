@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const Product = require("../../models/productModel");
-const User = require("../../models/userModel");
 
 var fs = require('fs');
 var path = require('path');
@@ -23,11 +22,8 @@ const upload = multer({
     storage: storage, 
 }).single('productImage');
 
-router.get("/dashboard", function(req, res){
-    res.render('admin/dashboard');
-});
 
-router.get("/products", function (req, res) {   
+router.get("/", function (req, res) {   
     Product.find({}, function (err, allProducts) {
         if (err) {
             console.log(err);
@@ -41,7 +37,7 @@ router.get("/add-product", function(req, res){
     res.render('admin/add-product');
 });
 
-router.get("/products/:productId/edit", function(req, res){
+router.get("/:productId/edit", function(req, res){
     const productId = req.params.productId;
 
     Product.findOne({ _id:productId }, function(err, product){
@@ -58,7 +54,7 @@ router.get("/products/:productId/edit", function(req, res){
     })
 });
 
-router.post("/products/:productId", upload, function(req, res){
+router.post("/:productId", upload, function(req, res){
     const productId = req.params.productId;
     console.log(productId);
     Product.updateOne(
@@ -135,49 +131,6 @@ router.get("/inventory", function(req, res){
 
 router.get("/orders", function(req, res){
     res.render('admin/orders');
-});
-
-router.get("/accounts", function(req, res){
-    User.find({}, function(err, foundAccounts){
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.render('admin/accounts', {accounts: foundAccounts});
-        }
-    });
-});
-
-router.get("/upgrade-account", function(req, res){
-    res.render('admin/accounts');
-});
-
-router.get("/downgrade-account", function(req, res){
-    res.render('admin/accounts');
-});
-
-router.post("/upgrade-account", function(req, res){
-    const upgradeId = req.body.upgradeId;
-    User.findByIdAndUpdate(upgradeId, {$set: {accountType: "admin"}}, function(err, foundAccounts){
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.redirect('/admin/accounts');
-        }
-    });
-});
-
-router.post("/downgrade-account", function(req, res){
-    const downgradeId = req.body.downgradeId;
-    User.findByIdAndUpdate(downgradeId, {$set: {accountType: "user"}}, function(err, foundAccounts){
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.redirect('/admin/accounts');
-        }
-    });
 });
 
 module.exports = router;

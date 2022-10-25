@@ -31,11 +31,11 @@
                                 <td>
                                     <% if(account.email === "sammygarma26@gmail.com" && account.accountType === "admin"){ %>
                                     <%} else if(account.accountType === "admin"){ %>
-                                        <form action="/admin/downgrade-account" method="post">
+                                        <form action="/admin/accounts/downgrade-account" method="post">
                                             <button type="submit" class="btn btn-sm btn-danger" name="downgradeId" value="<%= account._id %>">Downgrade</button>
                                         </form>
                                     <% } else { %>
-                                        <form action="/admin/upgrade-account" method="post">
+                                        <form action="/admin/accounts/upgrade-account" method="post">
                                             <button type="submit" class="btn btn-sm btn-success" name="upgradeId" value="<%= account._id %>">Upgrade</button>
                                         </form>
                                     <% } %>

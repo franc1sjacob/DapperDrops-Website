@@ -28,8 +28,16 @@ app.use("/products", productRoute);
 const accountRoute = require("./routes/Account");
 app.use("/account", accountRoute);
 
-const adminRoute = require("./routes/admin/Admin");
-app.use("/admin", adminRoute);
+//ADMIN
+
+const adminDashbordRoute = require("./routes/admin/Dashboard");
+app.use("/admin/dashboard/", adminDashbordRoute);
+
+const adminProductRoute = require("./routes/admin/Products");
+app.use("/admin/products/", adminProductRoute);
+
+const adminAccountRoute = require("./routes/admin/Account");
+app.use("/admin/accounts/", adminAccountRoute);
 
 //MongoDB
 main().catch(err => console.log(err));

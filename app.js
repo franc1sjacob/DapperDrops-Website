@@ -14,6 +14,10 @@ const randomstring = require("randomstring");
 const app = express();
 const port = 3000 || process.env.PORT;
 
+//EXPORT MODELS
+const User = require("./models/userModel");
+const Product = require("./models/productModel");
+
 //FOR IMAGE DISPLAY
 var fs = require('fs');
 var path = require('path');
@@ -51,57 +55,7 @@ async function main(){
     console.log("Connected to db!");
 }
 
-//Schemas
-const userSchema = new mongoose.Schema({
-    firstName: {
-        type: String,
-        required: true
-    },
-    lastName: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true,
-        index: {
-            unique: true
-        }
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    accountType: {
-        type: String,
-        required: true
-    },
-    isVerified: {
-        type: String,
-        default: false
-    },
-    token: {
-        type: String,
-        default: ''
-    }
-});
-
-const productSchema = new mongoose.Schema({
-    brand: String,
-    name: String,
-    price: Number,
-    description: String,
-    quantity: Number,
-    image: String,
-    type: String,
-});
-
-//Models
-const User = new mongoose.model("User", userSchema);
-const Product = new mongoose.model("Product", productSchema);
-
 //ROUTES
-
 //INDEX
 app.get("/", function(req, res){
     res.render('index');

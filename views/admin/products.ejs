@@ -54,9 +54,9 @@
                                 <td>
                                     <a href="/admin/products/<%= product._id %>/edit"><i class="fa-solid fa-pen-to-square me-1"></i></a>
                                     <form action="" method="post">
-                                        <a type="submit" name="deleteId" value="<%= product._id %>"><i class="fa-solid fa-eye me-1"></i></a>
+                                        <a type="submit" name="updateId" value="<%= product._id %>"><i class="fa-solid fa-eye me-1"></i></a>
                                     </form>
-                                    <form action="/delete-product" method="post">
+                                    <form action="/admin/delete-product/<%= product._id %>" method="post">
                                         <a type="submit" name="deleteId" value="<%= product._id %>"><i class="fa-solid fa-trash-can me-1"></i></a>
                                     </form>
                                 </td>

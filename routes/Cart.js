@@ -7,7 +7,13 @@ const { ObjectID } = require('bson');
 
 
 router.get("/view-cart", function(req, res){
-    res.render('view-cart')
+    Cart.find({}, function(err, foundCarts){
+        if(err){
+            console.log(err);
+        } else{
+            res.render('view-cart', {userCart:foundCarts});
+        }
+    });
 });
 
 router.post("/add-to-cart", function(req, res){
@@ -23,7 +29,8 @@ router.post("/add-to-cart", function(req, res){
                     name: foundProduct.name,
                     brand: foundProduct.brand,
                     category: foundProduct.category,
-                    quantity: 1
+                    quantity: 1,
+                    price: foundProduct.price
                 }],
                 total: foundProduct.price
             });
@@ -32,7 +39,7 @@ router.post("/add-to-cart", function(req, res){
                 if(err){
                     console.log(err);
                 }
-                res.render('view-cart');
+                res.redirect('/cart/view-cart');
             });
         }
     });

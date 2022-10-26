@@ -1,36 +1,35 @@
 <%- include('partials/header'); %>
 <div class="container">
-    <h1 class="cust-title-text mb-5"><%= type + " " %> / <%= brand + " " + name %></h1>
+    <h1 class="cust-title-text mb-5"><%= category + " " %> / <%= brand + " " + name %></h1>
     <div class="row">
         <div class="col-lg-6">
             <img src="/uploads/<%= image %>" style="width: 80%;" alt="">
         </div>
         <div class="col-lg-4">
-            <form>
-                <h1><%= brand %></h1>
-                <h1 class="cust-title-text"><%= name %></h1>
-                <h1>₱ <%= price %></h1>
-                <h5> <%= description %></h5>
-                <div class="dropdown mb-2">
-                    <button class="btn btn-light btn-lg dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    SIZE: 
-                    </button>
-                    <ul class="dropdown-menu">
-                    <li class="dropdown-item" href="#">7</li>
-                    <li class="dropdown-item" href="#">8</li>
-                    <li class="dropdown-item" href="#">9</li>
-                    <li class="dropdown-item" href="#">10</li>
-                    <li class="dropdown-item" href="#">11</li>
-                    <li class="dropdown-item" href="#">12</li>
-                    </ul>
-                </div>
-                <div class="d-grid gap-2">
-                <form>
-                    <button class="btn btn-dark btn-lg" >ADD TO CART</button>
-                </form>    
-                <button class="btn btn-light btn-lg">ADD TO WISHLIST</button>  
-                </div>
+            <h1><%= brand %></h1>
+            <h1 class="cust-title-text"><%= name %></h1>
+            <h1>₱ <%= price %></h1>
+            <h5> <%= description %></h5>
+            <div class="dropdown mb-2">
+                <button class="btn btn-light btn-lg dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                SIZE: 
+                </button>
+                <ul class="dropdown-menu">
+                <li class="dropdown-item" href="#">7</li>
+                <li class="dropdown-item" href="#">8</li>
+                <li class="dropdown-item" href="#">9</li>
+                <li class="dropdown-item" href="#">10</li>
+                <li class="dropdown-item" href="#">11</li>
+                <li class="dropdown-item" href="#">12</li>
+                </ul>
+            </div>
+            <div class="d-grid gap-2">
+            <form action="/cart/add-to-cart" method="post">
+                <button class="btn btn-dark btn-lg" >ADD TO CART</button>
+                <input type="hidden" name="prodId" value="<%= _id %>">
             </form>    
+            <button class="btn btn-light btn-lg">ADD TO WISHLIST</button>  
+            </div> 
         </div>
     </div>
 </div>

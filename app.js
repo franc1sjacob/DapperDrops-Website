@@ -20,6 +20,7 @@ app.use(express.static("public"));
 //EXPORT MODELS
 const User = require("./models/userModel");
 const Product = require("./models/productModel");
+const Cart = require("./models/cartModel");
 
 //EXPORT ROUTES
 const productRoute = require("./routes/Products");
@@ -27,6 +28,9 @@ app.use("/products", productRoute);
 
 const accountRoute = require("./routes/Account");
 app.use("/account", accountRoute);
+
+const cartRoute = require("./routes/Cart");
+app.use("/cart", cartRoute);
 
 //ADMIN
 

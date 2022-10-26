@@ -37,6 +37,25 @@ router.get("/add-product", function(req, res){
     res.render('admin/add-product');
 });
 
+router.post("/addProduct", upload,function(req, res){
+    const product = new Product({
+        brand: req.body.productBrand,
+        name: req.body.productName,
+        price: req.body.productPrice,
+        description: req.body.productDescription,
+        quantity: req.body.productQuantity,
+        image: req.file.filename,
+        category: req.body.productType
+    });
+    
+    product.save(function(err){
+        if(err){
+            console.log(err);
+        }
+        res.redirect("/admin/products");
+    });
+});
+
 router.get("/:productId/edit", function(req, res){
     const productId = req.params.productId;
 
@@ -49,7 +68,7 @@ router.get("/:productId/edit", function(req, res){
             description: product.description,
             quantity: product.quantity,
             image: product.image,
-            type: product.type,
+            category: product.category,
         });
     })
 });
@@ -66,7 +85,7 @@ router.post("/:productId", upload, function(req, res){
             description: req.body.productDescription,
             quantity: req.body.productQuantity,
             image: req.file.filename,
-            type: req.body.productType
+            category: req.body.productType
         }}, function(err, results){
             if(!err){
                 res.redirect("/admin/products");
@@ -76,25 +95,6 @@ router.post("/:productId", upload, function(req, res){
         }
     ); 
     
-});
-
-router.post("/addProduct", upload,function(req, res){
-    const product = new Product({
-        brand: req.body.productBrand,
-        name: req.body.productName,
-        price: req.body.productPrice,
-        description: req.body.productDescription,
-        quantity: req.body.productQuantity,
-        image: req.file.filename,
-        type: req.body.productType
-    });
-    
-    product.save(function(err){
-        if(err){
-            console.log(err);
-        }
-        res.redirect("/admin/products");
-    });
 });
 
 router.post("/delete-product/:deleteId", function(req, res){

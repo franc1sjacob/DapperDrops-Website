@@ -55,7 +55,7 @@ router.get("/item/:productId", function(req, res){
             description: item.description,
             quantity: item.quantity,
             image: item.image,
-            type: item.type
+            category: item.category
         });
     });
 });

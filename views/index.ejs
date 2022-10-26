@@ -37,7 +37,7 @@
   <div class="row">
     <%newProducts.forEach(function(product){%>
       <div class="col-lg-4 col-sm-6">
-        <a href="/item/<%= product._id %>" class="cust-prod-link">
+        <a href="/products/item/<%= product._id %>" class="cust-prod-link">
           <div class="card border-0 " style="width: 18rem;">
             <img src="/uploads/<%= product.image %>" class="card-img-top" alt="...">
             <div class="card-body">
@@ -58,7 +58,7 @@
   <div class="row">
     <%newProducts.forEach(function(product){%>
       <div class="col-lg-4 col-sm-6">
-        <a href="/item/<%= product._id %>" class="cust-prod-link">
+        <a href="/products/item/<%= product._id %>" class="cust-prod-link">
           <div class="card border-0 " style="width: 18rem;">
             <img src="/uploads/<%= product.image %>" class="card-img-top" alt="...">
             <div class="card-body">

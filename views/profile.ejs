@@ -1,0 +1,50 @@
+<%- include('partials/header'); %>
+
+<div class="container">
+    <div>
+
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h1 class="fw-bold float-start">My Account</h1>
+            <form action="/account/logout" method="POST" class="float-end">
+                <button type="submit" class="btn btn-dark">Logout</button>
+            </form>
+        </div>
+        <% const name = user.firstName + " " + user.lastName %>
+        <div class="card-body row mt-4">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <h2 class="mb-4 fw-bold">Account Information</h2>
+                <p>Name: <%= name %></p>
+                <p>Email: <%= user.email %></p>
+                <p>Account Type: <%= user.accountType %></p>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <h2 class="mb-4 fw-bold">Addresses</h2>
+                <% if(user.addresses.length === 0){ %>
+                    <p>There is no addresses listed yet.</p>
+                <% } else { %>
+                    <p>Full Name: <%= user.addresses[0].fullName %></p>
+                    <p>Phone Number: <%= user.addresses[0].phoneNumber %></p>
+                    <p>Region: <%= user.addresses[0].region %></p>
+                    <p>Province: <%= user.addresses[0].province %></p>
+                    <p>City: <%= user.addresses[0].city %></p>
+                    <p>Barangay: <%= user.addresses[0].barangay %></p>
+                    <p>Postal Code: <%= user.addresses[0].postalCode %></p>
+                    <p>Street Name, Building, House #: <%= user.addresses[0].streetName %></p>
+                <% } %>
+
+                <a href="/account/address">View Addresses</a>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <h2 class="mb-4 fw-bold">Order History</h2>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+<%- include('partials/footer'); %>

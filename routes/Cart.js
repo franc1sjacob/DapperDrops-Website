@@ -5,8 +5,15 @@ const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 const { ObjectID } = require('bson');
 
+const isAuth = function(req, res, next){
+    if(req.session.isAuth){
+        next();
+    } else {
+        res.render('login', { message: "Please login to your account to access this page." });
+    }
+}
 
-router.get("/view-cart", function(req, res){
+router.get("/view-cart", isAuth, function(req, res){
     Cart.find({}, function(err, foundCarts){
         if(err){
             console.log(err);

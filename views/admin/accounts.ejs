@@ -18,9 +18,10 @@
                 <div class="table table-responsive">
                     <table class="table table-sm">
                         <tr>
-                            <th>Username</th>
+                            <th>Name</th>
                             <th>Email</th>
                             <th>Account Type</th>
+                            <th>Verification Status</th>
                             <th>Action</th>
                         </tr>
                         <%accounts.forEach(function(account){%>
@@ -28,6 +29,7 @@
                                 <td><%= account.firstName + " " + account.lastName %></td>
                                 <td><%= account.email %></td>
                                 <td><%= account.accountType %></td>
+                                <td><%= account.isVerified %></td>
                                 <td>
                                     <% if(account.email === "sammygarma26@gmail.com" && account.accountType === "admin"){ %>
                                     <%} else if(account.accountType === "admin"){ %>

@@ -2,81 +2,135 @@ const express = require('express');
 const router = express.Router();
 
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
 const nodemailer = require("nodemailer");
+// const hbs = require('nodemailer-express-handlebars');
 
 const randomstring = require("randomstring");
 
 const User = require("../models/userModel");
 
+const isAuth = function(req, res, next){
+    if(req.session.isAuth){
+        next();
+    } else {
+        res.redirect('/account/login');
+    }
+}
+
+const isAdmin = function(req, res, next){
+    if(req.session.accountType === "admin"){
+        req.session.isAdmin = true;
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
 router.get("/login", function(req, res){
-    res.render('login');
+    //Checks whether user is logged in or not.
+    if(req.session.isAuth === true){
+        res.redirect("/account/profile");
+    } else {
+        res.render('login');
+    }
+
 });
 
-router.post("/login", function(req, res){
-    const userEmail = req.body.email;
-    const userPassword = req.body.password;
-    
-    User.findOne({email: userEmail}, function(err, foundUser){
+router.get("/profile", isAuth, function(req, res){
+    userId = req.session.userId;
+    User.findById(userId, function(err, user){
+        res.render('profile', { user: user });
+    });
+});
+
+
+router.post("/login", async function(req, res){
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if(!user){
+        return res.render('login', { message: "The email you entered isn’t connected to an account."});
+    }
+
+    //Returns true if password matches.
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    //Checks if isMatch is true
+    if(!isMatch){
+        return res.render('login', { message: "The password you’ve entered is incorrect. Forgot Password?"});
+    } else if(isMatch && user.isVerified === 'true'){
+        req.session.firstName = user.firstName;
+        req.session.lastName = user.lastName;
+        req.session.userId = user._id;
+        req.session.accountType = user.accountType;
+        req.session.isAuth = true;
+        if(req.session.accountType === "admin"){
+            res.redirect('/admin/dashboard')
+        } else {
+            res.redirect('/account/profile');
+        }
+    } else {
+        console.log("User account is correct but not verified.");
+        return res.render('login', { message: "Please verify your account in your email."});
+    }
+});
+
+router.post('/logout', function(req, res){
+    req.session.destroy(function(err){
         if(err){
             console.log(err);
         } else {
-            if(foundUser){
-                bcrypt.compare(userPassword, foundUser.password, function(err, result){
-                    if(result === true){
-                        if(foundUser.isVerified === "false"){
-                            res.render('login', {message: "Please check and verify your account in your email."});
-                        }
-                        else if(foundUser.accountType === "admin"){
-                            // req.session.userId = foundUser._id;
-                            res.render('admin/dashboard');
-                        }
-                        else{
-                            // req.session.userId = foundUser._id;
-                            res.redirect('/');
-                        }
-                    }
-                    else{
-                        res.render('login', {message: "Incorrect login credentials!"});
-                    }
-                });
-            }
-            else{
-                res.render('login', {message: "Incorrect email and password!"});
-            }
-        }});
+            res.redirect('/account/login');
+        }
+    });
 });
 
 router.get("/register", function(req, res){
     res.render('register');
 });
 
-router.post("/register", function(req, res){
-    bcrypt.hash(req.body.password, saltRounds, function(err, hash){
-        const user = new User({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            password: hash,
-            accountType: "user"
-        });
-    
-        user.save(function(err){
-            if(err){
-                console.log(err);
-            } else {
-                sendVerifyMail(req.body.firstName, req.body.email, user._id);
-                res.render('register', {message: "Your registration has been successful. Please check and verify your account."});
-            }
-        });
+router.post("/register", async function(req, res){
+    const {
+        firstName,
+        lastName,
+        email,
+        password,
+    } = req.body;
+
+    let user = await User.findOne({ email });
+
+    //Check if email exists
+    if(user){
+        return res.render('register', { message: "The email you've entered is already registered." });
+    }
+
+    //Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    user = new User({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        accountType: 'user'
+    });
+
+    await user.save(function (err){
+        if(err){
+            console.log(err);
+        } else {
+            sendVerifyMail(firstName, email, user._id);
+            res.render('register', {message: "Your registration has been successful. Please check your email and verify your account."});
+        }
     });
 });
 
-const sendVerifyMail = async(name, email, user_id) =>{
-    try{
+const sendVerifyMail = async function(name, email, user_id){
+    try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
-            port:465,
+            port: 465,
             secure: true,
             auth:{
                 user: process.env.SECRETEMAIL,
@@ -91,7 +145,7 @@ const sendVerifyMail = async(name, email, user_id) =>{
             from: process.env.SECRETEMAIL,
             to: email,
             subject: "For Verification",
-            html:'<p>Hi '+name+', please click here to <a href="http://localhost:3000/account/verify?id='+user_id+'"> Verify </a> your mail</p>'
+            html:'<p>Hi ' + name + ', please click here to <a href="http://localhost:3000/account/verify?id='+user_id+'"> Verify </a> your mail</p>'
         }
 
         transporter.sendMail(mailOptions, function(error, info){
@@ -109,11 +163,10 @@ const sendVerifyMail = async(name, email, user_id) =>{
 }
 
 router.get("/verify", function(req, res){
-    User.findByIdAndUpdate({_id:req.query.id}, {$set:{isVerified: true}}, function(err, user){
+    User.findByIdAndUpdate({ _id: req.query.id }, { $set:{ isVerified: true } }, function(err, user){
         if(err){
             console.log(err);
-        }
-        else{
+        } else {
             res.render('email-verified');
         }
     });
@@ -124,29 +177,28 @@ router.get("/forgot", function(req, res){
 });
 
 router.post("/forgot", function(req, res){
-    
-    const forgotEmail = req.body.email;
-    User.findOne({email: forgotEmail}, function(err, foundUser){
-        if(foundUser){
-            if(foundUser.isVerified === "false"){
-                res.render('forgot', {message: "Please check and verify your email."});
+    const { email } = req.body;
+    User.findOne({email: email}, function(err, user){
+        if(user){
+            if(user.isVerified === "false"){
+                res.render('forgot', {message: "Please check your email and verify your account."});
             } else{
                 const randomString = randomstring.generate();
                 User.updateOne({email: forgotEmail}, {$set: {token: randomString}}, function(err, user){});
-                sendResetPasswordMail(foundUser.firstName, foundUser.email, randomString);
+                sendResetPasswordMail(user.firstName, user.email, randomString);
                 res.render('forgot', {message: "Please check your email for the reset link of forgotten password."});
             }
         } else {
-            res.render('forgot', {message: "User email is incorrect."});
+            res.render('forgot', {message: "The email you entered isn’t connected to an account."});
         }
     });
 });
 
-const sendResetPasswordMail = async(name, email, token) =>{
-    try{
+const sendResetPasswordMail = async function(name, email, token){
+    try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
-            port:465,
+            port: 465,
             secure: true,
             auth:{
                 user: process.env.SECRETEMAIL,
@@ -156,24 +208,28 @@ const sendResetPasswordMail = async(name, email, token) =>{
                 rejectUnauthorized: false
             }
         });
+
+        // transporter.use('compile', hbs({
+        //     viewEngine: 'express-handlebars',
+        //     viewPath: './views/'
+        // }));
         
-        const mailOptions= {
+        const mailOptions = {
             from: process.env.SECRETEMAIL,
             to: email,
-            subject: "For Reset Password",
-            html:'<p>Hi '+name+', please click here to <a href="http://localhost:3000/account/forget-password?token='+token+'"> Reset </a> your password.</p>'
+            subject: "Password Reset Request for DapperDrops",
+            html:'<p>Hi '+name+', please click here to <a href="http://localhost:3000/account/forget-password?token='+token+'"> reset </a> your password.</p>'
+            // template: 'forgotpass'
         }
 
         transporter.sendMail(mailOptions, function(error, info){
             if(error){
                 console.log(error);
-            }
-            else{
+            } else {
                 console.log("Email has been sent:- ", info.response);
             }
         });
-    }
-    catch (error){
+    } catch(error) {
         console.log(error);
     }
 }
@@ -189,20 +245,48 @@ router.get("/forget-password", function(req, res){
     });
 });
 
-router.post("/forget-password", function(req, res){
-    const newPassword = req.body.password;
-    const userId = req.body.userId;
+router.post("/forget-password", async function(req, res){
+    const { password, userId } = req.body;
 
-    bcrypt.hash(newPassword, saltRounds, function(err, hash){
-        User.findByIdAndUpdate({_id: userId}, {$set: {password: hash}, token:''}, function(err, user){
-            if(err){
-                console.log(err);
-            }
-            else{
-                res.render('login', {message: "Your password is now reset, you can now login."});
-            }
-        });
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    User.findByIdAndUpdate({ _id: userId }, { $set: {password: hashedPassword}, token: ''}, function(err){
+        if(err){
+            console.log(err);
+        } else {
+            res.render('login', { message: "Your password is now reset, you can now login with your new password." });
+        }
     });
+});
+
+router.get('/address', isAuth, function(req, res){
+    res.render('address');
+});
+
+router.post('/address', isAuth, function(req, res){
+    const userId = req.session.userId;
+    const { fullName, phoneNumber, region, province, city, barangay, postalCode, streetName } = req.body;
+
+    User.findByIdAndUpdate({ "_id": userId }, { $push: { 
+        addresses: [
+            {
+                fullName: fullName,
+                phoneNumber: phoneNumber,
+                region: region,
+                province: province,
+                city: city,
+                barangay: barangay,
+                postalCode: fullName,
+                streetName: streetName
+            }
+        ]
+    } }, function(err){
+        if(err){
+            console.log(err);
+        } else {
+            res.redirect('/account/profile');
+        }
+    })
 });
 
 module.exports = router;

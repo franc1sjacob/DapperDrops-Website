@@ -34,7 +34,10 @@
                 <a class="list-group-item list-group-item-action list-group-item-light border-bottom border-dark p-3 dashboard-links" href="/admin/orders"><i class="fa-solid fa-dolly me-2 dash-icons"></i>Orders</a>
                 <a class="list-group-item list-group-item-action list-group-item-light border-bottom border-dark p-3 dashboard-links" href="#!"><i class="fa-solid fa-thumbs-up me-2 dash-icons"></i>Feedback</a>
                 <a class="list-group-item list-group-item-action list-group-item-light border-bottom border-dark p-3 dashboard-links" href="/admin/accounts"><i class="fa-solid fa-user-pen me-2 dash-icons"></i>Accounts</a>
-                <a class="list-group-item list-group-item-action list-group-item-light border-bottom border-dark p-3 dashboard-links logout-link" href="/account/login"><i class="fa-solid fa-right-from-bracket me-2 dash-icons logout-icon"></i>Log-out</a>
+                <form action="/account/logout" method="POST">
+                    <button class="list-group-item list-group-item-action list-group-item-light border-bottom border-dark p-3 dashboard-links logout-link" type="submit"><i class="fa-solid fa-right-from-bracket me-2 dash-icons logout-icon"></i>Log-out</button>
+                </form>
+                
             </div>
         </div>
         <!-- ---------------SIDEBAR END--------------- -->

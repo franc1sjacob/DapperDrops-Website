@@ -1,6 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
+const isAuth = function(req, res, next){
+    if(req.session.isAuth){
+        next();
+    } else {
+        res.redirect('/account/login');
+    }
+}
+
+const isAdmin = function(req, res, next){
+    if(req.session.accountType === "admin"){
+        req.session.isAdmin = true;
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
 const Product = require("../../models/productModel");
 
 var fs = require('fs');
@@ -23,7 +40,7 @@ const upload = multer({
 }).single('productImage');
 
 
-router.get("/", function (req, res) {   
+router.get("/", isAuth, isAdmin, function (req, res) {   
     Product.find({}, function (err, allProducts) {
         if (err) {
             console.log(err);
@@ -33,11 +50,11 @@ router.get("/", function (req, res) {
     });
 });
 
-router.get("/add-product", function(req, res){
+router.get("/add-product", isAuth, isAdmin, function(req, res){
     res.render('admin/add-product');
 });
 
-router.post("/addProduct", upload,function(req, res){
+router.post("/addProduct", isAuth, isAdmin, upload, function(req, res){
     const product = new Product({
         brand: req.body.productBrand,
         name: req.body.productName,
@@ -56,7 +73,7 @@ router.post("/addProduct", upload,function(req, res){
     });
 });
 
-router.get("/:productId/edit", function(req, res){
+router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
 
     Product.findOne({ _id:productId }, function(err, product){
@@ -73,7 +90,7 @@ router.get("/:productId/edit", function(req, res){
     })
 });
 
-router.post("/:productId", upload, function(req, res){
+router.post("/:productId", isAuth, isAdmin, upload, function(req, res){
     const productId = req.params.productId;
     console.log(productId);
     Product.updateOne(
@@ -97,7 +114,7 @@ router.post("/:productId", upload, function(req, res){
     
 });
 
-router.post("/delete-product/:deleteId", function(req, res){
+router.post("/delete-product/:deleteId", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
     Product.findByIdAndRemove({ _id:productId }, function(err, user){
         if(err){
@@ -109,27 +126,27 @@ router.post("/delete-product/:deleteId", function(req, res){
     });
 });
 
-router.get("/onhand-products", function(req, res){
+router.get("/onhand-products", isAuth, isAdmin, function(req, res){
     res.render('admin/onhand-products');
 });
 
-router.get("/preorder-products", function(req, res){
+router.get("/preorder-products", isAuth, isAdmin, function(req, res){
     res.render('admin/preorder-products');
 });
 
-router.get("/apparel-products", function(req, res){
+router.get("/apparel-products", isAuth, isAdmin, function(req, res){
     res.render('admin/apparel-products');
 });
 
-router.get("/accessories-products", function(req, res){
+router.get("/accessories-products", isAuth, isAdmin, function(req, res){
     res.render('admin/accessories-products');
 });
 
-router.get("/inventory", function(req, res){
+router.get("/inventory", isAuth, isAdmin, function(req, res){
     res.render('admin/inventory');
 });
 
-router.get("/orders", function(req, res){
+router.get("/orders", isAuth, isAdmin, function(req, res){
     res.render('admin/orders');
 });
 

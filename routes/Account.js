@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const mongoose = require('mongoose');
+
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 // const hbs = require('nodemailer-express-handlebars');
@@ -260,31 +262,44 @@ router.post("/forget-password", async function(req, res){
 });
 
 router.get('/address', isAuth, function(req, res){
-    res.render('address');
+    const userId = req.session.userId;
+    User.findById(userId, function(err, user){
+        res.render('address', { user: user });
+    });
 });
 
-router.post('/address', isAuth, function(req, res){
+router.post('/address', isAuth, async function(req, res){
     const userId = req.session.userId;
     const { fullName, phoneNumber, region, province, city, barangay, postalCode, streetName } = req.body;
 
+    //Sets the address id.
+    const addressId = new mongoose.Types.ObjectId();
+    const address = {
+        _id: addressId,
+        fullName: fullName,
+        phoneNumber: phoneNumber,
+        region: region,
+        province: province,
+        city: city,
+        barangay: barangay,
+        postalCode: fullName,
+        streetName: streetName
+    };
+
     User.findByIdAndUpdate({ "_id": userId }, { $push: { 
-        addresses: [
-            {
-                fullName: fullName,
-                phoneNumber: phoneNumber,
-                region: region,
-                province: province,
-                city: city,
-                barangay: barangay,
-                postalCode: fullName,
-                streetName: streetName
-            }
-        ]
-    } }, function(err){
+        addresses: [address]
+    }}, function(err){
         if(err){
             console.log(err);
         } else {
-            res.redirect('/account/profile');
+            //Sets the newly added address as default address.
+            User.findByIdAndUpdate({ _id: userId }, { $set: { defaultAddress: address } }, function(err, user){
+                if(err){
+                    console.log(err);
+                } else {
+                    res.redirect('/account/profile');
+                }
+            });
         }
     })
 });

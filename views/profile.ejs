@@ -24,14 +24,15 @@
                 <% if(user.addresses.length === 0){ %>
                     <p>There is no addresses listed yet.</p>
                 <% } else { %>
-                    <p>Full Name: <%= user.addresses[0].fullName %></p>
-                    <p>Phone Number: <%= user.addresses[0].phoneNumber %></p>
-                    <p>Region: <%= user.addresses[0].region %></p>
-                    <p>Province: <%= user.addresses[0].province %></p>
-                    <p>City: <%= user.addresses[0].city %></p>
-                    <p>Barangay: <%= user.addresses[0].barangay %></p>
-                    <p>Postal Code: <%= user.addresses[0].postalCode %></p>
-                    <p>Street Name, Building, House #: <%= user.addresses[0].streetName %></p>
+                    <% %>
+                    <p>Full Name: <%= user.defaultAddress.fullName %></p>
+                    <p>Phone Number: <%= user.defaultAddress.phoneNumber %></p>
+                    <p>Region: <%= user.defaultAddress.region %></p>
+                    <p>Province: <%= user.defaultAddress.province %></p>
+                    <p>City: <%= user.defaultAddress.city %></p>
+                    <p>Barangay: <%= user.defaultAddress.barangay %></p>
+                    <p>Postal Code: <%= user.defaultAddress.postalCode %></p>
+                    <p>Street Name, Building, House #: <%= user.defaultAddress.streetName %></p>
                 <% } %>
 
                 <a href="/account/address">View Addresses</a>

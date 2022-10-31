@@ -62,6 +62,43 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }],
+    defaultAddress: {
+        _id: {
+            type: mongoose.Types.ObjectId
+        },
+        fullName: {
+            type: String,
+            required: true
+        },
+        phoneNumber: {
+            type: String,
+            required: true
+        },
+        region: {
+            type: String,
+            required: true
+        },
+        province: {
+            type: String,
+            required: true
+        },
+        city: {
+            type: String,
+            required: true
+        },
+        barangay: {
+            type: String,
+            required: true
+        },
+        postalCode: {
+            type: String,
+            required: true
+        },
+        streetName:{
+            type: String,
+            required: true
+        }
+    },
     token: {
         type: String,
         default: ''

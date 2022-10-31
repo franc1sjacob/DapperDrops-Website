@@ -29,11 +29,15 @@ const userSchema = new mongoose.Schema({
         default: false
     },
     addresses: [{
-        fullName: {
+        firstName: {
             type: String,
             required: true
         },
-        phoneNumber: {
+        lastName: {
+            type: String,
+            required: true
+        },
+        addressLine: {
             type: String,
             required: true
         },
@@ -41,15 +45,7 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-        province: {
-            type: String,
-            required: true
-        },
         city: {
-            type: String,
-            required: true
-        },
-        barangay: {
             type: String,
             required: true
         },
@@ -57,7 +53,15 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-        streetName:{
+        barangay: {
+            type: String,
+            required: true
+        },
+        phoneNumber: {
+            type: String,
+            required: true
+        },
+        email:{
             type: String,
             required: true
         }
@@ -66,37 +70,32 @@ const userSchema = new mongoose.Schema({
         _id: {
             type: mongoose.Types.ObjectId
         },
-        fullName: {
+        firstName: {
             type: String,
-            required: true
         },
-        phoneNumber: {
+        lastName: {
             type: String,
-            required: true
+        },
+        addressLine: {
+            type: String,
         },
         region: {
             type: String,
-            required: true
-        },
-        province: {
-            type: String,
-            required: true
         },
         city: {
             type: String,
-            required: true
-        },
-        barangay: {
-            type: String,
-            required: true
         },
         postalCode: {
             type: String,
-            required: true
         },
-        streetName:{
+        barangay: {
             type: String,
-            required: true
+        },
+        phoneNumber: {
+            type: String,
+        },
+        email:{
+            type: String
         }
     },
     token: {

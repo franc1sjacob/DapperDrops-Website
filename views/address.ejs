@@ -1,63 +1,77 @@
 <%- include('partials/header'); %>
 <div class="container">
     <div class="row">
-        <%user.addresses.forEach(function(address){%>
-            <div class="col">
-                <div class="card" style="max-width: 240px;">
-                  <div class="card-body">
-                    <p class="card-text"> <%= address.fullName %></p>
-                    <p class="card-text"> <%= address.phoneNumber %></p>
-                    <p class="card-text"> <%= address.region %></p>
-                    <p class="card-text"> <%= address.province %></p>
-                    <p class="card-text"> <%= address.city %></p>
-                    <p class="card-text"> <%= address.barangay %></p>
-                    <p class="card-text"> <%= address.postalCode %></p>
-                    <p class="card-text"> <%= address.streetName %></p>
-                    <!-- <form action="/account/setDefaultAddress/" method="POST">
-                        <button type="submit" class="btn btn-dark">Set as default address</button>
-                    </form> -->
-                  </div>
+        <div class="col-lg-12 col-md-12 mb-4">
+            <div class="card">
+                <div class="card-header"><h1 class="fw-bold">New Address</h1></div>
+                <div class="card-body">
+                    <form action="/account/address" method="POST">
+                        <div class="row g-3">
+                            <div class="col-lg-6 col-md-6">
+                                <label class="form-label" for="firstName">First Name</label>
+                                <input class="form-control" type="text" name="firstName" id="firstName" required>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <label class="form-label" for="lastName">Last Name</label>
+                                <input class="form-control" type="text" name="lastName" id="lastName" required>
+                            </div>
+                            <div>
+                                <label for="addressLine">House Number and Street Name</label>
+                                <input class="form-control" type="text" name="addressLine" id="addressLine" required>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <label for="region">Region</label>
+                                <input class="form-control" type="text" name="region" id="region" required>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <label for="city">City</label>
+                                <input class="form-control" type="text" name="city" id="city" required>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <label for="postalCode">Postal Code</label>
+                                <input class="form-control" type="text" name="postalCode" id="postalCode" required>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <label class="form-label" for="barangay">Barangay</label>
+                                <input class="form-control" type="text" name="barangay" id="barangay" required>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <label class="form-label" for="phoneNumber">Phone Number</label>
+                                <input class="form-control" type="text" name="phoneNumber" id="phoneNumber" required>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <label class="form-label" for="email">Email Address</label>
+                                <input class="form-control" type="email" name="email" id="email" required>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-dark" type="submit">Add</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-              </a>  
             </div>
-          <% }) %>
-    </div>
-    <div class="mt-5">
-        <form action="/account/address" method="POST">
-            <div>
-                <label for="fullName">Full Name</label>
-                <input type="text" name="fullName" id="fullName">
-            </div>
-            <div>
-                <label for="phoneNumber">Phone Number</label>
-                <input type="text" name="phoneNumber" id="phoneNumber">
-            </div>
-            <div>
-                <label for="region">Region</label>
-                <input type="text" name="region" id="region">
-            </div>
-            <div>
-                <label for="province">Province</label>
-                <input type="text" name="province" id="province">
-            </div>
-            <div>
-                <label for="city">City</label>
-                <input type="text" name="city" id="city">
-            </div>
-            <div>
-                <label for="barnagayu">Barangay</label>
-                <input type="text" name="barangay" id="barangay">
-            </div>
-            <div>
-                <label for="postalCode">Postal Code</label>
-                <input type="text" name="postalCode" id="postalCode">
-            </div>
-            <div>
-                <label for="streetName">Street Name, Building, House #</label>
-                <input type="text" name="streetName" id="streetName">
-            </div>
-            <button type="submit">Add</button>
-        </form>
+            
+        </div>
+        <div class="row">
+            <%user.addresses.forEach(function(address){%>
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header"><%= address.firstName + " " + address.lastName + " | " + address.phoneNumber + " | " + address.email %></div>
+                        <div class="card-body">
+                            <p class="card-text"> <%= address.addressLine + ", " + address.barangay + ", " + address.city + ", " + address.region + ", " + address.postalCode%></p>
+                            <form class="d-grid mb-2" action="/account/setDefaultAddress/<%= address._id %>&<%= address.firstName %>&<%= address.lastName %>&<%= address.addressLine %>
+                            &<%= address.region %>&<%= address.city %>&<%= address.postalCode %>&<%= address.barangay %>&<%= address.phoneNumber %>&<%= address.email %>" method="POST">
+                                <button type="submit" class="btn btn-dark" value="<%= address._id %>&<%= address.firstName %>&<%= address.lastName %>&<%= address.addressLine %>
+                                &<%= address.region %>&<%= address.city %>&<%= address.postalCode %>&<%= address.barangay %>&<%= address.phoneNumber %>&<%= address.email %>">Set as default address</button>
+                            </form>
+                            <form class="d-grid mb-2" action="/account/deleteAddress/<%= address._id %>" method="POST">
+                                <button type="submit" class="btn btn-danger" value="<%= address._id %>">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+              <% }) %>
+        </div>
     </div>
 </div>
     

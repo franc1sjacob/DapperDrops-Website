@@ -268,22 +268,22 @@ router.get('/address', isAuth, function(req, res){
     });
 });
 
-router.post('/address', isAuth, async function(req, res){
+router.post('/address', isAuth, function(req, res){
     const userId = req.session.userId;
-    const { fullName, phoneNumber, region, province, city, barangay, postalCode, streetName } = req.body;
-
-    //Sets the address id.
     const addressId = new mongoose.Types.ObjectId();
+    const { firstName, lastName, addressLine, region, city, postalCode, barangay, phoneNumber, email } = req.body;
+
     const address = {
         _id: addressId,
-        fullName: fullName,
-        phoneNumber: phoneNumber,
+        firstName: firstName,
+        lastName: lastName,
+        addressLine: addressLine,
         region: region,
-        province: province,
         city: city,
-        barangay: barangay,
-        postalCode: fullName,
-        streetName: streetName
+        postalCode: postalCode,
+        barangay: "Brgy " + barangay,
+        phoneNumber: phoneNumber,
+        email: email
     };
 
     User.findByIdAndUpdate({ "_id": userId }, { $push: { 
@@ -301,7 +301,65 @@ router.post('/address', isAuth, async function(req, res){
                 }
             });
         }
-    })
+    });
+});
+
+router.post('/setDefaultAddress/:addressId&:firstName&:lastName&:addressLine&:region&:city&:postalCode&:barangay&:phoneNumber&:email', isAuth, function(req, res){
+    const { addressId, firstName, lastName, addressLine, region, city, postalCode, barangay, phoneNumber, email } = req.params;
+    const newDefaultAddress = {
+        _id: addressId,
+        firstName: firstName,
+        lastName: lastName,
+        addressLine: addressLine,
+        region: region,
+        city: city,
+        postalCode: postalCode,
+        barangay: barangay,
+        phoneNumber: phoneNumber,
+        email: email
+    };
+    const userId = req.session.userId;
+    User.findByIdAndUpdate({ _id: userId }, { $set:{ defaultAddress: newDefaultAddress }}, function(err, user){
+        if(err){
+            console.log(err);
+        } else {
+            res.redirect('/account/profile');
+        }
+    });
+})
+
+router.post('/deleteAddress/:addressId', isAuth, function(req, res){
+    const userId = req.session.userId;
+    const addressId = req.params.addressId;
+
+    User.findByIdAndUpdate({ "_id": userId },
+    { $pull: { 
+        addresses: { _id: addressId }
+    }}, function(err, user){
+        if(err){
+            console.log(err);
+        } else {
+
+            const objAddressId = mongoose.Types.ObjectId(addressId);
+            const isEqual = objAddressId.equals(user.defaultAddress._id);
+
+            if(isEqual){
+                User.findByIdAndUpdate({ _id: userId }, { $unset:{ defaultAddress: {
+                    _id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    addressLine: 1,
+                    region: 1,
+                    city: 1,
+                    postalCode: 1,
+                    barangay: 1,
+                    phoneNumber: 1,
+                    email: 1
+                }}});
+            }
+            res.redirect('/account/address');
+        }
+    });
 });
 
 module.exports = router;

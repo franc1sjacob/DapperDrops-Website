@@ -20,22 +20,24 @@
                 <p>Account Type: <%= user.accountType %></p>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12">
-                <h2 class="mb-4 fw-bold">Addresses</h2>
+                <h2 class="mb-4 fw-bold">Default Address</h2>
                 <% if(user.addresses.length === 0){ %>
-                    <p>There is no addresses listed yet.</p>
+                    <p>There are no addresses listed.</p>
+                <% } else if(user.defaultAddress._id === undefined) { %>
+                    <p><%= user.defaultAddress.firstName %></p>
+                    <p>Please set a new default address. Your default address may have been deleted.</p>
                 <% } else { %>
-                    <% %>
-                    <p>Full Name: <%= user.defaultAddress.fullName %></p>
-                    <p>Phone Number: <%= user.defaultAddress.phoneNumber %></p>
+                    <p>Full Name: <%= user.defaultAddress.firstName + " " + user.defaultAddress.lastName %></p>
+                    <p>Address Line: <%= user.defaultAddress.addressLine %></p>
                     <p>Region: <%= user.defaultAddress.region %></p>
-                    <p>Province: <%= user.defaultAddress.province %></p>
                     <p>City: <%= user.defaultAddress.city %></p>
-                    <p>Barangay: <%= user.defaultAddress.barangay %></p>
                     <p>Postal Code: <%= user.defaultAddress.postalCode %></p>
-                    <p>Street Name, Building, House #: <%= user.defaultAddress.streetName %></p>
+                    <p>Barangay: <%= user.defaultAddress.barangay %></p>
+                    <p>Phone Number: <%= user.defaultAddress.phoneNumber %></p>
+                    <p>Email: <%= user.defaultAddress.email %></p>
                 <% } %>
 
-                <a href="/account/address">View Addresses</a>
+                <a href="/account/address" class="fw-bold text-dark">View Addresses</a>
             </div>
             <div class="col-lg-12 col-md-12 col-sm-12">
                 <h2 class="mb-4 fw-bold">Order History</h2>

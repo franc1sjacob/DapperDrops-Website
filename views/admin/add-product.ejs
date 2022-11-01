@@ -1,35 +1,31 @@
 <%- include('../partials/admin/header', {name: fullName}); %>
 <div class="container">
     <h1 class="text-center mt-2 mb-3">Add Product</h1> 
-    <form action="/admin/products/addProduct" method="post" enctype="multipart/form-data">
+    <form action="/admin/products/add-product" method="post" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="inputBrandName" class="form-label">Brand Name:</label>
-          <input type="text" class="form-control" id="inputBrandName" name="productBrand">
+          <input type="text" class="form-control" id="inputBrandName" name="brand">
         </div>
         <div class="mb-3">
             <label for="inputName" class="form-label">Name:</label>
-            <input type="text" class="form-control" id="inputName" name="productName">
+            <input type="text" class="form-control" id="inputName" name="name">
         </div>
         <div class="mb-3">
             <label for="inputPrice" class="form-label">Price:</label>
-            <input type="number" class="form-control" id="inputPrice" name="productPrice">
+            <input type="number" class="form-control" id="inputPrice" name="price">
         </div>
         <div class="mb-3">
             <label for="inputDescription" class="form-label">Description:</label>
-            <input type="text" class="form-control" id="inputDescription" name="productDescription">
+            <input type="text" class="form-control" id="inputDescription" name="description">
         </div>
         <div class="mb-3">
-            <label for="inputQuantity" class="form-label">Quantity:</label>
-            <input type="number" class="form-control" id="inputQuantity" name="productQuantity">
-        </div>
-        <div class="mb-3">
-            <label for="inputImage" class="form-label">Image:</label>
-            <input type="file" class="form-control" id="inputImage" name="productImage">
+            <label for="image" class="form-label">Image:</label>
+            <input type="file" class="form-control" id="image" name="image">
         </div>
 
         <div class="mb-3">
-            <label for="inputProductType" class="form-label">Image:</label>
-            <select name="productType" id="productType" class="form-control">
+            <label for="category" class="form-label">Image:</label>
+            <select name="category" id="category" class="form-control">
                 <option value="On-Hand">On-hand</option>
                 <option value="Pre-Order">Pre-Order</option>
                 <option value="Apparel">Apparel</option>

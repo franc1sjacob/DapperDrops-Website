@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const mongoose = require('mongoose');
+
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
         next();
@@ -37,7 +39,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage, 
-}).single('productImage');
+}).single('image');
 
 
 router.get("/", isAuth, isAdmin, function (req, res) {   
@@ -51,26 +53,65 @@ router.get("/", isAuth, isAdmin, function (req, res) {
 });
 
 router.get("/add-product", isAuth, isAdmin, function(req, res){
-    res.render('admin/add-product');
+    res.render('admin/add-product', {fullName: req.session.firstName + " " + req.session.lastName});
 });
 
-router.post("/addProduct", isAuth, isAdmin, upload, function(req, res){
+router.post("/add-product", isAuth, isAdmin, upload, function(req, res){
+    const productId = new mongoose.Types.ObjectId();
+    const { brand, name, price, description, category } = req.body;
+
     const product = new Product({
-        brand: req.body.productBrand,
-        name: req.body.productName,
-        price: req.body.productPrice,
-        description: req.body.productDescription,
-        quantity: req.body.productQuantity,
+        _id: productId,
+        brand: brand,
+        name: name,
+        price: price,
+        description: description,
         image: req.file.filename,
-        category: req.body.productType
+        category: category
     });
+
+    // const product = new Product({
+    //     brand: req.body.productBrand,
+    //     name: req.body.productName,
+    //     price: req.body.productPrice,
+    //     description: req.body.productDescription,
+    //     quantity: req.body.productQuantity,
+    //     image: req.file.filename,
+    //     category: req.body.productType
+    // });
     
     product.save(function(err){
         if(err){
             console.log(err);
         }
-        res.redirect("/admin/products");
+        console.log("Product ID:");
+        console.log(productId);
+        req.session.productId = productId;
+        res.redirect("/admin/products/add-variations");
     });
+});
+
+router.get("/add-variations", isAuth, isAdmin, function(req, res){
+    res.render('admin/add-variations', { productId: req.session.productId, fullName: req.session.firstName + " " + req.session.lastName });
+});
+
+router.post("/add-variations", isAuth, isAdmin, function(req, res){
+    const { productId, name, quantity } = req.body;
+    const variation = {
+        name: name,
+        quantity: quantity
+    };
+
+    Product.findByIdAndUpdate({ _id: req.session.productId }, { $push: { 
+        variations: [variation]
+    }}, function(err){
+        if(err){
+            console.log(err);
+        } else {
+            res.redirect('/admin/products')
+        }
+    });
+
 });
 
 router.get("/:productId/edit", isAuth, isAdmin, function(req, res){

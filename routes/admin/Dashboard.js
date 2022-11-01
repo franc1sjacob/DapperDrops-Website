@@ -19,7 +19,8 @@ const isAdmin = function(req, res, next){
 }
 
 router.get("/", isAuth, isAdmin, function(req, res){
-    res.render('admin/dashboard');
+    const name = req.session.firstName + " " + req.session.lastName;
+    res.render('admin/dashboard', {fullName: name});
 });
 
 module.exports = router;

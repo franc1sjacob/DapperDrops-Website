@@ -26,7 +26,7 @@ router.get("/", isAuth, isAdmin, function(req, res){
             console.log(err);
         }
         else{
-            res.render('admin/accounts', {accounts: foundAccounts});
+            res.render('admin/accounts', {accounts: foundAccounts, fullName: req.session.firstName + " " + req.session.lastName });
         }
     });
 });

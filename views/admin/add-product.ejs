@@ -1,4 +1,4 @@
-<%- include('../partials/admin/header'); %>
+<%- include('../partials/admin/header', {name: fullName}); %>
 <div class="container">
     <h1 class="text-center mt-2 mb-3">Add Product</h1> 
     <form action="/admin/products/addProduct" method="post" enctype="multipart/form-data">

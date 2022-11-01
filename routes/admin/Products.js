@@ -45,7 +45,7 @@ router.get("/", isAuth, isAdmin, function (req, res) {
         if (err) {
             console.log(err);
         } else {
-            res.render('admin/products', { newListProducts: allProducts })
+            res.render('admin/products', { newListProducts: allProducts, fullName: req.session.firstName + " " + req.session.lastName })
         }
     });
 });
@@ -127,27 +127,27 @@ router.post("/delete-product/:deleteId", isAuth, isAdmin, function(req, res){
 });
 
 router.get("/onhand-products", isAuth, isAdmin, function(req, res){
-    res.render('admin/onhand-products');
+    res.render('admin/onhand-products', {fullName: req.session.firstName + " " + req.session.lastName});
 });
 
 router.get("/preorder-products", isAuth, isAdmin, function(req, res){
-    res.render('admin/preorder-products');
+    res.render('admin/preorder-products', {fullName: req.session.firstName + " " + req.session.lastName});
 });
 
 router.get("/apparel-products", isAuth, isAdmin, function(req, res){
-    res.render('admin/apparel-products');
+    res.render('admin/apparel-products', {fullName: req.session.firstName + " " + req.session.lastName});
 });
 
 router.get("/accessories-products", isAuth, isAdmin, function(req, res){
-    res.render('admin/accessories-products');
+    res.render('admin/accessories-products', {fullName: req.session.firstName + " " + req.session.lastName});
 });
 
 router.get("/inventory", isAuth, isAdmin, function(req, res){
-    res.render('admin/inventory');
+    res.render('admin/inventory', {fullName: req.session.firstName + " " + req.session.lastName});
 });
 
 router.get("/orders", isAuth, isAdmin, function(req, res){
-    res.render('admin/orders');
+    res.render('admin/orders', {fullName: req.session.firstName + " " + req.session.lastName});
 });
 
 module.exports = router;

@@ -338,19 +338,14 @@ router.post('/deleteAddress/:addressId', isAuth, function(req, res){
             const objAddressId = mongoose.Types.ObjectId(addressId);
             const isEqual = objAddressId.equals(user.defaultAddress._id);
 
+            //Checks if default address id is equal to address id of selected address.
             if(isEqual){
-                User.findByIdAndUpdate({ _id: userId }, { $unset:{ defaultAddress: {
-                    _id: 1,
-                    firstName: 1,
-                    lastName: 1,
-                    addressLine: 1,
-                    region: 1,
-                    city: 1,
-                    postalCode: 1,
-                    barangay: 1,
-                    phoneNumber: 1,
-                    email: 1
-                }}});
+                //Unsets the values of default address if this specific address is deleted.
+                User.findByIdAndUpdate({ "_id": userId }, { $unset: { defaultAddress: { _id: 1}}}, function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                });
             }
             res.redirect('/account/address');
         }

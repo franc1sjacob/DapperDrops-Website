@@ -341,7 +341,7 @@ router.post('/deleteAddress/:addressId', isAuth, function(req, res){
             //Checks if default address id is equal to address id of selected address.
             if(isEqual){
                 //Unsets the values of default address if this specific address is deleted.
-                User.findByIdAndUpdate({ "_id": userId }, { $unset: { defaultAddress: { _id: 1}}}, function(err){
+                User.findByIdAndUpdate({ "_id": userId }, { $unset: { defaultAddress: 1}}, function(err){
                     if(err){
                         console.log(err);
                     }

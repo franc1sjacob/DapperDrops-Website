@@ -93,12 +93,7 @@ router.get("/register", function(req, res){
 });
 
 router.post("/register", async function(req, res){
-    const {
-        firstName,
-        lastName,
-        email,
-        password,
-    } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     let user = await User.findOne({ email });
 

@@ -1,32 +1,28 @@
 <%- include('partials/header'); %>
 <div class="container">
-    <h1 class="cust-title-text mb-5"><%= category + " " %> / <%= brand + " " + name %></h1>
+    <h1 class="cust-title-text mb-5"><%= item.category + " " %> / <%= item.brand + " " + item.name %></h1>
     <div class="row">
         <div class="col-lg-6">
-            <img src="/uploads/<%= image %>" style="width: 80%;" alt="">
+            <img src="/uploads/<%= item.image %>" style="width: 80%;" alt="">
         </div>
         <div class="col-lg-4">
-            <h1><%= brand %></h1>
-            <h1 class="cust-title-text"><%= name %></h1>
-            <h1>₱ <%= price %></h1>
-            <h5> <%= description %></h5>
-            <div class="dropdown mb-2">
-                <button class="btn btn-light btn-lg dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                SIZE: 
-                </button>
-                <ul class="dropdown-menu">
-                <li class="dropdown-item" href="#">7</li>
-                <li class="dropdown-item" href="#">8</li>
-                <li class="dropdown-item" href="#">9</li>
-                <li class="dropdown-item" href="#">10</li>
-                <li class="dropdown-item" href="#">11</li>
-                <li class="dropdown-item" href="#">12</li>
-                </ul>
-            </div>
+            <h1><%= item.brand %></h1>
+            <h1 class="cust-title-text"><%= item.name %></h1>
+            <h1>₱ <%= item.price %></h1>
+            <h5> <%= item.description %></h5>    
             <div class="d-grid gap-2">
             <form action="/cart/add-to-cart" method="post">
-                <button class="btn btn-dark btn-lg" >ADD TO CART</button>
-                <input type="hidden" name="prodId" value="<%= _id %>">
+                <div class="mb-3">
+                    <label for="variation" class="form-label">Size:</label>
+                    <select name="variation" id="category" class="form-control">
+                        <% item.variations.forEach(function(variation){ %>
+                            <option value="<%= variation.name %>"><%= variation.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <input type="number" name="quantity">
+                <input type="hidden" name="prodId" value="<%= item._id %>">
+                <button class="btn btn-dark btn-lg" type="submit">ADD TO CART</button>
             </form>    
             <button class="btn btn-light btn-lg">ADD TO WISHLIST</button>  
             </div> 

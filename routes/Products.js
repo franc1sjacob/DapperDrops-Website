@@ -47,16 +47,7 @@ router.get("/item/:productId", function(req, res){
     const productId = req.params.productId;
 
     Product.findOne({_id:productId}, function(err, item){
-        res.render('view-item', {
-            _id: productId,
-            brand: item.brand,
-            name: item.name,
-            price: item.price,
-            description: item.description,
-            quantity: item.quantity,
-            image: item.image,
-            category: item.category
-        });
+        res.render('view-item', {item: item});
     });
 });
 

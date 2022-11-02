@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
 
 const User = require("../models/userModel");
+const Cart = require("../models/cartModel");
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -160,11 +161,21 @@ const sendVerifyMail = async function(name, email, user_id){
 }
 
 router.get("/verify", function(req, res){
-    User.findByIdAndUpdate({ _id: req.query.id }, { $set:{ isVerified: true } }, function(err, user){
+    User.findByIdAndUpdate({ _id: req.query.id}, { $set:{ isVerified: true } }, function(err, user){
         if(err){
             console.log(err);
         } else {
-            res.render('email-verified');
+            const cart = new Cart ({
+                userId: req.query.id
+            });
+
+            cart.save(function (err){
+                if(err){
+                    console.log(err);
+                } else{
+                    res.render('email-verified');
+                }
+            })
         }
     });
 });

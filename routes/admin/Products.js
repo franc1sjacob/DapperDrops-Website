@@ -127,6 +127,7 @@ router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
             quantity: product.quantity,
             image: product.image,
             category: product.category,
+            fullName: req.session.firstName + " " + req.session.lastName
         });
     })
 });

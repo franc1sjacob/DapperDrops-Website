@@ -165,17 +165,7 @@ router.get("/verify", function(req, res){
         if(err){
             console.log(err);
         } else {
-            const cart = new Cart ({
-                userId: req.query.id
-            });
-
-            cart.save(function (err){
-                if(err){
-                    console.log(err);
-                } else{
-                    res.render('email-verified');
-                }
-            })
+            res.render('email-verified');
         }
     });
 });

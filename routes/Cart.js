@@ -17,37 +17,31 @@ const isAuth = function(req, res, next){
 }
 
 router.get("/view-cart", isAuth, function(req, res){
-    Cart.findOne({userId: req.session.userId}, function(err, cart){
-        if(err){
-            console.log(err);
-        } else{
-            res.render('view-cart', {cart: cart});
-        }
-    });
+    if(!req.session.cart){
+        res.render('view-cart', {usercart: null});
+    } else{
+        const cart = new Cart(req.session.cart);
+        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty});
+    }
 });
 
-router.post("/add-to-cart", function(req, res){
+router.post("/add-to-cart", isAuth, function(req, res){
     const userId = req.session.userId;
     const { prodId, variation, quantity} = req.body;
-    console.log(req.body);
-    Product.findById(prodId, function(err, foundProduct){
-        const product = {
-            productId: foundProduct._id,
-            name: foundProduct.name,
-            brand: foundProduct.brand,
-            category: foundProduct.category,
-            variation: variation,
-            quantity: quantity,
-            price: foundProduct.price,
-            totalPrice: foundProduct.price * quantity
+    const selectQty = quantity;
+    const selectVar = variation;
+    // console.log(quantity);
+    const cart = new Cart(req.session.cart ? req.session.cart : {});
+
+    Product.findById(prodId, function(err, product){
+        if (err){
+            console.log(err);
+        } else{
+            cart.add(product, product._id, selectQty, selectVar);
+            req.session.cart = cart;
+            console.log('display current session of cart: ',req.session.cart);
+            res.redirect('/cart/view-cart');
         }
-        Cart.findOneAndUpdate({userId: userId},  {$push: {products: [product]}}, function(err){
-            if(err){
-                console.log(err);
-            } else{
-                res.redirect('/cart/view-cart');
-            }
-        });
     });
 });
 

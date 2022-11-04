@@ -365,7 +365,6 @@ router.get('/wishlist', isAuth, function(req, res){
         if(err){
             console.log(err);
         } else {
-            console.log("WISHLIST", wishlist)
             res.render('wishlist', { wishlist: wishlist });
         }
     });

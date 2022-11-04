@@ -4,6 +4,14 @@ const router = express.Router();
 const Product = require("../models/productModel");
 const Wishlist = require("../models/wishlistModel");
 
+const isAuth = function(req, res, next){
+    if(req.session.isAuth){
+        next();
+    } else {
+        res.redirect('/account/login');
+    }
+}
+
 router.get("/onhand", function(req, res){
     Product.find({category:"On-Hand"}, function (err, allProducts) {
         if (err) {

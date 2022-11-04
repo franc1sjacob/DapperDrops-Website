@@ -1,4 +1,4 @@
-<%- include('partials/header'); %>
+<%- include('innerPartials/header'); %>
 <div class="container">
     <h1 class="cust-title-text mb-5"><%= item.category + " " %> / <%= item.brand + " " + item.name %></h1>
     <div class="row">
@@ -23,11 +23,15 @@
                 <input type="number" name="quantity" value="1">
                 <input type="hidden" name="prodId" value="<%= item._id %>">
                 <button class="btn btn-dark btn-lg" type="submit">ADD TO CART</button>
+                <% if(userId){ %>
+                    <button class="btn btn-light btn-lg" formaction="/products/add-to-wishlist">ADD TO WISHLIST</button>  
+                <% } %>
+
             </form>    
-            <button class="btn btn-light btn-lg">ADD TO WISHLIST</button>  
+
             </div> 
         </div>
     </div>
 </div>
-<%- include('partials/footer'); %>
+<%- include('innerPartials/footer'); %>
 

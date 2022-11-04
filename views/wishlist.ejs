@@ -1,0 +1,25 @@
+<%- include('partials/header'); %>
+<div class="container">
+    <h1 class="fw-bold mb-3">My Wishlist</h1>
+    <div class="row">
+        <%wishlist.products.forEach(function(wishlist){%>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <a href="/products/item/<%= wishlist.productId %>" class="text-dark text-decoration-none">
+                            <img src="/uploads/<%= wishlist.image %>" height="200" class="card-img-top">
+                            <p class="card-text"><%= wishlist.brand %></p>
+                            <p class="card-text cust-prod-text"><%= wishlist.name %></p>
+                            <p class="card-text cust-prod-text">₱<%= wishlist.price %></p>
+                        <form class="d-grid mb-2" action="/account/delete-wishlist" method="POST">
+                            <button type="submit" class="btn btn-dark" name="wishlistId" value="<%= wishlist._id %>">Remove</button>
+                        </form>
+                        </a>
+                    </div>
+                </div>
+            </div>
+          <% }) %>
+    </div>
+</div>
+
+<%- include('partials/footer'); %>

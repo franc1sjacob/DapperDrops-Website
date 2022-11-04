@@ -37,7 +37,7 @@ router.post("/add-to-cart", isAuth, function(req, res){
         if (err){
             console.log(err);
         } else{
-            cart.add(product, product._id, selectQty, selectVar);
+            cart.add(product, product._id+selectVar, selectQty, selectVar);
             req.session.cart = cart;
             console.log('display current session of cart: ',req.session.cart);
             res.redirect('/cart/view-cart');

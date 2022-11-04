@@ -5,18 +5,19 @@ module.exports = function Cart(oldCart) {
 
     this.add = function(item, id, quantity, variation){
         var storedItem = this.items[id];
-        var storedVariation = variation;
-        console.log(storedVariation);
+        console.log('selected variation: ', variation);
+
         if (!storedItem) {
-            storedItem = this.items[id] = {item: item, variation: storedVariation, qty: 0, price: 0};
+            storedItem = this.items[id] = {item: item, variation: variation, qty: 0, price: 0};
         }
+
+        storedItem.variation = variation;
         console.log('storedQuantity before adding new quantity: ', storedItem.qty);
         console.log('quantity input in view-cart page: ', quantity);
         storedItem.qty = parseInt(storedItem.qty) + parseInt(quantity);
-        storedItem.price = storedItem.item.price * storedItem.qty;
-        this.totalQty++;
-        this.totalPrice += storedItem.price;
-        console.log('storedQuantity after adding new quantity: ', storedItem.qty);
+        storedItem.price = storedItem.item.price * parseInt(storedItem.qty);
+        this.totalQty += parseInt(quantity);
+        this.totalPrice = storedItem.item.price * this.totalQty;
     };
 
     this.generateArray = function(){

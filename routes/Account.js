@@ -80,14 +80,14 @@ router.post("/login", async function(req, res){
     }
 });
 
-router.post('/logout', function(req, res){
-    req.session.destroy(function(err){
-        if(err){
-            console.log(err);
-        } else {
-            res.redirect('/account/login');
-        }
-    });
+router.post('/logout', isAuth, function(req, res){
+    delete req.session.firstName;
+    delete req.session.lastName;
+    delete req.session.userId;
+    delete req.session.accountType;
+    delete req.session.isAuth;
+    delete req.session.isAdmin;
+    res.redirect('/account/login');
 });
 
 router.get("/register", function(req, res){

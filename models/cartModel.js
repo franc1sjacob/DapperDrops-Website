@@ -17,7 +17,16 @@ module.exports = function Cart(oldCart) {
         storedItem.qty = parseInt(storedItem.qty) + parseInt(quantity);
         storedItem.price = storedItem.item.price * parseInt(storedItem.qty);
         this.totalQty += parseInt(quantity);
-        this.totalPrice = storedItem.item.price * this.totalQty;
+
+        let prices = [];
+        Object.values(this.items).forEach(val => {
+            prices.push(val.price);
+        });
+        
+        this.totalPrice = 0;
+        for (const value of prices) {
+            this.totalPrice += value;
+        }; 
     };
 
     this.generateArray = function(){

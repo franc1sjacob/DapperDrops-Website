@@ -11,6 +11,7 @@ const randomstring = require("randomstring");
 
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
+const Wishlist = require("../models/wishlistModel");
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -165,7 +166,11 @@ router.get("/verify", function(req, res){
         if(err){
             console.log(err);
         } else {
-            res.render('email-verified');
+            wishlist = new Wishlist({
+                userId: req.query.id
+            });
+            wishlist.save();  
+            res.render('login', {message: "Your email has been verified. You may now login."});
         }
     });
 });
@@ -182,7 +187,7 @@ router.post("/forgot", function(req, res){
                 res.render('forgot', {message: "Please check your email and verify your account."});
             } else{
                 const randomString = randomstring.generate();
-                User.updateOne({email: forgotEmail}, {$set: {token: randomString}}, function(err, user){});
+                User.updateOne({email: email}, {$set: {token: randomString}}, function(err, user){});
                 sendResetPasswordMail(user.firstName, user.email, randomString);
                 res.render('forgot', {message: "Please check your email for the reset link of forgotten password."});
             }
@@ -349,6 +354,33 @@ router.post('/deleteAddress/:addressId', isAuth, function(req, res){
                 });
             }
             res.redirect('/account/address');
+        }
+    });
+});
+
+
+router.get('/wishlist', isAuth, function(req, res){
+    const userId = req.session.userId;
+    Wishlist.findOne({ userId: userId }, function(err, wishlist){
+        if(err){
+            console.log(err);
+        } else {
+            res.render('wishlist', { wishlist: wishlist });
+        }
+    });
+});
+
+router.post('/delete-wishlist', isAuth, function(req, res){
+    const userId = req.session.userId;
+    const wishlistId = req.body.wishlistId
+    Wishlist.findOneAndUpdate({ userId: userId },
+    { $pull: { 
+        products: { _id: wishlistId }
+    }}, function(err, user){
+        if(err){
+            console.log(err);
+        } else {
+            res.redirect('/account/wishlist');
         }
     });
 });

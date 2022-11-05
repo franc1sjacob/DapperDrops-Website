@@ -16,6 +16,8 @@ const port = 3000 || process.env.PORT;
 const User = require("./models/userModel");
 const Product = require("./models/productModel");
 const Cart = require("./models/cartModel");
+const Wishlist = require("./models/wishlistModel");
+
 
 //MongoDB
 const mongoUri = "mongodb://localhost:27017/dapperdropsDB";

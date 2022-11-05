@@ -16,7 +16,7 @@ const isAuth = function(req, res, next){
     }
 }
 
-router.get("/view-cart", isAuth, function(req, res){
+router.get("/view-cart", function(req, res){
     if(!req.session.cart){
         res.render('view-cart', {usercart: null});
     } else{
@@ -25,7 +25,7 @@ router.get("/view-cart", isAuth, function(req, res){
     }
 });
 
-router.post("/add-to-cart", isAuth, function(req, res){
+router.post("/add-to-cart", function(req, res){
     const userId = req.session.userId;
     const { prodId, variation, quantity} = req.body;
     const selectQty = quantity;

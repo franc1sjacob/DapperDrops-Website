@@ -1,26 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+<%- include('../innerPartials/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="text-center mt-2 mb-3">Add Variations</h1> 
     <form action="/admin/products/add-variations" method="POST">
-        <div>
-            <label for="productId">Product: ID</label>
-            <input type="text" name="productId" id="productId" value="<%= productId %>">
+        <div class="mb-3">
+            <label for="productId" class="form-label">Product: ID</label>
+            <input type="text" class="form-control" name="productId" id="productId" value="<%= productId %>">
         </div>
-        <div>
-            <label for="name">Variation Name:</label>
-            <input type="text" name="name" id="name">
+        <div class="mb-3">
+            <label for="name" class="form-label">Variation Name:</label>
+            <input type="text" class="form-control" name="name" id="name">
         </div>
-        <div>
-            <label for="quantity">Quantity</label>
-            <input type="number" name="quantity" id="quantity">
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity</label>
+            <input type="number" class="form-control" name="quantity" id="quantity">
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
-</body>
-</html>
+</div>
+
+<%- include('../innerPartials/admin/footer'); %>

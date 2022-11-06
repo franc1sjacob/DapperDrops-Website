@@ -24,7 +24,17 @@ const isAdmin = function(req, res, next){
 }
 
 router.get("/", isAuth, isAdmin, function(req, res){
-    res.render('admin/orders', {fullName: req.session.firstName + " " + req.session.lastName});
+    Order.find({}, function(err, orders){
+        if(err){
+            console.log(err);
+        } else {
+            orders.forEach(function(order) {
+                cart = new Cart(order.cart);
+                order.items = cart.generateArray();
+            });
+            res.render('admin/orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName});
+        }
+    });
 });
 
 module.exports = router;

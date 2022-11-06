@@ -19,32 +19,34 @@
                     <table class="table table-sm">
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
                             <th>Date</th>
                             <th>Address</th>
-                            <th>Status</th>
-                            <th>Amount Paid</th>
-                            <th>Amount Remaining</th>
+                            <th>Order Status</th>
+                            <th>Payment Status</th>
+                            <th>Paid</th>
+                            <th>Remaining</th>
                             <th>Total</th>
-                            <th>Items</th>
+                            <th>Total Items</th>
                             <th>Action</th>
                         </tr>
+                        <%orders.forEach(function(order){%>
                         <tr>
+                            <td><%= order._id %></td>
                             <td>jordan</td>
                             <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
+                            <td><%= order.orderStatus %></td>
+                            <td><%= order.paymentStatus %></td>
+                            <td>₱<%= order.amountPaid %></td>
+                            <td>₱<%= order.amountRemaining %></td>
+                            <td>₱<%= order.cart.totalPrice %></td>
+                            <td><%= order.cart.totalQty %></td>
                             <td>
                                 <a class="" href="#"><i class="fa-solid fa-pen-to-square me-1"></i></a>
                                 <a class="" href="#"><i class="fa-solid fa-eye me-1"></i></a>
                                 <a class="btn btn-sm btn-danger" href="#">Cancel</a>
                             </td>
                         </tr>
+                        <% }) %>
                     </table>
                 </div>
             </div>

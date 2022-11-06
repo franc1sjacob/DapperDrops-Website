@@ -109,7 +109,7 @@ router.post("/place-order", isAuth, function(req, res){
                 }
                 else{
                     req.session.cart = null;
-                    res.redirect('/cart/view-orders');
+                    res.redirect('/account/view-orders');
                 }
             });
         }

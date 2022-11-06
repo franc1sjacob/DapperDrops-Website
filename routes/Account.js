@@ -401,4 +401,37 @@ router.get('/view-orders', isAuth, function(req, res){
     });
 });
 
+router.get('/change-password', isAuth, function(req, res){
+    res.render('change-password', { errorMessage: null, successMessage: null });
+});
+
+router.post('/change-password', isAuth, async function(req, res){
+    const userId = req.session.userId;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    const user = await User.findById({ _id: userId });
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+    console.log("isMatch: ", isMatch);
+
+    if(newPassword != confirmPassword){
+        return res.render('change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null});
+        
+    } else if(!isMatch){
+        return res.render('change-password', { errorMessage: "The old password you entered is incorrect.", successMessage: null});
+
+    } else {
+        const newHashedPassword = await bcrypt.hash(newPassword, 12);
+
+        User.findOneAndUpdate({_id: userId}, { $set: {password: newHashedPassword} }, function(err){
+            if(err){
+                console.log(err);
+            } else {
+                res.render('change-password', { successMessage: "Your password has successfully been changed!", errorMessage: null});
+            }
+        });
+    }
+});
+
 module.exports = router;

@@ -1,0 +1,40 @@
+<%- include('partials/header'); %>
+<div class="container">
+    <h1 class="fw-bold mb-5">My Orders</h1>
+    <div class="row">
+        <%orders.forEach(function(order){%>
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">Order ID: <%= order._id %></div>
+                    <div class="card-body">
+                        
+                        <%order.items.forEach(function(cart){%> 
+                            <p class="card-text">
+                                <%= cart.item.brand + " " + cart.item.name%> | Size: <%= cart.variation %> | <%= cart.qty %> 
+                                <% if(cart.qty <= 1 ){ %> Unit <% }else{ %> Units <% } %>   
+                                <span class="badge rounded-pill bg-dark">₱<%= cart.price %></span>   
+                            </p> 
+                            <p class="card-text"></p>
+                        <%})%>                       
+                        <p class="card-text">Total Price: 
+                            <span class="badge rounded-pill bg-dark">₱<%= order.cart.totalPrice %></span>
+                        </p>
+                        <p class="card-text">Total Price: 
+                            <span class="badge rounded-pill bg-dark">₱<%= order.cart.totalPrice %></span>
+                        </p>
+                        <form class="d-grid mb-2" action="" method="POST">
+                            <button type="submit" class="btn btn-success" value="">Send Proof of Payment</button>
+                        </form>
+                        <form class="d-grid mb-2" action="" method="POST">
+                            <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+    </div>
+</div>
+    
+    
+<%- include('partials/footer'); %>
+

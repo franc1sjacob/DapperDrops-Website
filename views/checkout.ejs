@@ -1,0 +1,7 @@
+<%- include('partials/header'); %>
+<h1>Checkout</h1>
+<h4>Your total is: ₱<%= total %></h4>
+<form action="/cart/place-order" method="post">
+<button type="submit">Confirm Order</button>
+</form>
+<%- include('partials/footer'); %>

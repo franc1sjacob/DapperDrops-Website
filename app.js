@@ -17,6 +17,7 @@ const User = require("./models/userModel");
 const Product = require("./models/productModel");
 const Cart = require("./models/cartModel");
 const Wishlist = require("./models/wishlistModel");
+const Order = require("./models/orderModel");
 
 
 //MongoDB

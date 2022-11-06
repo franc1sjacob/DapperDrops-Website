@@ -12,6 +12,7 @@ const randomstring = require("randomstring");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Wishlist = require("../models/wishlistModel");
+const Order = require("../models/orderModel");
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -381,6 +382,21 @@ router.post('/delete-wishlist', isAuth, function(req, res){
             console.log(err);
         } else {
             res.redirect('/account/wishlist');
+        }
+    });
+});
+
+router.get('/view-orders', isAuth, function(req, res){
+    const userId = req.session.userId;
+    Order.find({ userId: userId }, function(err, orders){
+        if(err){
+            console.log(err);
+        } else {
+            orders.forEach(function(order) {
+                cart = new Cart(order.cart);
+                order.items = cart.generateArray();
+            });
+            res.render('view-orders', { orders: orders });
         }
     });
 });

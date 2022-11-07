@@ -74,6 +74,9 @@ app.use("/admin/products/", adminProductRoute);
 const adminAccountRoute = require("./routes/admin/Account");
 app.use("/admin/accounts/", adminAccountRoute);
 
+const adminOrderRoute = require("./routes/admin/Order");
+app.use("/admin/orders/", adminOrderRoute);
+
 //INDEX
 app.get("/", function(req, res){
     Product.find({}, function (err, allProducts) {

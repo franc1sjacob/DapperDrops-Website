@@ -188,8 +188,4 @@ router.get("/inventory", isAuth, isAdmin, function(req, res){
     res.render('admin/inventory', {fullName: req.session.firstName + " " + req.session.lastName});
 });
 
-router.get("/orders", isAuth, isAdmin, function(req, res){
-    res.render('admin/orders', {fullName: req.session.firstName + " " + req.session.lastName});
-});
-
 module.exports = router;

@@ -44,7 +44,18 @@ router.get("/login", function(req, res){
 router.get("/profile", isAuth, function(req, res){
     userId = req.session.userId;
     User.findById(userId, function(err, user){
-        res.render('profile', { user: user });
+        Order.find({ userId: userId }, function(err, orders){
+            if(err){
+                console.log(err);
+            } else {
+                orders.forEach(function(order) {
+                    cart = new Cart(order.cart);
+                    order.items = cart.generateArray();
+                });
+                res.render('profile', { orders: orders, user: user });
+            }
+        });
+        // res.render('profile', { user: user });
     });
 });
 
@@ -386,20 +397,19 @@ router.post('/delete-wishlist', isAuth, function(req, res){
     });
 });
 
-router.get('/view-orders', isAuth, function(req, res){
-    const userId = req.session.userId;
-    Order.find({ userId: userId }, function(err, orders){
+router.get('/view-order/:orderId', isAuth, function(req, res){
+    const orderId = req.params.orderId;
+    Order.findById({ _id: orderId }, function(err, order){
         if(err){
             console.log(err);
         } else {
-            orders.forEach(function(order) {
-                cart = new Cart(order.cart);
-                order.items = cart.generateArray();
-            });
-            res.render('view-orders', { orders: orders });
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+            res.render('view-order', { order: order });
         }
     });
 });
+
 
 router.get('/change-password', isAuth, function(req, res){
     res.render('change-password', { errorMessage: null, successMessage: null });

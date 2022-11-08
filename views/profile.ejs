@@ -21,12 +21,7 @@
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 mt-3">
                 <h2 class="mb-4 fw-bold">Default Address</h2>
-                <% if(user.addresses.length === 0){ %>
-                    <p>There are no addresses listed.</p>
-                <% } else if(user.defaultAddress._id === undefined) { %>
-                    <p><%= user.defaultAddress.firstName %></p>
-                    <p>Please set a new default address. Your default address may have been deleted.</p>
-                <% } else { %>
+                <% if(user.defaultAddress._id != undefined) { %>
                     <p>Full Name: <%= user.defaultAddress.firstName + " " + user.defaultAddress.lastName %></p>
                     <p>Address Line: <%= user.defaultAddress.addressLine %></p>
                     <p>Region: <%= user.defaultAddress.region %></p>
@@ -35,8 +30,11 @@
                     <p>Barangay: <%= user.defaultAddress.barangay %></p>
                     <p>Phone Number: <%= user.defaultAddress.phoneNumber %></p>
                     <p>Email: <%= user.defaultAddress.email %></p>
+                <% } else if(user.defaultAddress._id === undefined) { %>
+                    <p><%= user.defaultAddress.firstName %></p>
+                    <p>Please set a default address. </p>
                 <% } %>
-
+                
                 <a href="/account/address" class="fw-bold text-dark">View Addresses</a>
             </div>
 

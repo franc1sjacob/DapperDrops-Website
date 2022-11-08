@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
@@ -75,45 +76,135 @@ router.get("/remove-item/:id/:variation", function(req, res){
 }); 
 
 router.get("/checkout", isAuth, function(req, res){
+    const userId = req.session.userId;
     if(!req.session.cart){
         res.redirect('/cart/view-cart');
     }
-    const cart = new Cart(req.session.cart);
-    res.render('checkout', {total: cart.totalPrice});
+    User.findById({ _id: userId }, function(err, user){
+        if(err){
+            console.log(err);
+        } else {
+            const cart = new Cart(req.session.cart);
+            res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user});
+        }
+    })
 });
 
 router.post("/place-order", isAuth, function(req, res){
-    const user = req.session.userId;
+    const { paymentMethod, termsCheckbox } = req.body;
+    const userId = req.session.userId;
     const cart = new Cart(req.session.cart);
+    if(termsCheckbox == "agree"){
+        User.findById(userId, function(err, result){
+            if(err){
+                console.log(err);
+            } else {
+                console.log(result.defaultAddress);
+                const order = new Order({
+                    userId: userId,
+                    cart: cart,
+                    address: result.defaultAddress,
+                    paymentStatus: "Pending",
+                    orderStatus: "Pending",
+                    proofPayment: paymentMethod,
+                    amountPaid: 0,
+                    amountRemaining: cart.totalPrice
+                });
+            
+                order.save(function(err, result){
+                    if(err){
+                        console.log(err);
+                    }
+                    else{
+                        req.session.cart = null;
+                        res.redirect('/account/view-orders');
+                    }
+                });
+            }
+        });
+    } else {
+        User.findById({ _id: userId }, function(err, user){
+            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: "Please read and accept the terms and conditions to proceed with your order."});
+        });
+    }
+});
 
-    User.findById(user, function(err, result){
+router.post('/add-new-address', isAuth, function(req, res){
+    const userId = req.session.userId;
+    const addressId = new mongoose.Types.ObjectId();
+    const { firstName, lastName, addressLine, region, city, postalCode, barangay, phoneNumber, email, paymentMethod } = req.body;
+    const address = {
+        _id: addressId,
+        firstName: firstName,
+        lastName: lastName,
+        addressLine: addressLine,
+        region: region,
+        city: city,
+        postalCode: postalCode,
+        barangay: "Brgy " + barangay,
+        phoneNumber: phoneNumber,
+        email: email
+    };
+    User.findByIdAndUpdate({ "_id": userId }, { $push: { 
+        addresses: [address]
+    }}, function(err){
         if(err){
             console.log(err);
-        }
-        else{
-            console.log(result.defaultAddress);
-            const order = new Order({
-                userId: req.session.userId,
-                cart: cart,
-                address: result.defaultAddress,
-                paymentStatus: "Pending",
-                orderStatus: "Pending",
-                proofPayment: "gcash",
-                amountPaid: 0,
-                amountRemaining: cart.totalPrice
-            });
-        
-            order.save(function(err, result){
+        } else {
+            //Sets the newly added address as default address.
+            User.findByIdAndUpdate({ _id: userId }, { $set: { defaultAddress: address } }, function(err, user){
                 if(err){
                     console.log(err);
-                }
-                else{
-                    req.session.cart = null;
-                    res.redirect('/account/view-orders');
+                } else {
+                    req.session.paymentMethod = paymentMethod;
+                    res.redirect('/cart/checkout-confirmation');
                 }
             });
         }
     });
 });
+
+router.post('/add-default-address', isAuth, function(req, res){
+    const userId = req.session.userId;
+    const addressId = new mongoose.Types.ObjectId();
+    const { firstName, lastName, addressLine, region, city, postalCode, barangay, phoneNumber, email, paymentMethod } = req.body;
+    const address = {
+        _id: addressId,
+        firstName: firstName,
+        lastName: lastName,
+        addressLine: addressLine,
+        region: region,
+        city: city,
+        postalCode: postalCode,
+        barangay: barangay,
+        phoneNumber: phoneNumber,
+        email: email
+    };
+    User.findByIdAndUpdate({ _id: userId }, { $set: { defaultAddress: address } }, function(err, user){
+        if(err){
+            console.log(err);
+        } else {
+            const cart = new Cart(req.session.cart);
+            req.session.paymentMethod = paymentMethod;
+            res.redirect('/cart/checkout-confirmation');
+        }
+    });
+});
+
+router.get('/checkout-confirmation', isAuth, function(req, res){
+    const userId = req.session.userId;
+    if(!req.session.cart){
+        res.redirect('/cart/view-cart');
+    }
+    User.findById({ _id: userId }, function(err, user){
+        if(err){
+            console.log(err);
+        } else {
+            const cart = new Cart(req.session.cart);
+            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: null});
+        }
+    })
+});
+
 
 module.exports = router;

@@ -68,20 +68,23 @@
             <ol class="list-group">
                 <% usercart.forEach(function(cart){ %>
                 <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <img src="/uploads/<%= cart.item.image %>" style="height: 75px;">
+                    </div>
                     <div class="ms-2 me-auto">
                         <div class="text-secondary fw-bold"><%= cart.item.brand %></div>
                         <div class="fw-bold"><%= cart.item.name %></div>
                         <div class="text-secondary fw-bold">Size: <%=cart.variation%></div>
                         <div>Quantity: <%= cart.qty %></div>
                     </div>
-                    <span class="fw-bold">₱<%= cart.price %>.00</span>
+                    <span class="fw-bold">₱<%=  new Intl.NumberFormat().format(cart.price) %>.00</span>
                 </li>
             <% }) %>
                 <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
                         <div class="fw-bold">Total: </div>
                     </div>
-                    <span class="fw-bold">₱<%= cart.totalPrice %>.00</span>
+                    <span class="fw-bold">₱<%=  new Intl.NumberFormat().format(cart.totalPrice) %>.00</span>
                 </li>
             </ol>
         </div>

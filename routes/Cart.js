@@ -91,6 +91,7 @@ router.get("/checkout", isAuth, function(req, res){
 });
 
 router.post("/place-order", isAuth, function(req, res){
+    const orderId = new mongoose.Types.ObjectId();
     const { paymentMethod, termsCheckbox } = req.body;
     const userId = req.session.userId;
     const cart = new Cart(req.session.cart);
@@ -101,6 +102,7 @@ router.post("/place-order", isAuth, function(req, res){
             } else {
                 console.log(result.defaultAddress);
                 const order = new Order({
+                    _id: orderId,
                     userId: userId,
                     cart: cart,
                     address: result.defaultAddress,
@@ -117,7 +119,7 @@ router.post("/place-order", isAuth, function(req, res){
                     }
                     else{
                         req.session.cart = null;
-                        res.redirect('/account/view-orders');
+                        res.redirect('/cart/order-confirmed/' + orderId);
                     }
                 });
             }
@@ -206,5 +208,20 @@ router.get('/checkout-confirmation', isAuth, function(req, res){
     })
 });
 
+router.get('/order-confirmed/:orderId', function(req, res){
+    const orderId = req.params.orderId
+    if(orderId == undefined){
+        res.redirect('/cart/view-cart');
+    }
+    Order.findById({ _id: orderId }, function(err, order){
+        if(err){
+            console.log(err);
+        } else {
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+            res.render('order-confirmed', { order: order });
+        }
+    });
+});
 
 module.exports = router;

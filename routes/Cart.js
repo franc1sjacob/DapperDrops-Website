@@ -16,7 +16,7 @@ const isAuth = function(req, res, next){
 }
 
 router.get("/view-cart", function(req, res){
-    if(!req.session.cart){
+    if(!req.session.cart || req.session.cart.totalPrice === 0){
         res.render('view-cart', {usercart: null});
     } else{
         const cart = new Cart(req.session.cart);
@@ -38,7 +38,6 @@ router.post("/add-to-cart", function(req, res){
         } else{
             cart.add(product, product._id+selectVar, selectQty, selectVar);
             req.session.cart = cart;
-            console.log('display current session of cart: ',req.session.cart);
             res.redirect('/cart/view-cart');
         }
     });
@@ -91,7 +90,7 @@ router.post("/place-order", isAuth, function(req, res){
             console.log(err);
         }
         else{
-            console.log(result.defaultAddress);
+            // console.log(result.defaultAddress);
             const order = new Order({
                 userId: req.session.userId,
                 cart: cart,

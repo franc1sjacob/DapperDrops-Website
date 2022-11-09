@@ -5,15 +5,15 @@ module.exports = function Cart(oldCart) {
 
     this.add = function(item, id, quantity, variation){
         var storedItem = this.items[id];
-        console.log('selected variation: ', variation);
+        // console.log('selected variation: ', variation);
 
         if (!storedItem) {
             storedItem = this.items[id] = {item: item, variation: variation, qty: 0, price: 0};
         }
 
         storedItem.variation = variation;
-        console.log('storedQuantity before adding new quantity: ', storedItem.qty);
-        console.log('quantity input in view-cart page: ', quantity);
+        // console.log('storedQuantity before adding new quantity: ', storedItem.qty);
+        // console.log('quantity input in view-cart page: ', quantity);
         storedItem.qty = parseInt(storedItem.qty) + parseInt(quantity);
         storedItem.price = storedItem.item.price * parseInt(storedItem.qty);
         this.totalQty += parseInt(quantity);

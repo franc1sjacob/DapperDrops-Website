@@ -1,0 +1,47 @@
+<%- include('../partials/admin/header', {name: fullName}); %>
+<!-- <div class="container"> -->
+    <!-- <h1 class="text-center mt-2 mb-3">View Product</h1> 
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg col-md">
+            <div class="card shadow p-3 bg-body rounded">
+                <div class="card-body">
+                    <div class="col-lg col-md">
+                        <img src="/uploads/<%= image %>" width="100" class="img-thumbnail mt-1">
+                    </div>
+                    <div class="col-lg col-md">
+                        <h6>Brand:<%= brand %></h6>
+                            <h6>Name:<%= name %></h6>
+                            <h6>Price:<%= price %></h6>
+                            <h6>Description:<%= description %></h6>
+                            <h6>Quantity:<%= quantity %></h6>
+                    </div>
+                            
+                </div>
+            </div>
+            </div>
+        </div>
+</div>
+     -->
+
+     <div class="container">
+        <h1 class="text-center mt-2 mb-3">View Product</h1> 
+        <div class="card shadow p-3 bg-body rounded">
+            <div class="row">
+                <div class="col-lg-6">
+                    <img src="/uploads/<%= image %>" style="width: 80%;" alt="">
+                </div>
+                <div class="col-lg-6">
+                    <h5>Brand:<%= brand %></h5>
+                    <h5>Name:<%= name %></h5>
+                    <h5>Price:<%= price %></h5>
+                    <h5>Description:<%= description %></h5>
+                    <h5>Size:<%= vname %></h5>
+                    <h5>Quantity:<%= quantity %></h5>
+                    <h5>Category:<%= category %></h5>
+                    
+                </div>
+            </div>
+        </div>
+        
+    </div>
+<%- include('../partials/admin/footer'); %>

@@ -19,32 +19,147 @@
                     <table class="table table-sm">
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
                             <th>Date</th>
-                            <th>Address</th>
-                            <th>Status</th>
-                            <th>Amount Paid</th>
-                            <th>Amount Remaining</th>
-                            <th>Total</th>
-                            <th>Items</th>
+                            <th>Order Status</th>
+                            <th>Payment Status</th>
+                            <th>Paid</th>
+                            <th>Remaining</th>
                             <th>Action</th>
                         </tr>
+
+                        <%orders.forEach(function(order){%>
                         <tr>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
+                            <td><%= order._id %></td>
                             <td>jordan</td>
                             <td>
-                                <a class="" href="#"><i class="fa-solid fa-pen-to-square me-1"></i></i></a>
-                                <a class="" href="#"><i class="fa-solid fa-eye me-1"></i></a>
-                                <a class="btn btn-sm btn-danger" href="#">Cancel</a>
+                                <div class="dropdown">
+                                    <a class="" href="#"><i class="fa-solid fa-pen-to-square me-2"></i></a>
+                                    <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <%= order.orderStatus %>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                         
+                                        <%order.items.forEach(function(cart){%>
+                                            <% if(order.orderStatus === "Pending"){ %>
+                                                
+                                            <form action="/admin/orders/confirmed-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Confirmed</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </form>
+
+                                            <form action="/admin/orders/completed-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Completed</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </form>
+
+                                            <form action="/admin/orders/cancelled-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Cancelled</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </form>
+
+                                            <form action="/admin/orders/refunded-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Refunded</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </form>
+
+                                            <form action="/admin/orders/delete-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Delete</button></li>
+                                            </form>
+
+                                            <% } else if(order.orderStatus === "Confirmed"){%>
+
+                                                <form action="/admin/orders/completed-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Completed</button></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                </form>
+        
+                                                <form action="/admin/orders/cancelled-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Cancelled</button></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                </form>
+        
+                                                <form action="/admin/orders/refunded-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Refunded</button></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                </form>
+
+                                                <form action="/admin/orders/delete-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Delete</button></li>
+                                                </form>
+
+                                            <% } else if(order.orderStatus === "Completed"){%>    
+
+                                                <form action="/admin/orders/cancelled-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Cancelled</button></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                </form>
+        
+                                                <form action="/admin/orders/refunded-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Refunded</button></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                </form>
+
+                                                <form action="/admin/orders/delete-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Delete</button></li>
+                                                </form>
+
+                                            <% } else if(order.orderStatus === "Cancelled"){%>   
+
+                                                <form action="/admin/orders/refunded-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Refunded</button></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                </form>
+
+                                                <form action="/admin/orders/delete-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Delete</button></li>
+                                                </form>
+
+                                            <% } else if(order.orderStatus === "Refunded"){%>
+
+                                                <form action="/admin/orders/cancelled-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Cancelled</button></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                </form>
+
+                                                <form action="/admin/orders/delete-order" method="post">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <li><button class="dropdown-item">Delete</button></li>
+                                                </form>
+
+                                            <% } else{ %>
+                                                
+                                            <% } %>
+                                        <% }) %>
+                                    </ul>
+                                  </div>
                             </td>
-                        </tr>
+                            <td>
+                                <a class="" href="#"><i class="fa-solid fa-pen-to-square me-2"></i></a>
+                                <%= order.paymentStatus %>
+                            </td>
+                            <td>₱<%= order.amountPaid %></td>
+                            <td>₱<%= order.amountRemaining %></td>
+                            <td>
+                                <a class="" href="#"><i class="fa-solid fa-eye me-1"></i></a>
+                                <a class="btn btn-sm btn-light" href="#">Send Email</a>
+                            </td>
+                        </tr>   
+                        <% }) %>
                     </table>
                 </div>
             </div>

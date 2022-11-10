@@ -1,0 +1,172 @@
+<%- include('partials/header'); %>
+<div class="container">
+    <div class="row d-flex">
+        <% if(user.defaultAddress._id == null){ %>
+            <div class="order-1 order-sm-1 order-lg-0 col-xl-8 col-lg-8 mb-4">
+                <h3 class="fw-bold">Shipping Information</h3>
+                <form action="/cart/add-new-address" method="POST">
+                    <div class="row g-3">
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="firstName">First Name</label>
+                            <input class="form-control" type="text" name="firstName" id="firstName" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="lastName">Last Name</label>
+                            <input class="form-control" type="text" name="lastName" id="lastName" required>
+                        </div>
+                        <div>
+                            <label for="addressLine">House Number and Street Name</label>
+                            <input class="form-control" type="text" name="addressLine" id="addressLine" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label for="region">Region</label>
+                            <input class="form-control" type="text" name="region" id="region" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label for="city">City</label>
+                            <input class="form-control" type="text" name="city" id="city" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label for="postalCode">Postal Code</label>
+                            <input class="form-control" type="text" name="postalCode" id="postalCode" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="barangay">Barangay</label>
+                            <input class="form-control" type="text" name="barangay" id="barangay" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="phoneNumber">Phone Number</label>
+                            <input class="form-control" type="text" name="phoneNumber" id="phoneNumber" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="email">Email Address</label>
+                            <input class="form-control" type="email" name="email" id="email" required>
+                        </div>
+                        <h3 class="fw-bold">Payment Method</h3>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="gcash" value="GCash" required>
+                            <label class="form-check-label" for="gcash">GCash</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="bdo" value="BDO">
+                            <label class="form-check-label" for="bdo">BDO</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="bdopay" value="BDO Pay">
+                            <label class="form-check-label" for="bdopay">BDO Pay</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="maya" value="Maya">
+                            <label class="form-check-label" for="maya">Maya</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD">
+                            <label class="form-check-label" for="maya">Cash on Delivery (10% Downpayment Required)</label>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn btn-secondary" href="/cart/view-cart">Cancel</a>
+                            <button class="btn btn-dark" type="submit">Next</button>
+                        </div>
+                    </div>
+                </form>
+        <% } else { %>
+            <div class="order-1 order-sm-1 order-lg-0 col-xl-8 col-lg-8 mb-4">
+                <h3 class="fw-bold">Shipping Information</h3>
+                <form action="/cart/add-default-address" method="POST">
+                    <div class="row g-3">
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="firstName">First Name</label>
+                            <input class="form-control" type="text" name="firstName" id="firstName" value="<%= user.defaultAddress.firstName %>" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="lastName">Last Name</label>
+                            <input class="form-control" type="text" name="lastName" id="lastName" value="<%= user.defaultAddress.lastName %>" required>
+                        </div>
+                        <div>
+                            <label for="addressLine">House Number and Street Name</label>
+                            <input class="form-control" type="text" name="addressLine" id="addressLine" value="<%= user.defaultAddress.addressLine %>" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label for="region">Region</label>
+                            <input class="form-control" type="text" name="region" id="region" value="<%= user.defaultAddress.region %>" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label for="city">City</label>
+                            <input class="form-control" type="text" name="city" id="city" value="<%= user.defaultAddress.city %>" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label for="postalCode">Postal Code</label>
+                            <input class="form-control" type="text" name="postalCode" id="postalCode" value="<%= user.defaultAddress.postalCode %>" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="barangay">Barangay</label>
+                            <input class="form-control" type="text" name="barangay" id="barangay" value="<%= user.defaultAddress.barangay %>" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="phoneNumber">Phone Number</label>
+                            <input class="form-control" type="text" name="phoneNumber" id="phoneNumber" value="<%= user.defaultAddress.phoneNumber %>" required>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label class="form-label" for="email">Email Address</label>
+                            <input class="form-control" type="email" name="email" id="email" value="<%= user.defaultAddress.email %>" required>
+                        </div>
+                        <h3 class="fw-bold">Payment Method</h3>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="gcash" value="GCash" required>
+                            <label class="form-check-label" for="gcash">GCash</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="bdo" value="BDO">
+                            <label class="form-check-label" for="bdo">BDO</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="bdopay" value="BDO Pay">
+                            <label class="form-check-label" for="bdopay">BDO Pay</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="maya" value="Maya">
+                            <label class="form-check-label" for="maya">Maya</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD">
+                            <label class="form-check-label" for="cod">Cash on Delivery (10% Downpayment Required)</label>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn btn-secondary" href="/cart/view-cart">Cancel</a>
+                            <button class="btn btn-dark" type="submit">Next</button>
+                        </div>
+                    </div>
+                </form>
+        <% } %>
+        
+        </div>
+
+        <div class="order-0 order-sm-0 order-lg-1 col-xl-4 col-lg-4 mb-4">
+            <h3 class="fw-bold">Your Cart <span class="badge bg-secondary rounded-pill"><%= cart.totalQty %></span></h3>
+            <ol class="list-group">
+                <% usercart.forEach(function(cart){ %>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <img src="/uploads/<%= cart.item.image %>" style="height: 75px;">
+                    </div>
+                    <div class="ms-2 me-auto">
+                        <div class="text-secondary fw-bold"><%= cart.item.brand %></div>
+                        <div class="fw-bold"><%= cart.item.name %></div>
+                        <div class="text-secondary fw-bold">Size: <%=cart.variation%></div>
+                        <div>Quantity: <%= cart.qty %></div>
+                    </div>
+                    <span class="fw-bold">₱<%=  new Intl.NumberFormat().format(cart.price) %>.00</span>
+                </li>
+            <% }) %>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Total: </div>
+                    </div>
+                    <span class="fw-bold">₱<%=  new Intl.NumberFormat().format(cart.totalPrice) %>.00</span>
+                </li>
+            </ol>
+        </div>
+        
+    </div>
+</div>
+<%- include('partials/footer'); %>

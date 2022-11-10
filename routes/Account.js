@@ -12,6 +12,7 @@ const randomstring = require("randomstring");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Wishlist = require("../models/wishlistModel");
+const Order = require("../models/orderModel");
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -43,7 +44,18 @@ router.get("/login", function(req, res){
 router.get("/profile", isAuth, function(req, res){
     userId = req.session.userId;
     User.findById(userId, function(err, user){
-        res.render('profile', { user: user });
+        Order.find({ userId: userId }, function(err, orders){
+            if(err){
+                console.log(err);
+            } else {
+                orders.forEach(function(order) {
+                    cart = new Cart(order.cart);
+                    order.items = cart.generateArray();
+                });
+                res.render('profile', { orders: orders, user: user });
+            }
+        });
+        // res.render('profile', { user: user });
     });
 });
 
@@ -80,14 +92,14 @@ router.post("/login", async function(req, res){
     }
 });
 
-router.post('/logout', function(req, res){
-    req.session.destroy(function(err){
-        if(err){
-            console.log(err);
-        } else {
-            res.redirect('/account/login');
-        }
-    });
+router.post('/logout', isAuth, function(req, res){
+    delete req.session.firstName;
+    delete req.session.lastName;
+    delete req.session.userId;
+    delete req.session.accountType;
+    delete req.session.isAuth;
+    delete req.session.isAdmin;
+    res.redirect('/account/login');
 });
 
 router.get("/register", function(req, res){
@@ -383,6 +395,53 @@ router.post('/delete-wishlist', isAuth, function(req, res){
             res.redirect('/account/wishlist');
         }
     });
+});
+
+router.get('/view-order/:orderId', isAuth, function(req, res){
+    const orderId = req.params.orderId;
+    Order.findById({ _id: orderId }, function(err, order){
+        if(err){
+            console.log(err);
+        } else {
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+            res.render('view-order', { order: order });
+        }
+    });
+});
+
+
+router.get('/change-password', isAuth, function(req, res){
+    res.render('change-password', { errorMessage: null, successMessage: null });
+});
+
+router.post('/change-password', isAuth, async function(req, res){
+    const userId = req.session.userId;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    const user = await User.findById({ _id: userId });
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+    console.log("isMatch: ", isMatch);
+
+    if(newPassword != confirmPassword){
+        return res.render('change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null});
+        
+    } else if(!isMatch){
+        return res.render('change-password', { errorMessage: "The old password you entered is incorrect.", successMessage: null});
+
+    } else {
+        const newHashedPassword = await bcrypt.hash(newPassword, 12);
+
+        User.findOneAndUpdate({_id: userId}, { $set: {password: newHashedPassword} }, function(err){
+            if(err){
+                console.log(err);
+            } else {
+                res.render('change-password', { successMessage: "Your password has successfully been changed!", errorMessage: null});
+            }
+        });
+    }
 });
 
 module.exports = router;

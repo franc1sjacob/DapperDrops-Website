@@ -1,0 +1,103 @@
+<%- include('innerPartials/header'); %>
+
+<div class="container">
+    <h2 class="fw-bold">Order Details</h2>    
+    <table class="table table-bordered table-responsive">
+        <thead>
+          <tr>
+            <th scope="col">Order ID:</th>
+            <th scope="col">Date Ordered:</th>
+            <th scope="col">Order Status</th>
+            <th scope="col">Total Items</th>
+            <th scope="col">Total Price</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><%= order._id %></td>
+                <td>07/11/2022</td>
+                <td><%= order.orderStatus %></td>
+                <td><%= cart.totalQty %></td>
+                <td>₱<%= cart.totalPrice %>.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <table class="table table-bordered table-responsive">
+        <thead>
+            <th colspan="4"><h2 class="fw-bold">Payment Details</h2></th>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="col">Payment Method:</th>
+                <th scope="col">Payment Status</th>
+                <th scope="col">Balance Paid</th>
+                <th scope="col">Balance Remaining</th>
+            </tr>
+            <tr>
+                <td><%= order.proofPayment %></td>
+                <td><%= order.paymentStatus %></td>
+                <td>₱<%= order.amountPaid %>.00</td>
+                <td>₱<%= order.amountRemaining %>.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table table-bordered table-responsive">
+        <thead>
+            <th colspan="5"><h2 class="fw-bold">Product Details</h2></th>
+        </thead>
+        <tbody>
+            <tr>
+                <th colspan="2">Product</th>
+                <th scope="col">Size</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+            </tr>
+            <%order.items.forEach(function(cart){%> 
+            <tr>
+                <td><img src="/uploads/<%= cart.item.image %>" style="height:200px;"></td>
+                <td>
+                    <p><%= cart.item.brand %></p>
+                    <p class="fw-semibold"><%= cart.item.name %></p>
+                    <p class="fw-semibold">₱<%= cart.item.price %></p>
+                </td>
+                <td><%= cart.variation %></td>
+                <td><%= cart.qty %></td>
+                <td>₱<%= cart.price %>.00</td>
+            <%})%>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-end fw-bold">Total: </td>
+                <td class="fw-bold">₱<%= cart.totalPrice %>.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table table-bordered table-responsive">
+        <thead>
+            <th scope="col"><h2 class="fw-bold">Shipping Address</h2></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <p class="fw-bold">Address:</p>
+                    <p><%= order.address.addressLine %></p>
+                    <p><%= order.address.region %></p>
+                    <p><%= order.address.city %></p>
+                    <p><%= order.address.barangay %></p>
+                    <p><%= order.address.postalCode %></p>
+                    <p class="fw-bold">Contact Details:</p>
+                    <p><%= order.address.firstName + " " + order.address.lastName %></p>
+                    <p><span><i class="fa-solid fa-phone"></i></span> <%= order.address.phoneNumber %></p>
+                    <p><span><i class="fa-solid fa-envelope"></i></span> <%= order.address.email %></p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+      
+</div>
+
+
+<%- include('innerPartials/footer'); %>

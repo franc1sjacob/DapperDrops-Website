@@ -1,0 +1,93 @@
+<%- include('innerPartials/header'); %>
+
+<div class="container">
+    <div>
+        <h5 class="text-center">OrderID: <%= order._id %></h5>
+        <h1 class="text-center">Thank you! Kindly review your order.</h1>
+        <h6 class="text-center">Your order is still pending, once payment is received we will confirm your order. Please follow the steps below.</h6>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-xl-6 col-lg-6">
+            <p class="fw-bold fs-5">Step 1: Pay required minimum downpayment for pre-order items or pay full amount for on-hand items on either of the following accounts and take a screenshot and save it, this will serve as your proof of payment.</p>
+            <div class="me-auto mb-3">
+                <div>GCash</div>
+                <div>0998 8723 456</div>
+                <div>RV Bandoy</div>
+            </div>
+            <div class="me-auto mb-3">
+                <div>PayMaya</div>
+                <div>0998 8723 456</div>
+                <div>RV Bandoy</div>
+            </div>
+            <div class="me-auto mb-3">
+                <div>BDO</div>
+                <div>0998 8723 456</div>
+                <div>RV Bandoy</div>
+            </div>
+            <div class="me-auto mb-3">
+                <div>BDO Pay</div>
+                <div>0998 8723 456</div>
+                <div>RV Bandoy</div>
+            </div>
+            <p class="fw-bold fs-5">Step 2: Visit your profile.</p>
+            <img src="/images/directions/direction1.png" alt="">
+
+            <p class="fw-bold fs-5">Step 3: Select your order and click send proof of payment button.</p>
+            <img src="/images/directions/direction2.png" alt="">
+
+            <p class="fw-bold fs-5">Step 4: Upload your proof of payment.</p>
+            <img src="/images/directions/direction2.png" alt="">
+
+            <p class="fw-bold fs-5">Step 5: Wait within 24 hours for your order and payment to be confirmed.</p>
+            <p class="fw-bold fs-5">Step 6: Have any inquiries?</p>
+            <p class="fs-6">Send us a message via SMS 0998 5541 546 or message us at our social media pages.</p>
+
+        </div>
+
+        <div class="col-xl-6 col-lg-6">
+            <h3 class="fw-bold">Order Details</h3>
+            <ol class="list-group">
+                <% order.items.forEach(function(cart){ %>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <img src="/uploads/<%= cart.item.image %>" style="height: 75px;">
+                    </div>
+                    <div class="ms-2 me-auto">
+                        <div class="text-secondary fw-bold"><%= cart.item.brand %></div>
+                        <div class="fw-bold"><%= cart.item.name %></div>
+                        <div class="text-secondary fw-bold">Size: <%=cart.variation%></div>
+                        <div>Quantity: <%= cart.qty %></div>
+                    </div>
+                    <span class="fw-bold">₱<%= new Intl.NumberFormat().format(cart.price) %>.00</span>
+                </li>
+            <% }) %>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="text-muted">Subtotal: </div>
+                    </div>
+                    <span class="text-muted">₱<%= new Intl.NumberFormat().format(cart.totalPrice) %>.00</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="text-muted">Payment Method: </div>
+                    </div>
+                    <span class="text-muted"><%= order.proofPayment %></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <h4 class="fw-bold">Total: </h4>
+                    </div>
+                    <h4 class="fw-bold">₱<%= new Intl.NumberFormat().format(cart.totalPrice) %>.00</h4>
+                </li>
+                <li class="list-group-item justify-content-between align-items-start">
+                    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores delectus cum eos ab dolore temporibus similique atque labore eveniet quo dolor quia quod numquam officia earum, quis ipsam. Velit, facilis!</div>
+                    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores delectus cum eos ab dolore temporibus similique atque labore eveniet quo dolor quia quod numquam officia earum, quis ipsam. Velit, facilis!</div>
+                    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores delectus cum eos ab dolore temporibus similique atque labore eveniet quo dolor quia quod numquam officia earum, quis ipsam. Velit, facilis!</div>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<%- include('innerPartials/footer'); %>

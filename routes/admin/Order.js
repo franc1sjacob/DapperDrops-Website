@@ -38,44 +38,50 @@ router.get("/", isAuth, isAdmin, function(req, res){
 });
 
 router.post("/confirmed-order", isAuth, isAdmin, function(req, res){
-    const{orderId, prodId} = req.body;
+    const{ orderId } = req.body;
 
-    Order.findById(orderId, function(err, order){
+    Order.findById(orderId, async function(err, order){
         if(err){
             console.log(err);
         } else {
             const variations = [];
             const quantity = [];
             const itemId = [];
+            const originalQuantity = [];
 
             const itemsLength = Object.keys(order.cart.items).length;
             console.log(Object.keys(order.cart.items));
 
-            Object.values(order.cart.items).forEach(val => variations.push(val.variation));
-            console.log(variations);
-
-            Object.values(order.cart.items).forEach(val => quantity.push(val.qty));
-            console.log(quantity);
-
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
-
             
+            //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
             order.items.forEach(function(cart){
                 itemId.push(cart.item._id);
+                quantity.push(cart.qty);
+                variations.push(cart.variation);
             });
 
-            console.log(itemId);
-
+            //GET QUANTITY OF EACH SELECTED VARIATION
             for(let i = 0; i < itemsLength; i++){
+                let productObject = await Product.findOne({_id: itemId[i]});
+                let productObjectVariations = productObject.variations;
 
+                const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
+                originalQuantity.push(origQty.quantity);
+            }
+
+            console.log(originalQuantity);
+    
+            for(let i = 0; i < itemsLength; i++){
+    
                 const conditions = {
                     _id: itemId[i],
                     'variations.name': {$eq: variations[i]}
                 };
 
                 const update = {
-                    $set:{'variations.$.quantity': 10 - quantity[i]}
+                    $set:{'variations.$.quantity': originalQuantity[i] - quantity[i]}
                 };
 
                 Product.findOneAndUpdate(conditions, update, function(err){

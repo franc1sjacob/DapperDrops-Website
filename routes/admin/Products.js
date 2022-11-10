@@ -247,6 +247,7 @@ router.get("/:productId/view", isAuth, isAdmin, upload, function(req, res){
             quantity: product.variations[0].quantity,
             image: product.image,
             category: product.category,
+            fullName: req.session.firstName + " " + req.session.lastName
         });
     })
 });

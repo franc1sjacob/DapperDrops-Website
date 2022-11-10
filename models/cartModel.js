@@ -1,26 +1,30 @@
-const mongoose = require('mongoose');
+module.exports = function Cart(oldCart) {
+    this.items = oldCart.items || {};
+    this.totalQty = oldCart.totalQty || 0;
+    this.totalPrice = oldCart.totalPrice || 0;
 
-const cartSchema = new mongoose.Schema({
-    products: [{
-        productId:{
-            type: mongoose.Types.ObjectId, 
-            ref: 'products'
-        },
-        name: String,
-        brand: String,
-        category: String,
-        quantity: {
-            type: Number,
-            required: true,
-            min: 1,
-            default: 1
-        }, 
-        price: Number
-    }],
-    total: {
-        type: Number,
-        default: 0
-    }
-});
+    this.add = function(item, id, quantity, variation){
+        var storedItem = this.items[id];
+        console.log('selected variation: ', variation);
 
-module.exports = mongoose.model("Cart", cartSchema);
+        if (!storedItem) {
+            storedItem = this.items[id] = {item: item, variation: variation, qty: 0, price: 0};
+        }
+
+        storedItem.variation = variation;
+        console.log('storedQuantity before adding new quantity: ', storedItem.qty);
+        console.log('quantity input in view-cart page: ', quantity);
+        storedItem.qty = parseInt(storedItem.qty) + parseInt(quantity);
+        storedItem.price = storedItem.item.price * parseInt(storedItem.qty);
+        this.totalQty += parseInt(quantity);
+        this.totalPrice = storedItem.item.price * this.totalQty;
+    };
+
+    this.generateArray = function(){
+        var arr = [];
+        for (var id in this.items){
+            arr.push(this.items[id]);
+        }
+        return arr;
+    };
+};

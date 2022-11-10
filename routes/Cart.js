@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
+const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 const { ObjectID } = require('bson');
+
+var cart;
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -13,41 +16,31 @@ const isAuth = function(req, res, next){
     }
 }
 
-router.get("/view-cart", isAuth, function(req, res){
-    Cart.find({}, function(err, foundCarts){
-        if(err){
-            console.log(err);
-        } else{
-            res.render('view-cart', {userCart:foundCarts});
-        }
-    });
+router.get("/view-cart", function(req, res){
+    if(!req.session.cart){
+        res.render('view-cart', {usercart: null});
+    } else{
+        const cart = new Cart(req.session.cart);
+        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty});
+    }
 });
 
 router.post("/add-to-cart", function(req, res){
-    const prodId = req.body.prodId; 
-    console.log(prodId);
-    Product.findById(prodId, function(err, foundProduct){
-        if(err){
+    const userId = req.session.userId;
+    const { prodId, variation, quantity} = req.body;
+    const selectQty = quantity;
+    const selectVar = variation;
+    // console.log(quantity);
+    const cart = new Cart(req.session.cart ? req.session.cart : {});
+
+    Product.findById(prodId, function(err, product){
+        if (err){
             console.log(err);
         } else{
-            const cart = new Cart({
-                products: [{
-                    productId: foundProduct._id,
-                    name: foundProduct.name,
-                    brand: foundProduct.brand,
-                    category: foundProduct.category,
-                    quantity: 1,
-                    price: foundProduct.price
-                }],
-                total: foundProduct.price
-            });
-            
-            cart.save(function(err){
-                if(err){
-                    console.log(err);
-                }
-                res.redirect('/cart/view-cart');
-            });
+            cart.add(product, product._id+selectVar, selectQty, selectVar);
+            req.session.cart = cart;
+            console.log('display current session of cart: ',req.session.cart);
+            res.redirect('/cart/view-cart');
         }
     });
 });

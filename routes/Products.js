@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 
 const Product = require("../models/productModel");
+const Wishlist = require("../models/wishlistModel");
+
+const isAuth = function(req, res, next){
+    if(req.session.isAuth){
+        next();
+    } else {
+        res.redirect('/account/login');
+    }
+}
 
 router.get("/onhand", function(req, res){
     Product.find({category:"On-Hand"}, function (err, allProducts) {
@@ -45,19 +54,44 @@ router.get("/apparel", function(req, res){
 
 router.get("/item/:productId", function(req, res){
     const productId = req.params.productId;
+    const userId = req.session.userId;
 
     Product.findOne({_id:productId}, function(err, item){
-        res.render('view-item', {
-            _id: productId,
-            brand: item.brand,
-            name: item.name,
-            price: item.price,
-            description: item.description,
-            quantity: item.quantity,
-            image: item.image,
-            category: item.category
-        });
+        res.render('view-item', {item: item, userId: userId});
     });
 });
 
+
+router.post('/add-to-wishlist', isAuth, function(req, res){
+    userId = req.session.userId;
+    const { prodId } = req.body;
+
+    Product.findOne({ _id: prodId }, function(err, product){
+
+        newProduct = {
+            productId: prodId,
+            image: product.image,
+            name: product.name,
+            brand: product.brand,
+            category: product.category,
+            price: product.price
+        }
+        const conditions = {
+            userId: userId,
+            'products.productId': { $ne: prodId }
+        };
+
+        const update = {
+            $push: { products: newProduct }
+        };
+
+        Wishlist.findOneAndUpdate(conditions, update, function(err, wishlist){
+            if(err){
+                console.log(err);
+            } else {
+                res.redirect('/products/item/' + prodId);
+            }
+        });
+    });
+})
 module.exports = router;

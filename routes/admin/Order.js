@@ -5,6 +5,7 @@ const User = require("../../models/userModel");
 const Product = require("../../models/productModel");
 const Cart = require("../../models/cartModel");
 const Order = require("../../models/orderModel");
+const Sale = require("../../models/salesModel");
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -120,10 +121,49 @@ router.post("/decline-order", isAuth, isAdmin, function(req, res){
 
 router.post("/complete-order", isAuth, isAdmin, function(req, res){
     const {orderId} = req.body;
-    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, function(err, orders){
+    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, function(err, order){
         if(err){
             console.log(err);
         } else {
+            console.log("ORDEEEEEEEEEEEEEEEER")
+            console.log(order);
+            let item;
+            let items = [];
+
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+
+            order.items.forEach(function(cart){
+                item = {
+                    itemBrand: cart.item.brand,
+                    itemName: cart.item.name,
+                    itemPrice: cart.item.price,
+                    itemVariation: cart.variation,
+                    itemQuantity: cart.qty,
+                    itemTotal: cart.price
+                }
+                items.push(item);
+            });
+
+            console.log("ITEMSSSSSSSSSSSSSS", items);
+
+            sale = new Sale({
+                orderId: orderId,
+                dateSold: order.dateCreated,
+                earnings: order.amountPaid,
+                items: items,
+            });
+
+            console.log("SALEEEEEEEEE", sale)
+
+            sale.save(function (err){
+                if(err){
+                    console.log(err);
+                } else {
+                    console.log("save success");
+                }
+            });
+        
             res.redirect('/admin/orders');
         }
     });

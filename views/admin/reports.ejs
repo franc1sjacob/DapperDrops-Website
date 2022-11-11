@@ -1,7 +1,5 @@
 <%- include('../partials/admin/header', {name: fullName}); %>
-
-
-
+    
     <div class="container">
         <div>
             <canvas id="myChart" class="mb-5"></canvas>
@@ -24,15 +22,17 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+const earningsData = '<%= sales %>'.split(',');
+const dateData = '<%= date %>'.split(',');
 const ctx = document.getElementById('myChart').getContext('2d');
 const ctx2 = document.getElementById('myChart2').getContext('2d');
 const myChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: dateData,
         datasets: [{
             label: 'Earnings',
-            data: [12, 19, 3, 5, 2, 3],
+            data: earningsData,
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',

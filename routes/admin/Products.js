@@ -44,11 +44,11 @@ const upload = multer({
 
 
 router.get("/", isAuth, isAdmin, function (req, res) {   
-    Product.find({category:"On-Hand"}, function (err, allProducts) {
+    Product.find({}, function (err, allProducts) {
         if (err) {
             console.log(err);
         } else {
-            res.render('admin/onhand-products', { newOnHandProducts: allProducts, fullName: req.session.firstName + " " + req.session.lastName })
+            res.render('admin/products', { products: allProducts, fullName: req.session.firstName + " " + req.session.lastName })
         }
     });
 });
@@ -304,7 +304,7 @@ router.post("/:productId", isAuth, isAdmin, upload, function(req, res){
 router.get("/:productId/search", isAuth, isAdmin, function(req,res){
     console.log(req.params.key);
     resp.send("Search Done");
-})
+});
 
 router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
@@ -337,33 +337,22 @@ router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.get("/:variationId/update-variation", isAuth, isAdmin, upload, function(req, res){
+router.get("/update-variation/:variationId-:productId", isAuth, isAdmin, upload, function(req, res){
     const variationId = req.params.variationId;
-
-    Product.findOne({ _id:variationId }, function(err, variation){
-        res.render('admin/update-variation', {
-            fullName: req.session.firstName + " " + req.session.lastName, 
-            _id: variationId,     
-            name: variation.name,
-            quantity: variation.quantity
-        });
-    })
-});
-router.post("/:productId/delete-variation", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
-    Product.findById({ _id:productId },
-        {$pull:{
-        _id: productId,
-        }
-    },function(err){
+    console.log(variationId);
+
+    Product.findById({_id: productId}, function(err, product){
         if(err){
             console.log(err);
-        } else {
-            console.log("Deleted!" + productId);
-            res.redirect('/admin/products/onhand-products')
-               
         }
-    });
+        else{
+            const variation = product.variations.find(obj => obj.id === variationId);
+            console.log(variation);
+            
+            res.render('admin/update-variation', {fullName: req.session.firstName + " " + req.session.lastName, product: product, variation: variation});
+        }
+    });     
 });
 
 

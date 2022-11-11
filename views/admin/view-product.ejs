@@ -24,11 +24,11 @@
                                     <td><%= variation.quantity %></td>
                                     <td><%= variation.status %></td>
                                     <td>    
-                                        <a href="/admin/products/<%= variation._id %>/update-variation"><i class="fa-solid fa-pen-to-square me-1"></i></a> 
-                                        <a href="/admin/products/<%= variation._id %>/delete-variation" ><i class="fa-solid fa-trash-can me-1"></i></a>
+                                        <a href="/admin/products/update-variation/<%= variation._id%>-<%= newListProducts._id%>"><i class="fa-solid fa-pen-to-square me-1"></i></a> 
+                                        <a href="/admin/products/delete-variation" ><i class="fa-solid fa-trash-can me-1"></i></a>
                                     </td>
                                 </tr>
-                                <%})%>
+                            <%})%>
                         </table>
                     <h5>Category: <%= newListProducts.category %></h5>
                     

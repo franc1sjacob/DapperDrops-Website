@@ -1,0 +1,31 @@
+<%- include('../innerPartials/admin/header', {name: fullName}); %>
+<div class="container">
+    <form action="/admin/orders/update-payment-<%= order._id %>" method="post">
+        <h1 class="fw-bold text-center mt-2 mb-3">Update Payment</h1>
+
+        <div class="mb-3">
+            <h3 class="form-label">Order ID: <%= order._id %></h3>
+        </div>
+
+        <div class="mb-3">
+            <label for="amountPaid" class="form-label">Amount Paid:</label>
+            <input type="hidden" name="oldBalance" value="<%= order.amountPaid %>">
+            <input type="number" class="form-control" id="amountPaid" name="amountPaid" value="<%= order.amountPaid %>" min="0">
+        </div>
+
+        <div class="mb-3">
+            <label for="prevRemaining" class="form-label">Amount Remaining:</label>
+            <input type="number" class="form-control" id="prevRemaining" name="prevRemaining" value="<%= order.amountRemaining %>" disabled>
+            <input type="hidden" name="amountRemaining" value="<%= order.amountRemaining %>">
+        </div>
+
+        <div class="mb-3">
+            <label for="paymentProof" class="form-label">Proof of Payment:</label>
+            <img class="form-control" src="/uploads/paymentProof/<%= order.paymentProof %>" style="width: 50%">
+        </div>
+
+        <button class="btn btn-primary" type="submit">Update</button>
+
+    </form>
+</div>
+<%- include('../innerPartials/admin/footer'); %>

@@ -210,7 +210,7 @@ router.post("/delete-order", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.get("/:orderId", isAuth, isAdmin, function(req, res){
+router.get("/view-order-:orderId", isAuth, isAdmin, function(req, res){
     const orderId = req.params.orderId;
     Order.findById({ _id: orderId }, function(err, order){
         if(err){
@@ -221,6 +221,37 @@ router.get("/:orderId", isAuth, isAdmin, function(req, res){
             res.render('admin/view-order', { order: order , fullName: req.session.firstName + " " + req.session.lastName });
         }
     });
+});
+
+router.get("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
+    const orderId = req.params.orderId;
+    
+    Order.findById({ _id: orderId }, function(err, order){
+        if(err){
+            console.log(err);
+        } else {
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+            res.render('admin/update-payment', { order: order , fullName: req.session.firstName + " " + req.session.lastName });
+        }
+    });
+});
+
+router.post("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
+    const orderId = req.params.orderId;
+    const {oldBalance, amountPaid, amountRemaining} = req.body;
+    if(amountPaid > amountRemaining){
+        res.redirect('/admin/orders/update-payment-' + orderId);
+    }
+    else{
+        Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(oldBalance) + parseInt(amountPaid), amountRemaining: amountRemaining-amountPaid}}, function(err, order){
+            if(err){
+                console.log(err);
+            } else {
+                res.redirect('/admin/orders');
+            }
+        });
+    }
 });
 
 module.exports = router;

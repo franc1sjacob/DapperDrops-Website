@@ -39,7 +39,6 @@ router.get("/", isAuth, isAdmin, function(req, res){
 
 router.post("/confirm-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
-
     Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, async function(err, order){
         if(err){
             console.log(err);
@@ -80,9 +79,16 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                     _id: itemId[i],
                     'variations.name': {$eq: variations[i]}
                 };
+                
+                // if(originalQuantity[i] - quantity[i] === 5){
+                //     status = "In-Stock"
+                // }
 
                 const update = {
-                    $set:{'variations.$.quantity': originalQuantity[i] - quantity[i]}
+                    $set:{'variations.$.quantity': originalQuantity[i] - quantity[i],
+                    // 'variations.$.status': status
+
+                }
                 };
 
                 Product.findOneAndUpdate(conditions, update, function(err){

@@ -37,10 +37,10 @@ router.get("/", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.post("/confirmed-order", isAuth, isAdmin, function(req, res){
+router.post("/confirm-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
 
-    Order.findById(orderId, async function(err, order){
+    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, async function(err, order){
         if(err){
             console.log(err);
         } else {
@@ -68,6 +68,7 @@ router.post("/confirmed-order", isAuth, isAdmin, function(req, res){
                 let productObjectVariations = productObject.variations;
 
                 const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
+                console.log(origQty);
                 originalQuantity.push(origQty.quantity);
             }
 
@@ -95,7 +96,29 @@ router.post("/confirmed-order", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.post("/completed-order", isAuth, isAdmin, function(req, res){
+router.post("/pending-order", isAuth, isAdmin, function(req, res){
+    const {orderId} = req.body;
+    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Pending"}}, function(err, orders){
+        if(err){
+            console.log(err);
+        } else {
+            res.redirect('/admin/orders');
+        }
+    });
+});
+
+router.post("/decline-order", isAuth, isAdmin, function(req, res){
+    const {orderId} = req.body;
+    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Declined"}}, function(err, orders){
+        if(err){
+            console.log(err);
+        } else {
+            res.redirect('/admin/orders');
+        }
+    });
+});
+
+router.post("/complete-order", isAuth, isAdmin, function(req, res){
     const {orderId} = req.body;
     Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, function(err, orders){
         if(err){
@@ -106,18 +129,66 @@ router.post("/completed-order", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.post("/cancelled-order", isAuth, isAdmin, function(req, res){
-    const {orderId} = req.body;
-    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Cancelled"}}, function(err, orders){
+router.post("/cancel-order", isAuth, isAdmin, function(req, res){
+    const{ orderId } = req.body;
+
+    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Cancelled"}}, async function(err, order){
         if(err){
             console.log(err);
         } else {
+            const variations = [];
+            const quantity = [];
+            const itemId = [];
+            const originalQuantity = [];
+
+            const itemsLength = Object.keys(order.cart.items).length;
+            console.log(Object.keys(order.cart.items));
+
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+            
+            //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
+            order.items.forEach(function(cart){
+                itemId.push(cart.item._id);
+                quantity.push(cart.qty);
+                variations.push(cart.variation);
+            });
+
+            //GET QUANTITY OF EACH SELECTED VARIATION
+            for(let i = 0; i < itemsLength; i++){
+                let productObject = await Product.findOne({_id: itemId[i]});
+                let productObjectVariations = productObject.variations;
+
+                const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
+                console.log(origQty);
+                originalQuantity.push(origQty.quantity);
+            }
+
+            console.log(originalQuantity);
+    
+            for(let i = 0; i < itemsLength; i++){
+    
+                const conditions = {
+                    _id: itemId[i],
+                    'variations.name': {$eq: variations[i]}
+                };
+
+                const update = {
+                    $set:{'variations.$.quantity': originalQuantity[i] + quantity[i]}
+                };
+
+                Product.findOneAndUpdate(conditions, update, function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                });
+            };  
             res.redirect('/admin/orders');
         }
     });
 });
 
-router.post("/refunded-order", isAuth, isAdmin, function(req, res){
+router.post("/refund-order", isAuth, isAdmin, function(req, res){
     const {orderId} = req.body;
     Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Refunded"}}, function(err, orders){
         if(err){
@@ -135,6 +206,19 @@ router.post("/delete-order", isAuth, isAdmin, function(req, res){
             console.log(err);
         } else {
             res.redirect('/admin/orders');
+        }
+    });
+});
+
+router.get("/:orderId", isAuth, isAdmin, function(req, res){
+    const orderId = req.params.orderId;
+    Order.findById({ _id: orderId }, function(err, order){
+        if(err){
+            console.log(err);
+        } else {
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+            res.render('admin/view-order', { order: order , fullName: req.session.firstName + " " + req.session.lastName });
         }
     });
 });

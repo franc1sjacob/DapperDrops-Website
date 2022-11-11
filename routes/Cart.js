@@ -94,6 +94,10 @@ router.post("/place-order", isAuth, function(req, res){
     const { paymentMethod, termsCheckbox } = req.body;
     const userId = req.session.userId;
     const cart = new Cart(req.session.cart);
+
+    var today = new Date();
+    console.log(today);
+
     if(termsCheckbox == "agree"){
         User.findById(userId, function(err, result){
             if(err){
@@ -107,7 +111,8 @@ router.post("/place-order", isAuth, function(req, res){
                     address: result.defaultAddress,
                     paymentStatus: "Pending",
                     orderStatus: "Pending",
-                    proofPayment: paymentMethod,
+                    paymentMethod: paymentMethod,
+                    dateCreated: today,
                     amountPaid: 0,
                     amountRemaining: cart.totalPrice
                 });

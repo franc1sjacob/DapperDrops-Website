@@ -1,4 +1,4 @@
-<%- include('innerPartials/header'); %>
+<%- include('../innerPartials/admin/header', {name: fullName}); %>
 
 <div class="container">
     <h2 class="fw-bold">Order Details</h2>    
@@ -36,10 +36,23 @@
                 <th scope="col">Balance Remaining</th>
             </tr>
             <tr>
-                <td><%= order.proofPayment %></td>
+                <td><%= order.paymentMethod %></td>
                 <td><%= order.paymentStatus %></td>
                 <td>₱<%= order.amountPaid %>.00</td>
                 <td>₱<%= order.amountRemaining %>.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table table-bordered table-responsive">
+        <tbody>
+            <tr>
+                <th scope="col">Payment Proof:</th>
+                <th scope="col">Payment Description</th>
+            </tr>
+            <tr>
+                <td><img src="/uploads/paymentProof/<%= order.paymentProof %>"  style="width: 100%"></td>
+                <td><%= order.paymentDescription %></td>
             </tr>
         </tbody>
     </table>
@@ -99,5 +112,4 @@
       
 </div>
 
-
-<%- include('innerPartials/footer'); %>
+<%- include('../innerPartials/admin/footer'); %>

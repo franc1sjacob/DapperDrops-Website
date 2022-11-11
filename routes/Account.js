@@ -14,6 +14,23 @@ const Cart = require("../models/cartModel");
 const Wishlist = require("../models/wishlistModel");
 const Order = require("../models/orderModel");
 
+var fs = require('fs');
+var path = require('path');
+
+const multer = require("multer")
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/uploads/paymentProof')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '_' + Date.now() + "_" + file.originalname)
+    }
+});
+  
+
+const upload = multer({storage: storage,}).single('paymentProof');
+
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
         next();
@@ -442,6 +459,36 @@ router.post('/change-password', isAuth, async function(req, res){
             }
         });
     }
+});
+
+router.get("/send-payment-proof/:orderId", isAuth, function(req, res){
+    const orderId = req.params.orderId;
+    Order.findById(orderId, function(err, foundOrder){
+        if(err){
+            console.log(err);
+            
+        }
+        else{
+            res.render('send-payment-proof', {order: foundOrder});
+        }
+    });
+});
+
+router.post("/send-payment-proof/:orderId", isAuth, upload, function(req, res){
+    const {description} = req.body;
+    const orderId = req.params.orderId;
+
+    Order.findByIdAndUpdate(orderId, {$set: {
+        paymentDescription: description,
+        paymentProof: req.file.filename
+    }},  function(err, result){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.redirect('/account/profile');
+        }
+    });
 });
 
 module.exports = router;

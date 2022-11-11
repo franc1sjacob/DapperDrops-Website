@@ -1,0 +1,23 @@
+<%- include('innerPartials/header'); %>
+
+<div class="container">
+    <form action="/account/send-payment-proof/<%= order._id %>" method="post" enctype="multipart/form-data">
+        <h1 class="fw-bold">Send Proof of Payment</h1>
+
+        <h3>Order ID: <%= order._id %></h3>
+
+        <div class="mb-3">
+            <label for="paymentProof" class="form-label">Proof of Payment:</label>
+            <input type="file" class="form-control" id="paymentProof" name="paymentProof">
+        </div>
+
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Description: </label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"></textarea>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+</div>
+
+<%- include('innerPartials/footer'); %>

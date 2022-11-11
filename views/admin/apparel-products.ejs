@@ -37,7 +37,6 @@
                             <th>Name</th>
                             <th>Price</th>
                             <th>Description</th>
-                            <th>Quantity</th>
                             <th>Type</th>
                             <th>Image</th>
                             <th>Actions</th>
@@ -48,18 +47,24 @@
                                 <td><%= product.name %> </td>
                                 <td><%= product.price %> </td>
                                 <td><%= product.description %> </td>
-                                <td><%= product.variations[0].quantity %> </td>
                                 <td><%= product.category %> </td>
                                 <td><img src="/uploads/<%= product.image %>" width="50"></td>
                                 <td>
-                                    <a href="/admin/products/<%= product._id %>/edit"><i class="fa-solid fa-pen-to-square me-1"></i></a>
-                                    <form action="" method="post">
-                                        <a href="/admin/products/<%= product._id %>/view"><i class="fa-solid fa-eye me-1"></i></a>
-                                    </form>
-                                    <form action="/admin/delete-product/<%= product._id %>" method="post">
-                                        <a href="/admin/products/<%= product._id %>/delete" ><i class="fa-solid fa-trash-can me-1"></i></a>
-                                        <!-- type="submit" name="deleteId" value="<%= product._id %>" -->
-                                    </form>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        </button>
+                                        <ul class="dropdown-menu">                                
+                                            <a class ="dropdown-item" href="/admin/products/<%= product._id %>/edit" >Update Product</a>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <a class ="dropdown-item" href="/admin/products/<%= product._id %>/view" >View Product</a>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <a class ="dropdown-item" href="/admin/products/<%= product._id %>/delete" >Delete Product</a>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <a class ="dropdown-item" href="/admin/products/<%= product._id %>/add-new-variation" >Add Variation</a>
+    
+                                             
+                                        </ul>
+                                      </div>
                                 </td>
                             </tr>
                         <% }); %>

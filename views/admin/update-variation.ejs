@@ -1,0 +1,24 @@
+<%- include('../innerPartialsv2/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="text-center mt-2 mb-3">Update Product</h1> 
+    <form action="/admin/products/<%= variation._id %>/update-variation" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="inputIdName" class="form-label">ID:</label>
+            <input type="text" class="form-control" id="inputBrandName" name="productId" value="<%=_id %>">
+        </div>
+        <div class="mb-3">
+            <label for="inputName" class="form-label">Size:</label>
+            <input type="text" class="form-control" id="inputName" name="variationName" value="<%= name %>">
+        </div>
+        <div class="mb-3">
+            <label for="inputQuantity" class="form-label">Quantity:</label>
+            <input type="number" class="form-control" id="inputQuantity" name="variationQuantity" value="<%= quantity %>">
+        </div>
+        
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+</div>
+
+<%- include('../innerPartials/admin/footer'); %>

@@ -26,13 +26,15 @@ const orderSchema = new mongoose.Schema({
         type: String
     },
 
-    paymentProof: {
-        type: String,
-    },
-
-    paymentDescription: {
-        type: String
-    },
+    paymentsInfo: [{
+        paymentProof: {
+            type: String,
+        },
+    
+        paymentDescription: {
+            type: String
+        }
+    }],
 
     dateCreated: {
         type: Date

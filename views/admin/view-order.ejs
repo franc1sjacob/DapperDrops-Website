@@ -47,13 +47,21 @@
     <table class="table table-bordered table-responsive">
         <tbody>
             <tr>
-                <th scope="col">Payment Proof:</th>
-                <th scope="col">Payment Description</th>
+                <th scope="col">Payment Reference:</th>
+                <th scope="col">Payment Information:</th>
             </tr>
+
+            <% order.paymentsInfo.forEach(function(payment){ %>
             <tr>
-                <td><img src="/uploads/paymentProof/<%= order.paymentProof %>"  style="width: 70%"></td>
-                <td><%= order.paymentDescription %></td>
+                <td>
+                    <p class="fw-semibold"><%= payment._id %></p>
+                </td>
+                <td>
+                    <a href="/admin/orders/view-payment-info-<%= order._id %>-<%= payment._id %>" class="fw-bold text-dark">View Info</a>
+                </td>    
             </tr>
+            <% }) %>
+            
         </tbody>
     </table>
 

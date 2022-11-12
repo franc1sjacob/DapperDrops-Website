@@ -260,4 +260,19 @@ router.post("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
     }
 });
 
+router.get("/view-payment-info-:orderId-:paymentId", isAuth, isAdmin, function(req, res){
+    const orderId = req.params.orderId;
+    const paymentId = req.params.paymentId;
+
+    Order.findById(orderId, function(err, foundOrder){
+        if(err){
+            console.log(err);
+        }
+        else{
+            const chosenPayment = foundOrder.paymentsInfo.find(obj => obj.id === paymentId);
+            res.render('admin/view-payment-info', {fullName: req.session.firstName + " " + req.session.lastName, order: foundOrder, chosenPayment: chosenPayment});
+        }
+    });
+});
+
 module.exports = router;

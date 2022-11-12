@@ -2,11 +2,7 @@
 <div class="container">
     <form action="/admin/orders/update-payment-<%= order._id %>" method="post">
         <h1 class="fw-bold text-center mt-2 mb-3">Update Payment</h1>
-
-        <div class="mb-3">
-            <h3 class="form-label">Order ID: <%= order._id %></h3>
-        </div>
-
+        
         <div class="mb-3">
             <label for="amountPaid" class="form-label">Amount Paid:</label>
             <input type="hidden" name="oldBalance" value="<%= order.amountPaid %>">
@@ -19,12 +15,38 @@
             <input type="hidden" name="amountRemaining" value="<%= order.amountRemaining %>">
         </div>
 
-        <div class="mb-3">
-            <label for="paymentProof" class="form-label">Proof of Payment:</label>
-            <img class="form-control" src="/uploads/paymentProof/<%= order.paymentProof %>" style="width: 50%">
-        </div>
+        <div class="col-lg col-md">
+            <div class="card bg-body rounded">
+                <div class="card-body">
+                    <div class="table table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <th colspan="4"><h5 class="fw-semibold">Proof of Payments</h5></th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>Payment Reference:</th>
+                                    <th>Payment Information:</th>
+                                </tr>
+                    
+                                <% order.paymentsInfo.forEach(function(payment){ %>
+                                <tr>
+                                    <td>
+                                        <p><%= payment._id %></p>
+                                    </td>
+                                    <td>
+                                        <a href="/admin/orders/view-payment-info-<%= order._id %>-<%= payment._id %>">View Info</a>
+                                    </td>    
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>    
+                </div>
+            </div>
+        </div>    
 
-        <button class="btn btn-primary" type="submit">Update</button>
+        <button class="btn btn-primary mt-3" type="submit">Update</button>
 
     </form>
 </div>

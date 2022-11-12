@@ -466,7 +466,6 @@ router.get("/send-payment-proof/:orderId", isAuth, function(req, res){
     Order.findById(orderId, function(err, foundOrder){
         if(err){
             console.log(err);
-            
         }
         else{
             res.render('send-payment-proof', {order: foundOrder});
@@ -477,16 +476,34 @@ router.get("/send-payment-proof/:orderId", isAuth, function(req, res){
 router.post("/send-payment-proof/:orderId", isAuth, upload, function(req, res){
     const {description} = req.body;
     const orderId = req.params.orderId;
+    const paymentProof= req.file.filename;
 
-    Order.findByIdAndUpdate(orderId, {$set: {
+    const paymentInfo = {
         paymentDescription: description,
-        paymentProof: req.file.filename
-    }},  function(err, result){
+        paymentProof: paymentProof
+    };
+
+    Order.findByIdAndUpdate(orderId, { $push: { paymentsInfo: [paymentInfo]}},  function(err, result){
         if(err){
             console.log(err);
         }
         else{
             res.redirect('/account/profile');
+        }
+    });
+});
+
+router.get("/view-payment-info-:orderId-:paymentId", isAuth, function(req, res){
+    const orderId = req.params.orderId;
+    const paymentId = req.params.paymentId;
+
+    Order.findById(orderId, function(err, foundOrder){
+        if(err){
+            console.log(err);
+        }
+        else{
+            const chosenPayment = foundOrder.paymentsInfo.find(obj => obj.id === paymentId);
+            res.render('view-payment-info', {order: foundOrder, chosenPayment: chosenPayment});
         }
     });
 });

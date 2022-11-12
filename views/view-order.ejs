@@ -36,11 +36,32 @@
                 <th scope="col">Balance Remaining</th>
             </tr>
             <tr>
-                <td><%= order.proofPayment %></td>
+                <td><%= order.paymentMethod %></td>
                 <td><%= order.paymentStatus %></td>
                 <td>₱<%= order.amountPaid %>.00</td>
                 <td>₱<%= order.amountRemaining %>.00</td>
             </tr>
+        </tbody>
+    </table>
+
+    <table class="table table-bordered table-responsive">
+        <tbody>
+            <tr>
+                <th scope="col">Payment Reference:</th>
+                <th scope="col">Payment Information:</th>
+            </tr>
+
+            <% order.paymentsInfo.forEach(function(payment){ %>
+            <tr>
+                <td>
+                    <p class="fw-semibold"><%= payment._id %></p>
+                </td>
+                <td>
+                    <a href="/account/view-payment-info-<%= order._id %>-<%= payment._id %>" class="fw-bold text-dark">View Info</a>
+                </td>    
+            </tr>
+            <% }) %>
+            
         </tbody>
     </table>
 

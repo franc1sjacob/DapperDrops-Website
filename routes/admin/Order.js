@@ -88,7 +88,7 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                     $set:{'variations.$.quantity': originalQuantity[i] - quantity[i],
                     // 'variations.$.status': status
 
-                }
+                    }
                 };
 
                 Product.findOneAndUpdate(conditions, update, function(err){

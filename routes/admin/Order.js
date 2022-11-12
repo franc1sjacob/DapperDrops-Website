@@ -40,7 +40,6 @@ router.get("/", isAuth, isAdmin, function(req, res){
 
 router.post("/confirm-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
-
     Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, async function(err, order){
         if(err){
             console.log(err);
@@ -75,9 +74,16 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                     _id: itemId[i],
                     'variations.name': {$eq: variations[i]}
                 };
+                
+                // if(originalQuantity[i] - quantity[i] === 5){
+                //     status = "In-Stock"
+                // }
 
                 const update = {
-                    $set:{'variations.$.quantity': originalQuantity[i] - quantity[i]}
+                    $set:{'variations.$.quantity': originalQuantity[i] - quantity[i],
+                    // 'variations.$.status': status
+
+                    }
                 };
 
                 Product.findOneAndUpdate(conditions, update, function(err){
@@ -385,6 +391,21 @@ router.post("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
             }
         });
     }
+});
+
+router.get("/view-payment-info-:orderId-:paymentId", isAuth, isAdmin, function(req, res){
+    const orderId = req.params.orderId;
+    const paymentId = req.params.paymentId;
+
+    Order.findById(orderId, function(err, foundOrder){
+        if(err){
+            console.log(err);
+        }
+        else{
+            const chosenPayment = foundOrder.paymentsInfo.find(obj => obj.id === paymentId);
+            res.render('admin/view-payment-info', {fullName: req.session.firstName + " " + req.session.lastName, order: foundOrder, chosenPayment: chosenPayment});
+        }
+    });
 });
 
 module.exports = router;

@@ -130,40 +130,69 @@ router.get('/sales-sortByYear', async function(req, res){
     
 });
 
-router.get('/trylang', async function(req, res){
+router.get('/inventory-performance', async function(req, res){
     let data = [];
-    const result = await Sale.aggregate([
-        { $group: {
-            _id: {
-                month: { $month : "$dateSold" },
-                day: { $dayOfMonth : "$dateSold" },
-                year: { $year : "$dateSold" },
-                date: { $dayOfYear : "$dateSold" } 
-            },
-            earnings: { $sum : "$earnings" }
-        }},
-        { $sort: { date: 1 }}
-    ])
+    const result = await Product.find({});
 
-    result.forEach(function(sale){
+    result.forEach(function(product){
         data.push({
-            date: sale._id.day + "/" + sale._id.month + "/" + sale._id.year,
-            earnings: sale.earnings
+            productId: product._id,
+            brand: product.brand,
+            name: product.name,
+            price: product.price,
+            category: product.category,
+            totalEarnings: product.totalEarnings,
+            totalQuantitySold: product.totalQuantitySold
         });
     });
 
-    const fields = ['date', 'earnings'];
+    const fields = ['productId', 'brand', 'name', 'price', 'category', 'totalEarnings', 'totalQuantitySold'];
         const opts = { fields };
 
     try{
         const csv = parse(data, opts);
-        fs.writeFile('./public/charts/sales.csv', csv, function(error){
+        fs.writeFile('./public/charts/products.csv', csv, function(error){
             if(error) throw error;
         });
     } catch (err) {
         console.log(err);
     }
-    res.render('admin/reports2', { sales: earningsData, date: dateData, fullName: req.session.firstName + " " + req.session.lastName });
+    res.render('admin/charts/products/inventory-performance', { fullName: req.session.firstName + " " + req.session.lastName });
+    
+});
+
+router.get('/inventory-performance-sortByBrand', async function(req, res){
+    let data = [];
+
+    const result = await Product.aggregate([
+        { $group: {
+            _id: { brand: "$brand" },
+            earnings: { $sum: "$totalEarnings" }
+        }}
+    ]);
+
+    result.forEach(function(product){
+        data.push({
+            brand: product._id.brand,
+            earnings: product.earnings
+        });
+    })
+
+    console.log(data);
+
+    const fields = ['brand', 'earnings'];
+        const opts = { fields };
+
+    try{
+        const csv = parse(data, opts);
+        fs.writeFile('./public/charts/products-brand.csv', csv, function(error){
+            if(error) throw error;
+        });
+    } catch (err) {
+        console.log(err);
+    }
+    res.render('admin/charts/products/inventory-performance-sortByBrand', { fullName: req.session.firstName + " " + req.session.lastName });
+    
 });
 
 router.post('/export', async function(req, res){

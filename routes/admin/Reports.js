@@ -24,14 +24,14 @@ router.get('/sales', async function(req, res){
             },
             earnings: { $sum : "$earnings" }
         }},
-        { $sort: { day: 1 }}
+        { $sort: { '_id.date': 1 }},
     ])
 
     console.log("RESULT", result);
 
     result.forEach(function(sale){
         data.push({
-            date: sale._id.day + "/" + sale._id.month + "/" + sale._id.year,
+            date: sale._id.year + "-" + sale._id.month + "-" + sale._id.day,
             earnings: sale.earnings
         });
     });
@@ -58,19 +58,21 @@ router.get('/sales-sortByMonth', async function(req, res){
     const result = await Sale.aggregate([
         { $group: {
             _id: {
-                month: { $month : "$dateSold" },
-                year: { $year : "$dateSold" },
+                date: { $dateToString: {
+                    "date": "$dateSold",
+                    "format": "%Y-%m"
+                }}
             },
             earnings: { $sum : "$earnings" }
         }},
-        { $sort: { month: 1 }}
+        { $sort: { '_id.date': 1 }}
     ])
 
     console.log("RESULT", result);
 
     result.forEach(function(sale){
         data.push({
-            date: sale._id.month + "/" + sale._id.year,
+            date: sale._id.date,
             earnings: sale.earnings
         });
     });
@@ -101,7 +103,7 @@ router.get('/sales-sortByYear', async function(req, res){
             },
             earnings: { $sum : "$earnings" }
         }},
-        { $sort: { year: 1 }}
+        { $sort: { '_id.year': 1 }}
     ])
 
     console.log("RESULT", result);
@@ -132,7 +134,9 @@ router.get('/sales-sortByYear', async function(req, res){
 
 router.get('/inventory-performance', async function(req, res){
     let data = [];
-    const result = await Product.find({});
+    const result = await Product.find({}).sort('totalEarnings');
+
+    console.log(result);
 
     result.forEach(function(product){
         data.push({
@@ -168,7 +172,7 @@ router.get('/inventory-performance-sortByBrand', async function(req, res){
         { $group: {
             _id: { brand: "$brand" },
             earnings: { $sum: "$totalEarnings" }
-        }}
+        }}, { $sort: { earnings: 1 }}
     ]);
 
     result.forEach(function(product){

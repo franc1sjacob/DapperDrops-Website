@@ -31,6 +31,14 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    totalQuantitySold: {
+        type: Number,
+        default: 0
+    },
+    totalEarnings: {
+        type: Number,
+        default: 0
+    },
     category: {
         type: String,
         required: true

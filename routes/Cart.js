@@ -112,9 +112,9 @@ router.post("/place-order", isAuth, function(req, res){
                     paymentStatus: "Pending",
                     orderStatus: "Pending",
                     paymentMethod: paymentMethod,
-                    dateCreated: today,
-                    amountPaid: 0,
-                    amountRemaining: cart.totalPrice
+                    dateCreated: new Date('2017-05-31'),
+                    amountPaid: cart.totalPrice,
+                    amountRemaining: 0
                 });
             
                 order.save(function(err, result){

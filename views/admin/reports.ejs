@@ -1,6 +1,9 @@
 <%- include('../partials/admin/header', {name: fullName}); %>
     
     <div class="container">
+        <form action="/admin/reports/export" method="POST">
+            <button class="btn btn-dark" type="submit">Export</button>
+        </form>
         <div>
             <canvas id="myChart" class="mb-5"></canvas>
         </div>

@@ -51,7 +51,6 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
             const originalQuantity = [];
 
             const itemsLength = Object.keys(order.cart.items).length;
-            console.log(Object.keys(order.cart.items));
 
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
@@ -63,20 +62,15 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                 variations.push(cart.variation);
             });
 
-            //GET QUANTITY OF EACH SELECTED VARIATION
+            
             for(let i = 0; i < itemsLength; i++){
                 let productObject = await Product.findOne({_id: itemId[i]});
                 let productObjectVariations = productObject.variations;
 
+                //GET QUANTITY OF EACH SELECTED VARIATION
                 const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
-                console.log(origQty);
                 originalQuantity.push(origQty.quantity);
-            }
-
-            console.log(originalQuantity);
-    
-            for(let i = 0; i < itemsLength; i++){
-    
+                
                 const conditions = {
                     _id: itemId[i],
                     'variations.name': {$eq: variations[i]}
@@ -121,19 +115,29 @@ router.post("/decline-order", isAuth, isAdmin, function(req, res){
 
 router.post("/complete-order", isAuth, isAdmin, function(req, res){
     const {orderId} = req.body;
-    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, function(err, order){
+    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, async function(err, order){
         if(err){
             console.log(err);
         } else {
-            console.log("ORDEEEEEEEEEEEEEEEER")
-            console.log(order);
+            //For Sales DB
             let item;
             let items = [];
+
+            //For updating product total quantity sold and total earnings.
+            const quantitySold = [];
+            const itemId = [];
+            const earnings = []
+            const originalTotalEarnings = [];
+            const originalTotalQuantitySold = [];
+
+            const itemsLength = Object.keys(order.cart.items).length;
 
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
 
+            //Getting product detail inside of cart.
             order.items.forEach(function(cart){
+                //To be inserted in sales db.
                 item = {
                     itemBrand: cart.item.brand,
                     itemName: cart.item.name,
@@ -142,19 +146,44 @@ router.post("/complete-order", isAuth, isAdmin, function(req, res){
                     itemQuantity: cart.qty,
                     itemTotal: cart.price
                 }
+
                 items.push(item);
+                itemId.push(cart.item._id);
+                quantitySold.push(cart.qty);
+                earnings.push(cart.price);
             });
 
-            console.log("ITEMSSSSSSSSSSSSSS", items);
+            //Updating the total sales and total quantity sold.
+            for(let i = 0; i < itemsLength; i++){
 
+                let productObject = await Product.findOne({_id: itemId[i]});
+                let totalEarnings = productObject.totalEarnings;
+                let totalQuantitySold = productObject.totalQuantitySold;
+
+                originalTotalQuantitySold.push(totalQuantitySold);
+                originalTotalEarnings.push(totalEarnings);
+    
+                const conditions = {
+                    _id: itemId[i],
+                };
+                const update = {
+                    $set: { totalEarnings : originalTotalEarnings[i] + earnings[i], totalQuantitySold : originalTotalQuantitySold[i] + quantitySold[i] }
+                };
+
+                Product.findOneAndUpdate(conditions, update, function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                });
+            };  
+
+            //Creating new sale object to be inserted to sales database.
             sale = new Sale({
                 orderId: orderId,
                 dateSold: order.dateCreated,
                 earnings: order.amountPaid,
                 items: items,
             });
-
-            console.log("SALEEEEEEEEE", sale)
 
             sale.save(function (err){
                 if(err){
@@ -202,11 +231,6 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                 const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
                 console.log(origQty);
                 originalQuantity.push(origQty.quantity);
-            }
-
-            console.log(originalQuantity);
-    
-            for(let i = 0; i < itemsLength; i++){
     
                 const conditions = {
                     _id: itemId[i],
@@ -222,18 +246,87 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                         console.log(err);
                     }
                 });
-            };  
+            }; 
             res.redirect('/admin/orders');
         }
     });
 });
 
 router.post("/refund-order", isAuth, isAdmin, function(req, res){
-    const {orderId} = req.body;
-    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Refunded"}}, function(err, orders){
+    const{ orderId } = req.body;
+
+    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Refunded"}}, async function(err, order){
         if(err){
             console.log(err);
         } else {
+            const itemId = [];
+
+            //For updating variation quantity
+            const variations = [];
+            const quantity = [];
+            const originalQuantity = [];
+
+            //For updating total quantity sold and total earnings.
+            const quantitySold = [];
+            const earnings = []
+            const originalTotalEarnings = [];
+            const originalTotalQuantitySold = [];
+
+            const itemsLength = Object.keys(order.cart.items).length;
+
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+            
+            //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
+            order.items.forEach(function(cart){
+                itemId.push(cart.item._id);
+
+                //Pushing the quantity and variation
+                quantity.push(cart.qty);
+                variations.push(cart.variation);
+
+                //Pushing the quantity sold and earnings
+                quantitySold.push(cart.qty);
+                earnings.push(cart.price);
+            });
+
+            
+            for(let i = 0; i < itemsLength; i++){
+                let productObject = await Product.findOne({_id: itemId[i]});
+                let productObjectVariations = productObject.variations;
+
+                //Getting the original quantity per variation.
+                const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
+                originalQuantity.push(origQty.quantity);
+                
+                //Getting the original total earnings and total quantity sold.
+                let totalEarnings = productObject.totalEarnings;
+                let totalQuantitySold = productObject.totalQuantitySold;
+
+                originalTotalQuantitySold.push(totalQuantitySold);
+                originalTotalEarnings.push(totalEarnings);
+                
+                const conditions = {
+                    _id: itemId[i],
+                    'variations.name': {$eq: variations[i]}
+                };
+
+                const update = {
+                    $set:{'variations.$.quantity': originalQuantity[i] + quantity[i], totalEarnings : originalTotalEarnings[i] - earnings[i], totalQuantitySold : originalTotalQuantitySold[i] - quantitySold[i]}
+                };
+
+                //Adds back the subtracted quantity, subtracts from total earnings and total quantity sold.
+                Product.findOneAndUpdate(conditions, update, function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                });
+
+                //Deletes the sale document.
+                Sale.findOneAndDelete({ orderId: orderId }, function(err, sale){
+                    if(err){ console.log(err) }
+                }); 
+            };  
             res.redirect('/admin/orders');
         }
     });

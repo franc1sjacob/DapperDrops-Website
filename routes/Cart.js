@@ -96,14 +96,12 @@ router.post("/place-order", isAuth, function(req, res){
     const cart = new Cart(req.session.cart);
 
     var today = new Date();
-    console.log(today);
 
     if(termsCheckbox == "agree"){
         User.findById(userId, function(err, result){
             if(err){
                 console.log(err);
             } else {
-                console.log(result.defaultAddress);
                 const order = new Order({
                     _id: orderId,
                     userId: userId,
@@ -112,9 +110,9 @@ router.post("/place-order", isAuth, function(req, res){
                     paymentStatus: "Pending",
                     orderStatus: "Pending",
                     paymentMethod: paymentMethod,
-                    dateCreated: new Date('2017-05-31'),
-                    amountPaid: cart.totalPrice,
-                    amountRemaining: 0
+                    dateCreated: today,
+                    amountPaid: 0,
+                    amountRemaining: cart.totalPrice
                 });
             
                 order.save(function(err, result){

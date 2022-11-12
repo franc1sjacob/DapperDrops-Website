@@ -9,9 +9,7 @@ const Order = require("../../models/orderModel");
 const { parse } = require('json2csv');
 const fs = require('fs');
 
-
-
-router.get('/sales', async function(req, res){
+router.get('/', async function(req, res){
     let data = [];
     const result = await Sale.aggregate([
         { $group: {

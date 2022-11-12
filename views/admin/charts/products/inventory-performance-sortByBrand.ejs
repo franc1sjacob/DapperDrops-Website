@@ -1,5 +1,21 @@
 <%- include('../../../innerPartials/admin/header', {name: fullName}); %>
     <div class="container">
+        <h1 class="fw-bold text-center mt-2 mb-3">Reports</h1>
+        <ul class="nav nav-tabs my-3">
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/reports">Sales</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle active" aria-current="page" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Inventory Performance</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/admin/reports/inventory-performance">Earnings</a></li>
+                <li><a class="dropdown-item" href="/admin/reports/inventory-performance-sortByBrand">Quantity Sold</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Stock Level</a>
+            </li>
+        </ul>
         <div class="my-4">
             <div class="dropdown">
                 <form action="/admin/reports/export" method="POST">
@@ -13,9 +29,9 @@
                     </ul>
                 </form>
             </div>
-        </div>
-        <div>
-            <canvas id="myChart" class="mb-5"></canvas>
+            <div>
+                <canvas id="myChart" class="mb-5"></canvas>
+            </div>
         </div>
     </div>
     

@@ -1,7 +1,7 @@
 <%- include('../innerPartials/admin/header', {name: fullName}); %>
 
 <div class="container">
-    <h2 class="fw-bold">Order Details</h2>    
+    <h1 class="fw-bold text-center mt-2 mb-3">Order Details</h1>    
     <table class="table table-bordered table-responsive">
         <thead>
           <tr>
@@ -51,7 +51,7 @@
                 <th scope="col">Payment Description</th>
             </tr>
             <tr>
-                <td><img src="/uploads/paymentProof/<%= order.paymentProof %>"  style="width: 100%"></td>
+                <td><img src="/uploads/paymentProof/<%= order.paymentProof %>"  style="width: 70%"></td>
                 <td><%= order.paymentDescription %></td>
             </tr>
         </tbody>

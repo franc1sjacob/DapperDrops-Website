@@ -1,5 +1,5 @@
 <%- include('../innerPartials/admin/header', {name: fullName}); %>
-<h1 class="text-center mt-2 mb-3">Orders</h1> 
+<h1 class="fw-bold text-center mt-2 mb-3">Orders</h1> 
 <nav class="navbar p-0">
     <div class="container justify-content-end">
         <div class="float-end ms-3 mb-1">
@@ -96,7 +96,7 @@
                                                 <li><button class="dropdown-item">Delete</button></li>
                                             </form>
 
-                                        <% } else if(order.orderStatus === "Cancelled" || order.orderStatus === "Declined"){%>   
+                                        <% } else if(order.orderStatus === "Cancelled" || order.orderStatus === "Declined" || order.orderStatus === "Refunded"){%>   
 
                                             <form action="/admin/orders/pending-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
@@ -109,32 +109,19 @@
                                                 <li><button class="dropdown-item">Delete</button></li>
                                             </form>
 
-                                        <% } else if(order.orderStatus === "Refunded"){%>
-
-                                            <form action="/admin/orders/pending-order" method="post">
-                                                <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Pending</button></li>
-                                                <li><hr class="dropdown-divider"></li>
-                                            </form>
-
-                                            <form action="/admin/orders/delete-order" method="post">
-                                                <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Delete</button></li>
-                                            </form>
-                        
                                         <% } %>
 
                                     </ul>
                                   </div>
                             </td>
                             <td>
-                                <a class="" href="#"><i class="fa-solid fa-pen-to-square me-2"></i></a>
+                                <a href="/admin/orders/update-payment-<%= order._id %>"><i class="fa-solid fa-pen-to-square me-2"></i></a>
                                 <%= order.paymentStatus %>
                             </td>
                             <td>₱<%= order.amountPaid %></td>
                             <td>₱<%= order.amountRemaining %></td>
                             <td>
-                                <a href="/admin/orders/<%= order._id %>"><i class="fa-solid fa-eye me-1"></i></a>
+                                <a href="/admin/orders/view-order-<%= order._id %>"><i class="fa-solid fa-eye me-1"></i></a>
                                 <a class="btn btn-sm btn-light" href="#">Send Email</a>
                             </td>
                         </tr>   

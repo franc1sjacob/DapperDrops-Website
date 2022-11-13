@@ -2,14 +2,30 @@ const express = require('express');
 const router = express.Router();
 
 const Product = require("../../models/productModel");
-const Cart = require("../../models/cartModel");
 const Sale = require("../../models/salesModel");
 const Order = require("../../models/orderModel");
 
 const { parse } = require('json2csv');
 const fs = require('fs');
 
-router.get('/', async function(req, res){
+const isAuth = function(req, res, next){
+    if(req.session.isAuth){
+        next();
+    } else {
+        res.redirect('/account/login');
+    }
+}
+
+const isAdmin = function(req, res, next){
+    if(req.session.accountType === "admin"){
+        req.session.isAdmin = true;
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
+router.get('/', isAuth, isAdmin, async function(req, res){
     let data = [];
     const result = await Sale.aggregate([
         { $group: {
@@ -23,9 +39,7 @@ router.get('/', async function(req, res){
             earnings: { $sum : "$earnings" }
         }},
         { $sort: { '_id.date': 1 }},
-    ])
-
-    console.log("RESULT", result);
+    ]);
 
     result.forEach(function(sale){
         data.push({
@@ -33,8 +47,6 @@ router.get('/', async function(req, res){
             earnings: sale.earnings
         });
     });
-
-    console.log("DATA", data);
 
     const fields = ['date', 'earnings'];
         const opts = { fields };
@@ -51,7 +63,7 @@ router.get('/', async function(req, res){
     
 });
 
-router.get('/sales-sortByMonth', async function(req, res){
+router.get('/sales-sortByMonth', isAuth, isAdmin, async function(req, res){
     let data = [];
     const result = await Sale.aggregate([
         { $group: {
@@ -64,9 +76,7 @@ router.get('/sales-sortByMonth', async function(req, res){
             earnings: { $sum : "$earnings" }
         }},
         { $sort: { '_id.date': 1 }}
-    ])
-
-    console.log("RESULT", result);
+    ]);
 
     result.forEach(function(sale){
         data.push({
@@ -75,12 +85,10 @@ router.get('/sales-sortByMonth', async function(req, res){
         });
     });
 
-    console.log("DATA", data);
-
     const fields = ['date', 'earnings'];
         const opts = { fields };
 
-    try{
+    try {
         const csv = parse(data, opts);
         fs.writeFile('./public/charts/sales-sortByMonth.csv', csv, function(error){
             if(error) throw error;
@@ -92,7 +100,7 @@ router.get('/sales-sortByMonth', async function(req, res){
     
 });
 
-router.get('/sales-sortByYear', async function(req, res){
+router.get('/sales-sortByYear', isAuth, isAdmin, async function(req, res){
     let data = [];
     const result = await Sale.aggregate([
         { $group: {
@@ -102,9 +110,7 @@ router.get('/sales-sortByYear', async function(req, res){
             earnings: { $sum : "$earnings" }
         }},
         { $sort: { '_id.year': 1 }}
-    ])
-
-    console.log("RESULT", result);
+    ]);
 
     result.forEach(function(sale){
         data.push({
@@ -113,12 +119,10 @@ router.get('/sales-sortByYear', async function(req, res){
         });
     });
 
-    console.log("DATA", data);
-
     const fields = ['date', 'earnings'];
         const opts = { fields };
 
-    try{
+    try {
         const csv = parse(data, opts);
         fs.writeFile('./public/charts/sales-sortByYear.csv', csv, function(error){
             if(error) throw error;
@@ -130,11 +134,9 @@ router.get('/sales-sortByYear', async function(req, res){
     
 });
 
-router.get('/inventory-performance-earnings', async function(req, res){
+router.get('/inventory-performance-earnings', isAuth, isAdmin, async function(req, res){
     let data = [];
     const result = await Product.find({}).sort('totalEarnings');
-
-    console.log(result);
 
     result.forEach(function(product){
         data.push({
@@ -151,7 +153,7 @@ router.get('/inventory-performance-earnings', async function(req, res){
     const fields = ['productId', 'brand', 'name', 'price', 'category', 'totalEarnings', 'totalQuantitySold'];
         const opts = { fields };
 
-    try{
+    try {
         const csv = parse(data, opts);
         fs.writeFile('./public/charts/products-performance-earnings.csv', csv, function(error){
             if(error) throw error;
@@ -163,7 +165,7 @@ router.get('/inventory-performance-earnings', async function(req, res){
     
 });
 
-router.get('/inventory-performance-earnings-sortByBrand', async function(req, res){
+router.get('/inventory-performance-earnings-sortByBrand', isAuth, isAdmin, async function(req, res){
     let data = [];
 
     const result = await Product.aggregate([
@@ -178,14 +180,12 @@ router.get('/inventory-performance-earnings-sortByBrand', async function(req, re
             brand: product._id.brand,
             earnings: product.earnings
         });
-    })
-
-    console.log(data);
+    });
 
     const fields = ['brand', 'earnings'];
         const opts = { fields };
 
-    try{
+    try {
         const csv = parse(data, opts);
         fs.writeFile('./public/charts/brands-performance-earnings.csv', csv, function(error){
             if(error) throw error;
@@ -197,7 +197,7 @@ router.get('/inventory-performance-earnings-sortByBrand', async function(req, re
     
 });
 
-router.get('/inventory-performance-quantity', async function(req, res){
+router.get('/inventory-performance-quantity', isAuth, isAdmin, async function(req, res){
     let data = [];
 
     const result = await Product.aggregate([
@@ -206,8 +206,6 @@ router.get('/inventory-performance-quantity', async function(req, res){
             totalQuantitySold: { $sum: "$totalQuantitySold" }
         }}, { $sort: { totalQuantitySold: 1 }}
     ]);
-
-    console.log(result);
 
     result.forEach(function(product){
         data.push({
@@ -219,7 +217,7 @@ router.get('/inventory-performance-quantity', async function(req, res){
     const fields = ['name', 'totalQuantitySold'];
         const opts = { fields };
 
-    try{
+    try {
         const csv = parse(data, opts);
         fs.writeFile('./public/charts/products-performance-quantity.csv', csv, function(error){
             if(error) throw error;
@@ -232,7 +230,7 @@ router.get('/inventory-performance-quantity', async function(req, res){
     res.render('admin/charts/products/inventory-performance-quantity', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 
-router.get('/inventory-performance-quantity-sortByBrand', async function(req, res){
+router.get('/inventory-performance-quantity-sortByBrand', isAuth, isAdmin, async function(req, res){
     let data = [];
 
     const result = await Product.aggregate([
@@ -242,19 +240,17 @@ router.get('/inventory-performance-quantity-sortByBrand', async function(req, re
         }}, { $sort: { totalQuantitySold: 1 }}
     ]);
 
-    console.log(result);
-
     result.forEach(function(product){
         data.push({
             brand: product._id.brand,
             totalQuantitySold: product.totalQuantitySold
         });
-    })
+    });
 
     const fields = ['brand', 'totalQuantitySold'];
         const opts = { fields };
 
-    try{
+    try {
         const csv = parse(data, opts);
         fs.writeFile('./public/charts/brands-performance-quantity.csv', csv, function(error){
             if(error) throw error;
@@ -263,11 +259,10 @@ router.get('/inventory-performance-quantity-sortByBrand', async function(req, re
         console.log(err);
     }
 
-    console.log(data);
     res.render('admin/charts/products/inventory-performance-quantity-sortByBrand', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 
-router.get('/inventory-stock-level', async function(req ,res){
+router.get('/inventory-stock-level', isAuth, isAdmin, async function(req ,res){
     let data = [];
     const result = await Product.aggregate([
         { $group: { 
@@ -291,7 +286,7 @@ router.get('/inventory-stock-level', async function(req ,res){
     const fields = ['productId', 'brand', 'name', 'quantityRemaining'];
         const opts = { fields };
 
-    try{
+    try {
         const csv = parse(data, opts);
         fs.writeFile('./public/charts/inventory-stock-level.csv', csv, function(error){
             if(error) throw error;
@@ -300,28 +295,46 @@ router.get('/inventory-stock-level', async function(req ,res){
         console.log(err);
     }
 
-    console.log(result);
-
     res.render('admin/charts/products/inventory-stock-level', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 
-router.post('/export', async function(req, res){
-    Sale.find({}, function(err, sale){
+router.post('/export-:csvFile', isAuth, isAdmin, function(req, res){
+    let csv;
 
-        const fields = ['orderId', 'earnings', 'dateSold', 'items'];
-        const opts = { fields };
+    //Sales
+    if(req.params.csvFile == "salesPerDate"){
+        csv = './public/charts/sales.csv';
+    } else if (req.params.csvFile == "salesPerMonth") {
+        csv = './public/charts/sales-sortByMonth.csv';
+    } else if (req.params.csvFile == "salesPerYear") {
+        csv = './public/charts/sales-sortByYear.csv';
+    //Inventory Performance
+    //Earnings
+    } else if (req.params.csvFile == "products-performance-earnings") {
+        csv = './public/charts/products-performance-earnings.csv';
+    } else if (req.params.csvFile == "brands-performance-earnings") {
+        csv = './public/charts/brands-performance-earnings.csv';
+    //Quantity Sold
+    } else if (req.params.csvFile == "products-performance-quantity") {
+        csv = './public/charts/products-performance-quantity.csv';
+    } else if (req.params.csvFile == "brands-performance-quantity") {
+        csv = './public/charts/brands-performance-quantity.csv';
+    //Inventory Stock Level
+    } else if (req.params.csvFile == "inventory-stock-level") {
+        csv = './public/charts/inventory-stock-level.csv';
+    } else {
+        csv = './public/charts/nofile.csv';
+    }
 
-        try{
-            const csv = parse(sale, opts);
-            fs.writeFile('sales.csv', csv, function(error){
-                if(error) throw error;
-                console.log("write success!");
-            });
-            console.log(csv);
-        } catch (err) {
-            console.log(err);
+    fs.readFile(csv, function(err, content){
+        if(err){
+            res.writeHead(404, { "Content-type": "text/html" });
+            res.end("<h1>No such .csv file!</h1>");
+        } else {
+            res.writeHead(200, { "Content-type" : "text/csv" });
+            res.end(content);
         }
-    })
-})
+    });
+});
  
 module.exports = router;

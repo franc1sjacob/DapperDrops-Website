@@ -267,6 +267,44 @@ router.get('/inventory-performance-quantity-sortByBrand', async function(req, re
     res.render('admin/charts/products/inventory-performance-quantity-sortByBrand', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 
+router.get('/inventory-stock-level', async function(req ,res){
+    let data = [];
+    const result = await Product.aggregate([
+        { $group: { 
+            _id: {
+                productId: "$_id",
+                brand: "$brand",
+                name: "$name",
+                quantityRemaining: { $sum:"$variations.quantity" }
+        }}}
+    ]);
+
+    result.forEach(function(product){
+        data.push({
+            productId: product._id.productId,
+            brand: product._id.brand,
+            name: product._id.name,
+            quantityRemaining: product._id.quantityRemaining
+        });
+    })
+
+    const fields = ['productId', 'brand', 'name', 'quantityRemaining'];
+        const opts = { fields };
+
+    try{
+        const csv = parse(data, opts);
+        fs.writeFile('./public/charts/inventory-stock-level.csv', csv, function(error){
+            if(error) throw error;
+        });
+    } catch (err) {
+        console.log(err);
+    }
+
+    console.log(result);
+
+    res.render('admin/charts/products/inventory-stock-level', { fullName: req.session.firstName + " " + req.session.lastName });
+});
+
 router.post('/export', async function(req, res){
     Sale.find({}, function(err, sale){
 

@@ -2,16 +2,259 @@
 
 
 <div class="container">
-    <h1 class="mt-4">Simple Sidebar</h1>
-    <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-    <p>
-        Make sure to keep all page content within the
-        <code>#page-content-wrapper</code>
-        . The top navbar is optional, and just for demonstration. Just create an element with the
-        <code>#sidebarToggle</code>
-        ID which will toggle the menu when clicked.
-    </p>
+    <h1 class="fw-bold text-center mt-2 mb-3">Dashboard</h1>
+    <div class="row mt-3">
+        <div class="col-xl-6 col-lg-6">
+            <div class="chartBox mb-3">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-6">
+            <div class="chartBox">
+                <canvas id="myChart2"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header text-center">Total Earnings</div>
+                <div class="card-body text-center fw-bold">₱<%= total.earnings.toLocaleString("en-US") %></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header text-center">Pending Orders</div>
+                <div class="card-body text-center fw-bold"><%= total.pending %></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header text-center">Completed Orders</div>
+                <div class="card-body text-center fw-bold"><%= total.completed %></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header text-center">On-hand Products</div>
+                <div class="card-body text-center fw-bold"><%= total.onhand %></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header text-center">Pre-order Products</div>
+                <div class="card-body text-center fw-bold"><%= total.preorder %></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header text-center">Accessories</div>
+                <div class="card-body text-center fw-bold"><%= total.accessories %></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header text-center">Apparel</div>
+                <div class="card-body text-center fw-bold"><%= total.apparel %></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header text-center">Customer Users</div>
+                <div class="card-body text-center fw-bold"><%= total.customer %></div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header text-center">Admin Users</div>
+                <div class="card-body text-center fw-bold"><%= total.admin %></div>
+            </div>
+        </div>
+        
+
+    </div>
+
 </div>
 
-<%- include('../partials/admin/footer') %>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js" integrity="sha512-MefNfAGJ/pEy89xLOFs3V6pYPs6AmUhXJrRlydI/9wZuGrqxmrdQ80zKHUcyadAcpH67teDZcBeS6oMJLPtTqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- ---------------DASHBOARD CONTENT BELOW NAVBAR END--------------- -->
+</div>
+<!-- ---------------PAGE CONTENT WRAPPER; ALL CONTENT IS DISPLAYED INSIDE THIS CONTAINER END--------------- --> 
+</div>
+<!-- ---------------JS CDN LINKS W/ CUSTOM JS--------------- --> 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+<script src="../../js/dashboard.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+let filename = '../../charts/sales.csv';
+
+d3.csv(filename).then(function(datapoints){
+console.log(datapoints);
+const earnings = [];
+const dateCreated = [];
+datapoints.forEach(data => {
+    earnings.push(data.earnings);
+    dateCreated.push(data.date);
+});
+console.log(earnings);
+console.log(dateCreated);
+const data = {
+labels: dateCreated,
+datasets: [{
+label: 'Earnings Per Date',
+data: earnings,
+backgroundColor: [
+'rgba(255, 26, 104, 0.2)',
+'rgba(54, 162, 235, 0.2)',
+'rgba(255, 206, 86, 0.2)',
+'rgba(75, 192, 192, 0.2)',
+'rgba(153, 102, 255, 0.2)',
+'rgba(255, 159, 64, 0.2)',
+'rgba(0, 0, 0, 0.2)'
+],
+borderColor: [
+'rgba(255, 26, 104, 1)',
+'rgba(54, 162, 235, 1)',
+'rgba(255, 206, 86, 1)',
+'rgba(75, 192, 192, 1)',
+'rgba(153, 102, 255, 1)',
+'rgba(255, 159, 64, 1)',
+'rgba(0, 0, 0, 1)'
+],
+borderWidth: 1
+}]
+};
+
+// config 
+const config = {
+type: 'line',
+data,
+options: {
+    scales: {
+        y: {
+            beginAtZero: true
+        }
+    }
+}
+};
+
+// render init block
+const myChart = new Chart(document.getElementById('myChart'),config
+);
+});
+// setup
+
+//CHART 2
+
+let filename2 = '../../charts/inventory-stock-level.csv';
+
+d3.csv(filename2).then(function(datapoints){
+    const name = [];
+        const quantityRemaining = [];
+
+        datapoints.forEach(data => {
+            name.push(data.brand + " - " + data.name);
+            quantityRemaining.push(data.quantityRemaining);
+        });
+
+        const data = {
+            labels: name,
+            datasets: [{
+                label: 'Quantity Remaining Per Product',
+                data: quantityRemaining,
+                backgroundColor: [
+                'rgba(255, 26, 104, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(0, 0, 0, 0.2)'
+                ],
+                borderColor: [
+                'rgba(255, 26, 104, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(0, 0, 0, 1)'
+                ],
+                borderWidth: 1
+                }]
+            };
+
+    //Horiznal dotted line
+
+    const horizontalDottedLine = {
+        id: 'horizontalDottedLine',
+        afterDatasetsDraw(chart, args, options){
+            const { ctx, chartArea: { top, right, bottom, left, width, height },
+                scales: { x, y } } = chart;
+                ctx.save();
+        //draw line
+        ctx.strokeStyle = 'red';
+        ctx.setLineDash([20, 20]);
+        ctx.strokeRect(left, y.getPixelForValue(3), width, 0);
+        ctx.restore();
+        }
+    }
+
+    const horizontalDottedLine2 = {
+        id: 'horizontalDottedLine2',
+        afterDatasetsDraw(chart, args, options){
+            const { ctx, chartArea: { top, right, bottom, left, width, height },
+                scales: { x, y } } = chart;
+                ctx.save();
+        //draw line
+        ctx.strokeStyle = 'red';
+        ctx.setLineDash([20, 20]);
+        ctx.strokeRect(left, y.getPixelForValue(6), width, 0);
+        ctx.restore();
+        }
+    }
+
+    const horizontalDottedLine3 = {
+        id: 'horizontalDottedLine3',
+        afterDatasetsDraw(chart, args, options){
+            const { ctx, chartArea: { top, right, bottom, left, width, height },
+                scales: { x, y } } = chart;
+                ctx.save();
+        //draw line
+        ctx.strokeStyle = 'red';
+        ctx.setLineDash([20, 20]);
+        ctx.strokeRect(left, y.getPixelForValue(12), width, 0);
+        ctx.restore();
+        }
+    }
+    // config 
+    const config = {
+    type: 'bar',
+    data,
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    },
+    plugins: [horizontalDottedLine, horizontalDottedLine2, horizontalDottedLine3]
+    };
+
+
+    // render init block
+    const myChart2 = new Chart(document.getElementById('myChart2'),config
+    );
+});
+    // setup 
+// setup 
+
+</script>
          

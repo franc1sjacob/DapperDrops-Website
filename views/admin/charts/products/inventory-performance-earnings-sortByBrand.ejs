@@ -8,8 +8,8 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle active" aria-current="page" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Inventory Performance</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/admin/reports/inventory-performance">Earnings</a></li>
-                <li><a class="dropdown-item" href="/admin/reports/inventory-performance-sortByBrand">Quantity Sold</a></li>
+                <li><a class="dropdown-item" href="/admin/reports/inventory-performance-earnings">Earnings</a></li>
+                <li><a class="dropdown-item" href="/admin/reports/inventory-performance-quantity">Quantity Sold</a></li>
               </ul>
             </li>
             <li class="nav-item">
@@ -24,8 +24,8 @@
                     Sort by:
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/admin/reports/inventory-performance">Products</a></li>
-                        <li><a class="dropdown-item" href="/admin/reports/inventory-performance-sortByBrand">Brand</a></li>
+                        <li><a class="dropdown-item" href="/admin/reports/inventory-performance-earnings">Products</a></li>
+                        <li><a class="dropdown-item" href="admin/reports/inventory-performance-earnings-sortByBrand">Brand</a></li>
                     </ul>
                 </form>
             </div>
@@ -49,7 +49,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
 
-    let filename = '../../charts/products-brand.csv';
+    let filename = '../../charts/brands-performance-earnings.csv';
 
     d3.csv(filename).then(function(datapoints){
 

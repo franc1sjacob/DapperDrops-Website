@@ -3,10 +3,10 @@
         <h1 class="fw-bold text-center mt-2 mb-3">Reports</h1>
         <ul class="nav nav-tabs my-3">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/admin/reports">Sales</a>
+              <a class="nav-link" href="/admin/reports">Sales</a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Inventory Performance</a>
+              <a class="nav-link dropdown-toggle active" aria-current="page" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Inventory Performance</a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/admin/reports/inventory-performance-earnings">Earnings</a></li>
                 <li><a class="dropdown-item" href="/admin/reports/inventory-performance-quantity">Quantity Sold</a></li>
@@ -24,15 +24,14 @@
                     Sort by:
                     </button>
                     <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="/admin/reports/">Date</a></li>
-                    <li><a class="dropdown-item" href="/admin/reports/sales-sortByMonth">Month</a></li>
-                    <li><a class="dropdown-item" href="/admin/reports/sales-sortByYear">Year</a></li>
+                        <li><a class="dropdown-item" href="/admin/reports/inventory-performance-quantity">Products</a></li>
+                        <li><a class="dropdown-item" href="/admin/reports/inventory-performance-quantity-sortByBrand">Brand</a></li>
                     </ul>
                 </form>
             </div>
-        </div>
-        <div>
-            <canvas id="myChart" class="mb-5"></canvas>
+            <div>
+                <canvas id="myChart" class="mb-5"></canvas>
+            </div>
         </div>
     </div>
     
@@ -50,23 +49,23 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
 
-    let filename = '../../charts/sales.csv';
+    let filename = '../../charts/brands-performance-quantity.csv';
 
     d3.csv(filename).then(function(datapoints){
-        console.log(datapoints);
-        const earnings = [];
-        const dateCreated = [];
+
+        const brand = [];
+        const totalQuantitySold = [];
+
         datapoints.forEach(data => {
-            earnings.push(data.earnings);
-            dateCreated.push(data.date);
+            brand.push(data.brand);
+            totalQuantitySold.push(data.totalQuantitySold);
         });
-        console.log(earnings);
-        console.log(dateCreated);
+
         const data = {
-    labels: dateCreated,
+    labels: brand,
     datasets: [{
-        label: 'Earnings Per Date',
-        data: earnings,
+        label: 'Quantity Sold Per Brand',
+        data: totalQuantitySold,
         backgroundColor: [
         'rgba(255, 26, 104, 0.2)',
         'rgba(54, 162, 235, 0.2)',
@@ -91,7 +90,7 @@
 
     // config 
     const config = {
-    type: 'line',
+    type: 'bar',
     data,
         options: {
             scales: {

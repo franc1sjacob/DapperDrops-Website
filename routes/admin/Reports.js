@@ -130,7 +130,7 @@ router.get('/sales-sortByYear', async function(req, res){
     
 });
 
-router.get('/inventory-performance', async function(req, res){
+router.get('/inventory-performance-earnings', async function(req, res){
     let data = [];
     const result = await Product.find({}).sort('totalEarnings');
 
@@ -153,17 +153,17 @@ router.get('/inventory-performance', async function(req, res){
 
     try{
         const csv = parse(data, opts);
-        fs.writeFile('./public/charts/products.csv', csv, function(error){
+        fs.writeFile('./public/charts/products-performance-earnings.csv', csv, function(error){
             if(error) throw error;
         });
     } catch (err) {
         console.log(err);
     }
-    res.render('admin/charts/products/inventory-performance', { fullName: req.session.firstName + " " + req.session.lastName });
+    res.render('admin/charts/products/inventory-performance-earnings', { fullName: req.session.firstName + " " + req.session.lastName });
     
 });
 
-router.get('/inventory-performance-sortByBrand', async function(req, res){
+router.get('/inventory-performance-earnings-sortByBrand', async function(req, res){
     let data = [];
 
     const result = await Product.aggregate([
@@ -187,14 +187,84 @@ router.get('/inventory-performance-sortByBrand', async function(req, res){
 
     try{
         const csv = parse(data, opts);
-        fs.writeFile('./public/charts/products-brand.csv', csv, function(error){
+        fs.writeFile('./public/charts/brands-performance-earnings.csv', csv, function(error){
             if(error) throw error;
         });
     } catch (err) {
         console.log(err);
     }
-    res.render('admin/charts/products/inventory-performance-sortByBrand', { fullName: req.session.firstName + " " + req.session.lastName });
+    res.render('admin/charts/products/inventory-performance-earnings-sortByBrand', { fullName: req.session.firstName + " " + req.session.lastName });
     
+});
+
+router.get('/inventory-performance-quantity', async function(req, res){
+    let data = [];
+
+    const result = await Product.aggregate([
+        { $group: {
+            _id: { _id: "$_id", name: "$name", brand: "$brand" },
+            totalQuantitySold: { $sum: "$totalQuantitySold" }
+        }}, { $sort: { totalQuantitySold: 1 }}
+    ]);
+
+    console.log(result);
+
+    result.forEach(function(product){
+        data.push({
+            name: product._id.brand + " - " + product._id.name,
+            totalQuantitySold: product.totalQuantitySold
+        });
+    })
+
+    const fields = ['name', 'totalQuantitySold'];
+        const opts = { fields };
+
+    try{
+        const csv = parse(data, opts);
+        fs.writeFile('./public/charts/products-performance-quantity.csv', csv, function(error){
+            if(error) throw error;
+        });
+    } catch (err) {
+        console.log(err);
+    }
+
+    console.log(data);
+    res.render('admin/charts/products/inventory-performance-quantity', { fullName: req.session.firstName + " " + req.session.lastName });
+});
+
+router.get('/inventory-performance-quantity-sortByBrand', async function(req, res){
+    let data = [];
+
+    const result = await Product.aggregate([
+        { $group: {
+            _id: { brand: "$brand" },
+            totalQuantitySold: { $sum: "$totalQuantitySold" }
+        }}, { $sort: { totalQuantitySold: 1 }}
+    ]);
+
+    console.log(result);
+
+    result.forEach(function(product){
+        data.push({
+            brand: product._id.brand,
+            totalQuantitySold: product.totalQuantitySold
+        });
+    })
+
+    const fields = ['brand', 'totalQuantitySold'];
+        const opts = { fields };
+
+    try{
+        const csv = parse(data, opts);
+        fs.writeFile('./public/charts/brands-performance-quantity.csv', csv, function(error){
+            if(error) throw error;
+        });
+    } catch (err) {
+        console.log(err);
+    }
+
+    console.log(data);
+    res.render('admin/charts/products/inventory-performance-quantity-sortByBrand', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 
 router.post('/export', async function(req, res){

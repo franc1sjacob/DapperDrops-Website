@@ -226,7 +226,6 @@ router.get('/inventory-performance-quantity', isAuth, isAdmin, async function(re
         console.log(err);
     }
 
-    console.log(data);
     res.render('admin/charts/products/inventory-performance-quantity', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 

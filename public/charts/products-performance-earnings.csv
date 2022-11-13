@@ -1,9 +1,11 @@
 "productId","brand","name","price","category","totalEarnings","totalQuantitySold"
+"63711cc229ddd5c981ba3e3f","Jordan","Travis Scott",50000,"On-Hand",0,0
+"63711ce029ddd5c981ba3e5b","Jordan","Travis Scott",50000,"Pre-Order",0,0
+"6363b5d75cfdfeb8384fc0c1","Jordan","Zion 1",7500,"On-Hand",7500,1
 "636fb72ebad865230c02a06e","Accel","Blue Force",800,"On-Hand",8800,11
-"6368e22184fb43772e111802","Nike","Hyper elite socks",895,"Apparel",9845,11
+"6368e22184fb43772e111802","Nike","Hyper elite socks",895,"Apparel",8950,10
 "63651a1de387ce6139629d8a","Test","Test",3000,"On-Hand",24000,8
-"6363b5d75cfdfeb8384fc0c1","Jordan","Zion 1",7500,"On-Hand",52500,7
-"63647b57bbde40808d14fa95","Anta","Looha",6500,"On-Hand",65000,10
+"63647b57bbde40808d14fa95","Anta","Looha",6500,"On-Hand",52000,8
 "636fb829bad865230c02a0b3","Peak","Romeo 1",5000,"On-Hand",70000,14
 "63650dcc1b3c55cd651d5627","Adadas","Rose 1",8500,"On-Hand",85000,10
 "636fb67abad865230c029fb6","Jordan","Luka 1",12000,"On-Hand",120000,10

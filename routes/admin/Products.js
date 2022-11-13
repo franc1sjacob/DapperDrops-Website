@@ -69,23 +69,11 @@ router.post("/add-product", isAuth, isAdmin, upload, function(req, res){
         image: req.file.filename,
         category: category
     });
-
-    // const product = new Product({
-    //     brand: req.body.productBrand,
-    //     name: req.body.productName,
-    //     price: req.body.productPrice,
-    //     description: req.body.productDescription,
-    //     quantity: req.body.productQuantity,
-    //     image: req.file.filename,
-    //     category: req.body.productType
-    // });
     
     product.save(function(err){
         if(err){
             console.log(err);
         }
-        console.log("Product ID:");
-        console.log(productId);
         req.session.productId = productId;
         res.redirect("/admin/products/add-variations");
     });
@@ -134,7 +122,6 @@ router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
 
 router.post("/:productId", isAuth, isAdmin, upload, function(req, res){
     const productId = req.params.productId;
-    console.log(productId);
     Product.updateOne(
         {_id: productId},
         {$set:{

@@ -6,7 +6,7 @@
         <div class="mb-3">
             <label for="amountPaid" class="form-label">Amount Paid:</label>
             <input type="hidden" name="oldBalance" value="<%= order.amountPaid %>">
-            <input type="number" class="form-control" id="amountPaid" name="amountPaid" value="<%= order.amountPaid %>" min="0">
+            <input type="number" class="form-control" id="amountPaid" name="amountPaid" min="0" required>
         </div>
 
         <div class="mb-3">
@@ -47,6 +47,7 @@
         </div>    
 
         <button class="btn btn-primary mt-3" type="submit">Update</button>
+        <a class="btn btn-secondary mt-3" href="/admin/orders">Cancel</a>
 
     </form>
 </div>

@@ -1,35 +1,91 @@
 <%- include('partials/header'); %>
 <div class="container">
-    <h1 class="fw-bold mb-5">My Orders</h1>
-    <div class="row">
-        <%orders.forEach(function(order){%>
-            <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-header">Order ID: <%= order._id %></div>
-                    <div class="card-body">
-                        
-                        <%order.items.forEach(function(cart){%> 
-                            <p class="card-text">
-                                <%= cart.item.brand + " " + cart.item.name%> | Size: <%= cart.variation %> | <%= cart.qty %> 
-                                <% if(cart.qty <= 1 ){ %> Unit <% }else{ %> Units <% } %>   
-                                <span class="badge rounded-pill bg-dark">₱<%= cart.price %></span>   
-                            </p> 
-                            <p class="card-text"></p>
-                        <%})%>                       
-                        <p class="card-text">Total Price: 
-                            <span class="badge rounded-pill bg-dark">₱<%= order.cart.totalPrice %></span>
-                        </p>
-                        <form class="d-grid mb-2" action="" method="POST">
-                            <button type="submit" class="btn btn-success" value="">Send Proof of Payment</button>
-                        </form>
-                        <form class="d-grid mb-2" action="" method="POST">
-                            <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
-                        </form>
+    <h1 class="fw-bold mb-3">My Orders</h1>
+    <div class="dropdown mb-3">
+        <a class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Filter</a>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="/account/view-orders">All Orders</a></li>
+          <li><a class="dropdown-item" href="/account/view-orders-Completed">Completed</a></li>
+          <li><a class="dropdown-item" href="/account/view-orders-Confirmed">Confirmed</a></li>
+          <li><a class="dropdown-item" href="/account/view-orders-Pending">Pending</a></li>
+          <li><a class="dropdown-item" href="/account/view-orders-Declined">Declined</a></li>
+          <li><a class="dropdown-item" href="/account/view-orders-Refunded">Refunded</a></li>
+          <li><a class="dropdown-item" href="/account/view-orders-Cancelled">Cancelled</a></li>
+        </ul>
+    </div>
+
+        <div class="row">
+            <% if(orders.length == 0){ %>
+                <h4>Sorry you have no orders with a <span class="fw-bold text-uppercase"><%= status %></span> status..</h4>
+            <% } else { %>
+                <%orders.forEach(function(order){%>
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">Order ID: <%= order._id %></div>
+                        <div class="card-body">
+                            
+                            <%order.items.forEach(function(cart){%> 
+                                <p class="card-text">
+                                    <%= cart.item.brand + " " + cart.item.name%> | Size: <%= cart.variation %> | <%= cart.qty %> 
+                                    <% if(cart.qty <= 1 ){ %> Unit <% }else{ %> Units <% } %>   
+                                    <span class="badge rounded-pill bg-dark">₱<%= cart.price %></span>   
+                                </p> 
+                            <%})%>                       
+                            <p class="card-text">Total Price: 
+                                <span class="badge rounded-pill bg-dark">₱<%= order.cart.totalPrice %></span>
+                            </p>
+                            <p class="card-text">Payment Status: <%= order.paymentStatus %></p>
+                            <p class="card-text">Shipping Status: <%= order.shippingStatus %></p>
+                            <p class="card-text">Order Status: <%= order.orderStatus %></p>
+                            <% if(order.orderStatus == "Pending"){ %>
+                                <form class="d-grid mb-2" action="/account/view-order/<%= order._id %>">
+                                    <button type="submit" class="btn btn-dark">View Order Details</button>
+                                </form> 
+                                <div class="d-grid mb-2">
+                                    <a href="/account/send-payment-proof/<%= order._id %>" class="btn btn-success">Send Proof of Payment</a>
+                                </div>
+                                <form class="d-grid mb-2" action="" method="POST">
+                                    <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
+                                </form>
+                            <% } else if (order.orderStatus == "Declined"){ %>
+                                <form class="d-grid mb-2" action="/account/view-order/<%= order._id %>">
+                                    <button type="submit" class="btn btn-dark">View Order Details</button>
+                                </form>
+                            <% } else if (order.orderStatus == "Confirmed"){ %>
+                                <form class="d-grid mb-2" action="/account/view-order/<%= order._id %>">
+                                    <button type="submit" class="btn btn-dark">View Order Details</button>
+                                </form> 
+                                <div class="d-grid mb-2">
+                                    <a href="/account/send-payment-proof/<%= order._id %>" class="btn btn-success">Send Proof of Payment</a>
+                                </div>
+                                <form class="d-grid mb-2" action="" method="POST">
+                                    <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
+                                </form>
+                            <% } else if(order.orderStatus == "Cancelled") { %>
+                                <form class="d-grid mb-2" action="/account/view-order/<%= order._id %>">
+                                    <button type="submit" class="btn btn-dark">View Order Details</button>
+                                </form>
+                            <% } else if(order.orderStatus == "Completed") { %>
+                                <form class="d-grid mb-2" action="/account/view-order/<%= order._id %>">
+                                    <button type="submit" class="btn btn-dark">View Order Details</button>
+                                </form>
+                                <% if(order.feedbackMessage == undefined){ %>
+                                    <div class="d-grid mb-2">
+                                        <a href="/account/send-feedback-<%= order._id %>" class="btn btn-primary">Send Feedback</a>
+                                    </div>
+                                <% } else { %>
+                                    <div class="d-grid mb-2">
+                                        <div class="btn btn-secondary disabled">Feedback Already Sent ✔</div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <% }) %>
-    </div>
+                <% }) %>
+           <% } %>
+            
+        </div>
 </div>
     
     

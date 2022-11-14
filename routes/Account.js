@@ -414,6 +414,41 @@ router.post('/delete-wishlist', isAuth, function(req, res){
     });
 });
 
+router.get('/view-orders', isAuth, function(req, res){
+    const userId = req.session.userId;
+    Order.find({ userId: userId }, function(err, orders){
+        if(err){
+            console.log(err);
+        } else {
+            orders.forEach(function(order) {
+                cart = new Cart(order.cart);
+                order.items = cart.generateArray();
+            });
+            res.render('view-orders', { orders: orders });
+        }
+    });
+});
+
+router.get('/view-orders-:status', isAuth, function(req, res){
+    const userId = req.session.userId;
+    const orderStatus = req.params.status;
+    if(orderStatus == "Completed" || orderStatus == "Confirmed" || orderStatus == "Pending" || orderStatus == "Declined" || orderStatus == "Refunded" || orderStatus == "Cancelled"){
+        Order.find({ userId: userId, orderStatus: orderStatus }, function(err, orders){
+            if(err){
+                console.log(err);
+            } else {
+                orders.forEach(function(order) {
+                    cart = new Cart(order.cart);
+                    order.items = cart.generateArray();
+                });
+                res.render('view-orders', { orders: orders, status: orderStatus });
+            }
+        });
+    } else {
+        res.redirect('/account/view-orders');
+    }
+});
+
 router.get('/view-order/:orderId', isAuth, function(req, res){
     const orderId = req.params.orderId;
     Order.findById({ _id: orderId }, function(err, order){

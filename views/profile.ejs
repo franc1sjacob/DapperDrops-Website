@@ -17,7 +17,9 @@
                 <p>Name: <%= name %></p>
                 <p>Email: <%= user.email %></p>
                 <p>Account Type: <%= user.accountType %></p>
-                <a href="/account/wishlist" class="fw-bold text-dark">View Wishlist</a>
+                <p><a href="/account/wishlist" class="fw-bold text-dark">View Wishlist</a></p>
+                <p><a href="/account/view-orders" class="fw-bold text-dark">View Order History</a></p>
+                
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 mt-3">
                 <h2 class="mb-4 fw-bold">Default Address</h2>
@@ -36,55 +38,6 @@
                 <% } %>
                 
                 <a href="/account/address" class="fw-bold text-dark">View Addresses</a>
-            </div>
-
-            <div class="col-lg-12 col-md-12 col-sm-12 mt-3">
-                <h2 class="mb-4 fw-bold">Order History</h2>
-                <div class="row">
-                    <%orders.forEach(function(order){%>
-                        <div class="col-lg-6 mb-4">
-                            <div class="card">
-                                <div class="card-header">Order ID: <%= order._id %></div>
-                                <div class="card-body">
-                                    
-                                    <%order.items.forEach(function(cart){%> 
-                                        <p class="card-text">
-                                            <%= cart.item.brand + " " + cart.item.name%> | Size: <%= cart.variation %> | <%= cart.qty %> 
-                                            <% if(cart.qty <= 1 ){ %> Unit <% }else{ %> Units <% } %>   
-                                            <span class="badge rounded-pill bg-dark">₱<%= cart.price %></span>   
-                                        </p> 
-                                    <%})%>                       
-                                    <p class="card-text">Total Price: 
-                                        <span class="badge rounded-pill bg-dark">₱<%= order.cart.totalPrice %></span>
-                                    </p>
-                                    <p class="card-text">Payment Status: <%= order.paymentStatus %></p>
-                                    <p class="card-text">Order Status: <%= order.orderStatus %></p>
-                                    <form class="d-grid mb-2" action="/account/view-order/<%= order._id %>">
-                                        <button type="submit" class="btn btn-dark">View Order Details</button>
-                                    </form> 
-                                    <% if(order.orderStatus != "Completed"){ %>
-                                        <div class="d-grid mb-2">
-                                            <a href="/account/send-payment-proof/<%= order._id %>" class="btn btn-success">Send Proof of Payment</a>
-                                        </div>
-                                        <form class="d-grid mb-2" action="" method="POST">
-                                            <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
-                                        </form>
-                                    <% } if(order.orderStatus == "Completed") { %>
-                                        <% if(order.feedbackMessage == undefined){ %>
-                                            <div class="d-grid mb-2">
-                                                <a href="/account/send-feedback-<%= order._id %>" class="btn btn-primary">Send Feedback</a>
-                                            </div>
-                                        <% } else { %>
-                                            <div class="d-grid mb-2">
-                                                <div class="btn btn-secondary disabled">Feedback Already Sent ✔</div>
-                                            </div>
-                                        <% } %>
-                                    <% } %>
-                                </div>
-                            </div>
-                        </div>
-                        <% }) %>
-                </div>
             </div>
 
         </div>

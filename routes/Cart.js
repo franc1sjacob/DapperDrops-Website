@@ -107,11 +107,8 @@ router.post("/place-order", isAuth, function(req, res){
                     userId: userId,
                     cart: cart,
                     address: result.defaultAddress,
-                    paymentStatus: "Pending",
-                    orderStatus: "Pending",
                     paymentMethod: paymentMethod,
                     dateCreated: today,
-                    amountPaid: 0,
                     amountRemaining: cart.totalPrice
                 });
             

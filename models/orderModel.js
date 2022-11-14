@@ -3,6 +3,7 @@ const orderSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Types.ObjectId,
         ref: "User",
+        required: true
     },
 
     cart: {
@@ -16,14 +17,22 @@ const orderSchema = new mongoose.Schema({
 
     paymentStatus: {
         type: String,
+        default: "Pending"
     },
 
     orderStatus: {
         type: String,
+        default: "Pending"
+    },
+
+    shippingStatus: {
+        type: String,
+        default: "Pending"
     },
 
     paymentMethod: {
-        type: String
+        type: String,
+        required: true
     },
 
     paymentsInfo: [{
@@ -37,15 +46,18 @@ const orderSchema = new mongoose.Schema({
     }],
 
     dateCreated: {
-        type: Date
+        type: Date,
+        required: true
     },
 
     amountPaid: {
         type: Number,
+        default: 0
     },
     
     amountRemaining:{
-        type: Number
+        type: Number,
+        required: true
     },
 
     feedbackMessage: {

@@ -58,8 +58,8 @@
 
           <ul class="navbar-nav">
             <form action="/products/search" method="GET" class="nav-item input-group me-3">
-                <input type="text" name="query" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1">
-                <button class="btn btn-outline-secondary" type="submit" id="button-addon1"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <input type="text" name="query" onkeyup="success()" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon1" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
             </form>
             <li class="nav-item">
               <a class="nav-link d-none d-lg-block" href="/cart/view-cart"><i class="fa-solid fa-cart-shopping"></i></a>
@@ -74,3 +74,12 @@
 </nav>
 <!-- ---------------NAVBAR END--------------- -->
 <body>
+<script>
+  function success() {
+	 if(document.getElementById("query").value==="") { 
+            document.getElementById('button-addon1').disabled = true; 
+        } else { 
+            document.getElementById('button-addon1').disabled = false;
+        }
+    }
+</script>

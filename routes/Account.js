@@ -506,16 +506,15 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, function(req, res){
     });
 });
 
-router.get('/send-feedback-:orderId', function(req, res){
+router.get('/send-feedback-:orderId', isAuth, function(req, res){
     const orderId = req.params.orderId;
-    console.log("get orderid", orderId);
     res.render('profile/send-feedback', { orderId: orderId });
 });
 
-router.post('/send-feedback-:orderId', function(req, res){
+router.post('/send-feedback-:orderId', isAuth, function(req, res){
     const orderId = req.params.orderId;
-    const { feedback } = req.body;
-    Order.findByIdAndUpdate({_id: orderId}, { $set: { feedback: feedback }}, function(err, order){
+    const { feedbackMessage, feedbackRate } = req.body;
+    Order.findByIdAndUpdate({_id: orderId}, { $set: { feedbackMessage: feedbackMessage, feedbackRate: feedbackRate }}, function(err, order){
         if(err) {
             console.log(err);
         } else {

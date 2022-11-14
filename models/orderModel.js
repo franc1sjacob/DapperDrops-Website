@@ -48,7 +48,10 @@ const orderSchema = new mongoose.Schema({
         type: Number
     },
 
-    feedback: {
+    feedbackMessage: {
+        type: String
+    },
+    feedbackRate: {
         type: String
     }
 });

@@ -70,13 +70,13 @@
                                             <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
                                         </form>
                                     <% } if(order.orderStatus == "Completed") { %>
-                                        <% if(order.feedback == undefined){ %>
+                                        <% if(order.feedbackMessage == undefined){ %>
                                             <div class="d-grid mb-2">
                                                 <a href="/account/send-feedback-<%= order._id %>" class="btn btn-primary">Send Feedback</a>
                                             </div>
                                         <% } else { %>
                                             <div class="d-grid mb-2">
-                                                <div class="btn btn-primary" disabled>Feedback Already Sent ✔</div>
+                                                <div class="btn btn-secondary disabled">Feedback Already Sent ✔</div>
                                             </div>
                                         <% } %>
                                     <% } %>

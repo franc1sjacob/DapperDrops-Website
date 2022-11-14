@@ -440,8 +440,6 @@ router.post('/change-password', isAuth, async function(req, res){
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
-    console.log("isMatch: ", isMatch);
-
     if(newPassword != confirmPassword){
         return res.render('change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null});
         
@@ -506,6 +504,26 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, function(req, res){
             res.render('view-payment-info', {order: foundOrder, chosenPayment: chosenPayment});
         }
     });
+});
+
+router.get('/send-feedback-:orderId', function(req, res){
+    const orderId = req.params.orderId;
+    console.log("get orderid", orderId);
+    res.render('profile/send-feedback', { orderId: orderId });
+});
+
+router.post('/send-feedback-:orderId', function(req, res){
+    const orderId = req.params.orderId;
+    const { feedback } = req.body;
+    Order.findByIdAndUpdate({_id: orderId}, { $set: { feedback: feedback }}, function(err, order){
+        if(err) {
+            console.log(err);
+        } else {
+            console.log("Feedback sent!", orderId)
+            res.redirect('/account/profile');
+        }
+    });
+
 });
 
 module.exports = router;

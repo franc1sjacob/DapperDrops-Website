@@ -46,6 +46,10 @@ const orderSchema = new mongoose.Schema({
     
     amountRemaining:{
         type: Number
+    },
+
+    feedback: {
+        type: String
     }
 });
 

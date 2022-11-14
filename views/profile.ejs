@@ -53,20 +53,33 @@
                                             <% if(cart.qty <= 1 ){ %> Unit <% }else{ %> Units <% } %>   
                                             <span class="badge rounded-pill bg-dark">₱<%= cart.price %></span>   
                                         </p> 
-                                        <p class="card-text"></p>
                                     <%})%>                       
                                     <p class="card-text">Total Price: 
                                         <span class="badge rounded-pill bg-dark">₱<%= order.cart.totalPrice %></span>
                                     </p>
+                                    <p class="card-text">Payment Status: <%= order.paymentStatus %></p>
+                                    <p class="card-text">Order Status: <%= order.orderStatus %></p>
                                     <form class="d-grid mb-2" action="/account/view-order/<%= order._id %>">
                                         <button type="submit" class="btn btn-dark">View Order Details</button>
-                                    </form>
-                                    <div class="d-grid mb-2">
-                                        <a href="/account/send-payment-proof/<%= order._id %>" class="btn btn-success">Send Proof of Payment</a>
-                                    </div>
-                                    <form class="d-grid mb-2" action="" method="POST">
-                                        <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
-                                    </form>
+                                    </form> 
+                                    <% if(order.orderStatus != "Completed"){ %>
+                                        <div class="d-grid mb-2">
+                                            <a href="/account/send-payment-proof/<%= order._id %>" class="btn btn-success">Send Proof of Payment</a>
+                                        </div>
+                                        <form class="d-grid mb-2" action="" method="POST">
+                                            <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
+                                        </form>
+                                    <% } if(order.orderStatus == "Completed") { %>
+                                        <% if(order.feedback == undefined){ %>
+                                            <div class="d-grid mb-2">
+                                                <a href="/account/send-feedback-<%= order._id %>" class="btn btn-primary">Send Feedback</a>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="d-grid mb-2">
+                                                <div class="btn btn-primary" disabled>Feedback Already Sent ✔</div>
+                                            </div>
+                                        <% } %>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>

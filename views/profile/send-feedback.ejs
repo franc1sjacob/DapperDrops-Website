@@ -1,0 +1,8 @@
+<%- include('../partials/header'); %>
+<div class="container">
+    <form action="/account/send-feedback-<%= orderId %>" method="POST">
+        <input type="text" name="feedback">
+        <button type="submit">Send</button>
+    </form>
+</div>
+<%- include('../partials/footer'); %>

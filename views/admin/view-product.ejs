@@ -3,13 +3,14 @@
         <h1 class="text-center mt-2 mb-3">View Product</h1> 
         <div class="card shadow p-3 bg-body rounded">
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <img src="/uploads/<%=  newListProducts.image %>" style="width: 50%;" alt="">
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <h5>Brand: <%= newListProducts.brand %></h5>
                     <h5>Name: <%= newListProducts.name %></h5>
                     <h5>Price: <%= newListProducts.price %></h5>
+                    <h5>Description: <%= newListProducts.description %></h5>
                     <div class="table table-responsive">
                         <table class="table table-sm">
                             <tr>
@@ -25,7 +26,7 @@
                                     <td><%= variation.status %></td>
                                     <td>    
                                         <a href="/admin/products/update-variation/<%= variation._id%>-<%= newListProducts._id%>"><i class="fa-solid fa-pen-to-square me-1"></i></a> 
-                                        <a href="/admin/products/delete-variation" ><i class="fa-solid fa-trash-can me-1"></i></a>
+                                        <a href="/admin/products/delete-variation/<%= variation._id%>-<%= newListProducts._id%>" ><i class="fa-solid fa-trash-can me-1"></i></a>
                                     </td>
                                 </tr>
                             <%})%>

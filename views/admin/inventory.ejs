@@ -18,29 +18,37 @@
                 <div class="table table-responsive">
                     <table class="table table-sm">
                         <tr>
-                            <th>ID</th>
-                            <th>Product Type</th>
                             <th>Brand</th>
                             <th>Name</th>
                             <th>Net Sales</th>
                             <th>Items Sold</th>
                             <th>Items Remaining</th>
-                            <th>Status</th>
+                            <th>Product Type</th>
                             <th>Action</th>
                         </tr>
-                        <%newListInventory.forEach(function(inventory, index){%>
+                        <%newListInventory.forEach(function(inventory){%>
                         <tr>
-                            <td><%= index %></td>
-                            <td><%= inventory.category %></td>
                             <td><%= inventory.brand %></td>
                             <td><%= inventory.name %></td>
-                            <td><%= inventory.sales %></td>
-                            <td><%= inventory.sold %></td>
-                            <td><%= inventory.variations[0].quantity %></td>
-                            <td><%= inventory.variations[0].status %></td>
+                            <td><%= inventory.totalEarnings %></td>
+                            <td><%= inventory.totalQuantitySold %></td>
+                            <td><%= inventory.itemsRemaining %></td>
+                            <td><%= inventory.category %></td>
                             <td>
-                                <a class="" href="#"><i class="fa-solid fa-pen-to-square me-1"></i></a>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                </button>
+                                <ul class="dropdown-menu">                                
+                                    
+                                    <a class ="dropdown-item" href="/admin/inventory/<%= inventory._id %>/view" >View Product</a>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <a class ="dropdown-item" href="/admin/inventory/<%= inventory._id %>/delete" >Delete Product</a>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <a class ="dropdown-item" href="/admin/inventory/<%= inventory._id %>/add-new-variation" >Add Variation</a>                        
+                            </ul>
                             </td>
+                        </ul>
+                    </div>
                         </tr>
                         <% }); %>
                     </table>

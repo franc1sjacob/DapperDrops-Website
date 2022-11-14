@@ -162,28 +162,25 @@ router.post("/completed-order", isAuth, isAdmin, function(req, res){
                         console.log(err);
                     }
                 });
-                Inventory.findOneAndUpdate(conditions, inventoryUpdate, function(err){
-                    if(err){
-                        console.log(err);
-                    }
-                });
+                
+                
             };  
 
-            //Creating new sale object to be inserted to sales database.
-            // sale = new Sale({
-            //     orderId: orderId,
-            //     dateSold: order.dateCreated,
-            //     earnings: order.amountPaid,
-            //     items: items,
-            // });
+            Creating new sale object to be inserted to sales database.
+            sale = new Sale({
+                orderId: orderId,
+                dateSold: order.dateCreated,
+                earnings: order.amountPaid,
+                items: items,
+            });
 
-            // sale.save(function (err){
-            //     if(err){
-            //         console.log(err);
-            //     } else {
-            //         console.log("save success");
-            //     }
-            // });
+            sale.save(function (err){
+                if(err){
+                    console.log(err);
+                } else {
+                    console.log("save success");
+                }
+            });
         
             res.redirect('/admin/orders');
         }

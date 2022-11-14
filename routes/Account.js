@@ -541,9 +541,14 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, function(req, res){
     });
 });
 
-router.get('/send-feedback-:orderId', isAuth, function(req, res){
-    const orderId = req.params.orderId;
-    res.render('profile/send-feedback', { orderId: orderId });
+router.get('/send-feedback-:orderId-:status', isAuth, function(req, res){
+    const { orderId, status } = req.params;
+    if(status != "Completed"){
+        res.redirect('/account/view-orders');
+    } else {
+        res.render('profile/send-feedback', { orderId: orderId });
+    }
+
 });
 
 router.post('/send-feedback-:orderId', isAuth, function(req, res){

@@ -71,7 +71,7 @@
                                 </form>
                                 <% if(order.feedbackMessage == undefined){ %>
                                     <div class="d-grid mb-2">
-                                        <a href="/account/send-feedback-<%= order._id %>" class="btn btn-primary">Send Feedback</a>
+                                        <a href="/account/send-feedback-<%= order._id %>-<%= order.orderStatus %>" class="btn btn-primary">Send Feedback</a>
                                     </div>
                                 <% } else { %>
                                     <div class="d-grid mb-2">

@@ -1,0 +1,44 @@
+<%- include('../innerPartialsv2/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="text-center mt-2 mb-3">Add New Variation</h1> 
+    <form action="/admin/products/<%= product._id %>/add-new-variation" method="POST" id="variation_form">
+            <div class="mb-3" id="row">
+                <label for="productId" class="form-label">Product: ID</label>
+                <input type="text" class="form-control" name="productId" id="productId" value="<%= product._id %>">
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Size:</label>
+                <input type="text" class="form-control" name="name" id="name">
+            </div>
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" class="form-control" name="quantity" id="quantity">
+            
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button class="btn-dark float-right mt-2" onclick="add_more_field()">Add More +</button>
+        </div>
+        
+    </form>
+        
+</div>
+<script>
+    var counter = 1;
+function add_more_field(){
+    counter+=1
+    html=' <form action="/admin/products/<%= product._id %>/add-new-variation" method="POST" id="variation_form">\
+        <div class="mb-3" id="row'+counter+'">\
+            <label for="name" class="form-label">Size:</label>\
+            <input type="text" class="form-control" name="name'+counter+'_" id="name">\
+        </div>\
+        <div class="mb-3" id="row'+counter+'">\
+            <label for="quantity" class="form-label">Quantity</label>\
+            <input type="number" class="form-control" name="quantity" id="quantity">\
+        </div>\
+        </form>'
+   var form = document.getElementById('variation_form')
+   form.innerHTML+=html
+}
+</script>
+
+<%- include('../innerPartials/admin/footer'); %>

@@ -6,6 +6,7 @@ const Product = require("../../models/productModel");
 const Cart = require("../../models/cartModel");
 const Order = require("../../models/orderModel");
 const Sale = require("../../models/salesModel");
+const Inventory = require("../../models/inventoryModel");
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -38,7 +39,7 @@ router.get("/", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.post("/confirm-order", isAuth, isAdmin, function(req, res){
+router.post("/confirmed-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
     Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, async function(err, order){
         if(err){
@@ -80,10 +81,7 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                 // }
 
                 const update = {
-                    $set:{'variations.$.quantity': originalQuantity[i] - quantity[i],
-                    // 'variations.$.status': status
-
-                    }
+                    $set:{'variations.$.quantity': 10 - quantity[i]}
                 };
 
                 Product.findOneAndUpdate(conditions, update, function(err){
@@ -99,10 +97,89 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 
 router.post("/pending-order", isAuth, isAdmin, function(req, res){
     const {orderId} = req.body;
-    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Pending"}}, function(err, orders){
+    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, async function(err, order){
         if(err){
             console.log(err);
         } else {
+            //For Sales DB
+            let item;
+            let items = [];
+
+            //For updating product total quantity sold and total earnings.
+            const quantitySold = [];
+            const itemId = [];
+            const earnings = []
+            const originalTotalEarnings = [];
+            const originalTotalQuantitySold = [];
+
+            const itemsLength = Object.keys(order.cart.items).length;
+
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+
+            //Getting product detail inside of cart.
+            order.items.forEach(function(cart){
+                //To be inserted in sales db.
+                item = {
+                    itemBrand: cart.item.brand,
+                    itemName: cart.item.name,
+                    itemPrice: cart.item.price,
+                    itemVariation: cart.variation,
+                    itemQuantity: cart.qty,
+                    itemTotal: cart.price
+                }
+
+                items.push(item);
+                itemId.push(cart.item._id);
+                quantitySold.push(cart.qty);
+                earnings.push(cart.price);
+            });
+
+            //Updating the total sales and total quantity sold.
+            for(let i = 0; i < itemsLength; i++){
+
+                let productObject = await Product.findOne({_id: itemId[i]});
+                let totalEarnings = productObject.totalEarnings;
+                let totalQuantitySold = productObject.totalQuantitySold;
+
+                originalTotalQuantitySold.push(totalQuantitySold);
+                originalTotalEarnings.push(totalEarnings);
+    
+                const conditions = {
+                    _id: itemId[i],
+                };
+                const update = {
+                    $set: { totalEarnings : originalTotalEarnings[i] + earnings[i], totalQuantitySold : originalTotalQuantitySold[i] + quantitySold[i] }
+                };
+                const inventoryUpdate = {
+                    $set: { sales : originalTotalEarnings[i] + earnings[i], sold : originalTotalQuantitySold[i] + quantitySold[i] }
+                };
+
+                Product.findOneAndUpdate(conditions, update, function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                });
+                
+                
+            };  
+
+            //Creating new sale object to be inserted to sales database.
+            sale = new Sale({
+                orderId: orderId,
+                dateSold: order.dateCreated,
+                earnings: order.amountPaid,
+                items: items,
+            });
+
+            sale.save(function (err){
+                if(err){
+                    console.log(err);
+                } else {
+                    console.log("save success");
+                }
+            });
+        
             res.redirect('/admin/orders');
         }
     });

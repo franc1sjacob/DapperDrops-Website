@@ -4,6 +4,9 @@
     <nav class="navbar p-0">  
         <ul class="nav nav-tabs border-0">
             <li class="nav-item">
+                <a class="nav-link" href="/admin/products">All</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="/admin/products/onhand-products">On-hand</a>
             </li>
             <li class="nav-item">
@@ -18,7 +21,7 @@
         </ul>
         <div class="float-end ms-3 mb-1">
             <form action="" method="post" class="row">
-                <input class="form-control col me-3" type="search" placeholder="Search" name="">
+                <input class="form-control col me-3" type="search" placeholder="Search" name="productSearch">
                 <input class= "btn btn-outline-dark col-2 me-3" type="button" name="" value = "Go">  
                 <a class="btn btn-light col-2 me-3" href="#" name="">Sort<i class="fa-solid fa-filter"></i></a>
                 <a class="btn btn-success col-3 me-3" href="/admin/products/add-product" name="">Add<i class="fa-solid fa-plus ms-1"></i></a>
@@ -37,28 +40,38 @@
                             <th>Name</th>
                             <th>Price</th>
                             <th>Description</th>
-                            <th>Quantity</th>
                             <th>Type</th>
                             <th>Image</th>
                             <th>Actions</th>
                         </tr>
-                        <%newListProducts.forEach(function(product){%>
+                        <%products.forEach(function(product){%>
                             <tr>
                                 <td><%= product.brand %> </td>
                                 <td><%= product.name %> </td>
                                 <td><%= product.price %> </td>
                                 <td><%= product.description %> </td>
-                                <td><%= product.variations[0].quantity %> </td>
                                 <td><%= product.category %> </td>
                                 <td><img src="/uploads/<%= product.image %>" width="50"></td>
                                 <td>
-                                    <a href="/admin/products/<%= product._id %>/edit"><i class="fa-solid fa-pen-to-square me-1"></i></a>
-                                    <form action="" method="post">
-                                        <a type="submit" name="updateId" value="<%= product._id %>"><i class="fa-solid fa-eye me-1"></i></a>
-                                    </form>
-                                    <form action="/admin/delete-product/<%= product._id %>" method="post">
-                                        <a type="submit" name="deleteId" value="<%= product._id %>"><i class="fa-solid fa-trash-can me-1"></i></a>
-                                    </form>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        </button>
+                                        <ul class="dropdown-menu">                                
+                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/edit" >Update Product</a>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/view" >View Product</a>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/delete" >Delete Product</a>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/add-new-variation" >Add Variation</a>
+                                                <!-- <form action="/admin/products/<%= product._id %>/add-new-variation" method="get">
+                                                    <li><button class="dropdown-item">Add Variation</button></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                </form> -->
+    
+                                             
+                                        </ul>
+                                      </div>
                                 </td>
                             </tr>
                         <% }); %>

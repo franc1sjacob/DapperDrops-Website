@@ -4,6 +4,9 @@
     <nav class="navbar p-0">  
         <ul class="nav nav-tabs border-0">
             <li class="nav-item">
+                <a class="nav-link" href="/admin/products">All</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="/admin/products/onhand-products">On-hand</a>
             </li>
             <li class="nav-item">
@@ -33,31 +36,42 @@
                 <div class="table table-responsive">
                     <table class="table table-sm">
                         <tr>
-                            <th>ID</th>
                             <th>Brand</th>
                             <th>Name</th>
                             <th>Price</th>
                             <th>Description</th>
-                            <th>Photo</th>
-                            <th>Quantity</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th>Type</th>
+                            <th>Image</th>
+                            <th>Actions</th>
                         </tr>
-                        <tr>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>jordan</td>
-                            <td>
-                                <a class="" href="#"><i class="fa-solid fa-pen-to-square me-1"></i></i></a>
-                                <a class="" href="#"><i class="fa-solid fa-eye me-1"></i></a>
-                                <a class="" href="#"><i class="fa-solid fa-trash-can me-1"></i></a>
-                            </td>
-                        </tr>
+                        <%newPreOrderProducts.forEach(function(product){%>
+                            <tr>
+                                <td><%= product.brand %> </td>
+                                <td><%= product.name %> </td>
+                                <td><%= product.price %> </td>
+                                <td><%= product.description %> </td>
+                                <td><%= product.category %> </td>
+                                <td><img src="/uploads/<%= product.image %>" width="50"></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        </button>
+                                        <ul class="dropdown-menu">                                
+                                            <a class ="dropdown-item" href="/admin/products/<%= product._id %>/edit" >Update Product</a>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <a class ="dropdown-item" href="/admin/products/<%= product._id %>/view" >View Product</a>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <a class ="dropdown-item" href="/admin/products/<%= product._id %>/delete" >Delete Product</a>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <a class ="dropdown-item" href="/admin/products/<%= product._id %>/add-new-variation" >Add Variation</a>
+    
+                                             
+                                        </ul>
+                                      </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+
                     </table>
                 </div>
             </div>

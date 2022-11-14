@@ -1,0 +1,30 @@
+<%- include('../partials/header'); %>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Order ID# <%= orderId %>
+        </div>
+        <div class="card-body">
+            <form action="/account/send-feedback-<%= orderId %>" method="POST">
+                <select class="form-select mb-3" name="feedbackRate" required>
+                    <option selected="true" disabled="disabled">Rate Us!</option>
+                    <option value="1">⭐</option>
+                    <option value="2">⭐⭐</option>
+                    <option value="3">⭐⭐⭐</option>
+                    <option value="4">⭐⭐⭐⭐</option>
+                    <option value="5">⭐⭐⭐⭐⭐</option>
+                </select>
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea1" name="feedbackMessage" style="height: 200px" required></textarea>
+                    <label for="floatingTextarea1">Feedback</label>
+                </div>
+                <div>
+                    <button class="btn btn-primary"type="submit">Send Feedback</button>
+                    <a href="/account/profile" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+<%- include('../partials/footer'); %>

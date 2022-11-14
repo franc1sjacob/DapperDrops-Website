@@ -83,6 +83,9 @@ app.use("/admin/inventory/", adminInventoryRoute);
 const adminReportRoute = require("./routes/admin/Reports");
 app.use("/admin/reports/", adminReportRoute);
 
+const adminFeedbackRoute = require("./routes/admin/Feedback");
+app.use("/admin/feedback/", adminFeedbackRoute);
+
 //INDEX
 app.get("/", function(req, res){
     Product.find({}, function (err, allProducts) {

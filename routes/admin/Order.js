@@ -456,11 +456,22 @@ router.get("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
 router.post("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
     const orderId = req.params.orderId;
     const {oldBalance, amountPaid, amountRemaining} = req.body;
-    if(amountPaid > amountRemaining){
-        res.redirect('/admin/orders/update-payment-' + orderId);
+    let paymentStatus;
+
+    let balanceRemaining = amountRemaining-amountPaid;
+
+    //Checks payment status.
+    if(balanceRemaining > 0){
+        paymentStatus = "Partially Paid";
+    } else if (balanceRemaining == 0) {
+        paymentStatus = "Fully Paid";
     }
-    else{
-        Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(oldBalance) + parseInt(amountPaid), amountRemaining: amountRemaining-amountPaid}}, function(err, order){
+
+    //Checks if amount paid exceeds amount remaining.
+    if (amountPaid > amountRemaining) {
+        res.redirect('/admin/orders/update-payment-' + orderId);
+    } else {
+        Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(oldBalance) + parseInt(amountPaid), amountRemaining: balanceRemaining, paymentStatus: paymentStatus }}, function(err, order){
             if(err){
                 console.log(err);
             } else {
@@ -483,6 +494,22 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, isAdmin, function(r
             res.render('admin/view-payment-info', {fullName: req.session.firstName + " " + req.session.lastName, order: foundOrder, chosenPayment: chosenPayment});
         }
     });
+});
+
+router.post('/shipping-:status', function(req, res){
+    const status = req.params.status;
+    const { orderId } = req.body;
+    if(status == "Pending" || status == "Processing" || status == "In-transit" || status == "Delivered"){
+        Order.findByIdAndUpdate(orderId, {$set: { shippingStatus: status }}, function(err, orders){
+            if(err) {
+                console.log(err)
+            } else {
+                res.redirect('/admin/orders');
+            }
+        });
+    } else {
+        res.redirect('/admin/orders');
+    }
 });
 
 module.exports = router;

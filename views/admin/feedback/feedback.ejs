@@ -1,0 +1,46 @@
+<%- include('../../partials/admin/header', {name: fullName}); %>
+
+
+
+    <div class="container"> 
+        <h1 class="fw-bold text-center mt-2 mb-3">Feedback</h1>
+        <% if(orders.length == 0) { %>
+            <h4 class="text-center">No feedbacks yet...</h4>
+        <% } else { %>
+            <% orders.forEach(function(order){ %>
+
+                <!-- Getting the value of rate -->
+            <% let rate; %>
+            <% if(order.feedbackRate == "5"){
+                rate = "⭐⭐⭐⭐⭐"
+            } else if (order.feedbackRate == "4") {
+                rate = "⭐⭐⭐⭐"
+            } else if (order.feedbackRate == "3") {
+                rate = "⭐⭐⭐"
+            } else if (order.feedbackRate == "2") {
+                rate = "⭐⭐"
+            } else if (order.feedbackRate == "1") {
+                rate = "⭐"
+            } else {
+                rate = "Sorry user has not inputted a rating. :("
+            } %>
+
+            <div class="card my-3 shadow p-3 mb-5 bg-body rounded">
+                <div class="card-header">
+                    <p class="float-start">Order ID: <%= order._id %></p>
+                    <p class="float-end"><%= rate %></p>
+                </div>
+                <div class="card-body">
+                    <p class="fw-bold"><%= order.address.firstName + " " + order.address.lastName %></p>
+                    <p><%= order.feedbackMessage %></p>
+                    <p class="fst-italic"><%= order.dateCreated %></p>
+
+                </div>
+            </div>
+
+            <% }) %>
+        <% } %>
+        
+
+    </div>
+<%- include('../../partials/admin/footer'); %>

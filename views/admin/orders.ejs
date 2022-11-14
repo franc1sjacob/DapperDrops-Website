@@ -20,6 +20,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Date</th>
+                            <th>Shipping Status</th>
                             <th>Order Status</th>
                             <th>Payment Status</th>
                             <th>Paid</th>
@@ -31,6 +32,34 @@
                         <tr>
                             <td><%= order._id %></td>
                             <td><%= order.dateCreated.toISOString().slice(0, 10) %></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <%= order.shippingStatus %>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <form action="/admin/orders/shipping-Pending" method="post">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <li><button class="dropdown-item">Pending</button></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                        </form>
+                                        <form action="/admin/orders/shipping-Processing" method="post">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <li><button class="dropdown-item">Processing</button></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                        </form>
+                                        <form action="/admin/orders/shipping-In-transit" method="post">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <li><button class="dropdown-item">In-transit</button></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                        </form>
+                                        <form action="/admin/orders/shipping-Delivered" method="post">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <li><button class="dropdown-item">Delivered</button></li>
+                                        </form>
+                                    </ul>
+                                </div>
+                            </td>
                             <td>
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -64,12 +93,6 @@
                                                 <li><button class="dropdown-item">Complete</button></li>
                                                 <li><hr class="dropdown-divider"></li>
                                             </form>
-
-                                            <form action="/admin/orders/refund-order" method="post">
-                                                <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Refund</button></li>
-                                                <li><hr class="dropdown-divider"></li>
-                                            </form>
     
                                             <form action="/admin/orders/cancel-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
@@ -77,12 +100,6 @@
                                             </form>
 
                                         <% } else if(order.orderStatus === "Completed"){%>    
-
-                                            <form action="/admin/orders/cancel-order" method="post">
-                                                <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Cancel</button></li>
-                                                <li><hr class="dropdown-divider"></li>
-                                            </form>
     
                                             <form action="/admin/orders/refund-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">

@@ -414,6 +414,41 @@ router.post('/delete-wishlist', isAuth, function(req, res){
     });
 });
 
+router.get('/view-orders', isAuth, function(req, res){
+    const userId = req.session.userId;
+    Order.find({ userId: userId }, function(err, orders){
+        if(err){
+            console.log(err);
+        } else {
+            orders.forEach(function(order) {
+                cart = new Cart(order.cart);
+                order.items = cart.generateArray();
+            });
+            res.render('view-orders', { orders: orders });
+        }
+    });
+});
+
+router.get('/view-orders-:status', isAuth, function(req, res){
+    const userId = req.session.userId;
+    const orderStatus = req.params.status;
+    if(orderStatus == "Completed" || orderStatus == "Confirmed" || orderStatus == "Pending" || orderStatus == "Declined" || orderStatus == "Refunded" || orderStatus == "Cancelled"){
+        Order.find({ userId: userId, orderStatus: orderStatus }, function(err, orders){
+            if(err){
+                console.log(err);
+            } else {
+                orders.forEach(function(order) {
+                    cart = new Cart(order.cart);
+                    order.items = cart.generateArray();
+                });
+                res.render('view-orders', { orders: orders, status: orderStatus });
+            }
+        });
+    } else {
+        res.redirect('/account/view-orders');
+    }
+});
+
 router.get('/view-order/:orderId', isAuth, function(req, res){
     const orderId = req.params.orderId;
     Order.findById({ _id: orderId }, function(err, order){
@@ -439,8 +474,6 @@ router.post('/change-password', isAuth, async function(req, res){
     const user = await User.findById({ _id: userId });
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
-
-    console.log("isMatch: ", isMatch);
 
     if(newPassword != confirmPassword){
         return res.render('change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null});
@@ -506,6 +539,30 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, function(req, res){
             res.render('view-payment-info', {order: foundOrder, chosenPayment: chosenPayment});
         }
     });
+});
+
+router.get('/send-feedback-:orderId-:status', isAuth, function(req, res){
+    const { orderId, status } = req.params;
+    if(status != "Completed"){
+        res.redirect('/account/view-orders');
+    } else {
+        res.render('profile/send-feedback', { orderId: orderId });
+    }
+
+});
+
+router.post('/send-feedback-:orderId', isAuth, function(req, res){
+    const orderId = req.params.orderId;
+    const { feedbackMessage, feedbackRate } = req.body;
+    Order.findByIdAndUpdate({_id: orderId}, { $set: { feedbackMessage: feedbackMessage, feedbackRate: feedbackRate }}, function(err, order){
+        if(err) {
+            console.log(err);
+        } else {
+            console.log("Feedback sent!", orderId)
+            res.redirect('/account/profile');
+        }
+    });
+
 });
 
 module.exports = router;

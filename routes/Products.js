@@ -12,12 +12,24 @@ const isAuth = function(req, res, next){
     }
 }
 
+router.get('/search', async function(req, res) {
+    const searchQuery = req.query.query;
+    const searchedProducts = await Product.find({
+        $or: [
+            { name: { $regex: searchQuery, $options: "i" } },
+            { brand: { $regex: searchQuery, $options: "i" } }
+        ]
+    });
+
+    res.render("search", { products: searchedProducts, query: searchQuery });
+});
+
 router.get("/onhand", function(req, res){
     Product.find({category:"On-Hand"}, function (err, allProducts) {
         if (err) {
             console.log(err);
         } else {
-            res.render("onhand", { newOnHandProducts: allProducts })
+            res.render("onhand", { newOnHandProducts: allProducts})
         }
     });
 });

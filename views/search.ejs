@@ -1,0 +1,23 @@
+<%- include('partials/header'); %>
+    <div class="container">
+        <% if(query != undefined){ %>
+            <h3 class="mb-3"><%= products.length %> Search results for: <span class="fst-italic">"<%= query %>"</span></h3>
+        <% } %>
+        <div class="row">
+            <%products.forEach(function(product){%>
+              <div class="col-lg-3 col-sm-6">
+                <a href="/products/item/<%= product._id %>" class="cust-prod-link">
+                  <div class="card border-0">
+                    <img src="/uploads/<%= product.image %>" height="200" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <p class="card-text"><%= product.brand %> </p>
+                      <p class="card-text fw-bold"><%= product.name %></p>
+                      <p class="card-text fw-bold">₱<%= product.price %></p>
+                    </div>
+                  </div>
+                </a> 
+              </div>
+            <% }) %>   
+          </div>
+    </div>
+<%- include('partials/footer'); %>

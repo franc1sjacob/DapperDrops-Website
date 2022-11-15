@@ -14,18 +14,32 @@
             <form action="/cart/add-to-cart" method="post">
                 <div class="mb-3">
                     <label for="variation" class="form-label">Size:</label>
-                    <select name="variation" id="category" class="form-control">
+                    <select name="variation" onchange="handleQuantity();" id="category" class="form-control">
                         <% item.variations.forEach(function(variation){ %>
                             <option value="<%= variation.name %>"><%= variation.name %></option>
                         <% }) %>
                     </select>
                 </div>
-                <div class="mb-3"><input type="number" name="quantity" value="1" min="1"></div>
+                    
+                <p class="mb-3">Available Quantity: <span id="qtydisplay" style="color:green"></span></p>
+                <div class="mb-3 form-outline">
+                    <input type="number" name="quantity" class="form-control" value="1" min="1" required>
+                </div>
+                <input type="hidden" name="itemValueTemp" id ="itemValueTemp" value="<%= JSON.stringify(item) %>">
                 <input type="hidden" name="prodId" value="<%= item._id %>">
-                <button class="btn btn-dark btn-lg" type="submit">ADD TO CART</button>
-                <% if(userId){ %>
-                    <button class="btn btn-light btn-lg" formaction="/products/add-to-wishlist">ADD TO WISHLIST</button>  
+                
+                <% if(isError){ %>
+                <div class="alert alert-danger" role="alert">
+                    <%= error %>
+                </div>
                 <% } %>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-dark btn-lg" type="submit">ADD TO CART</button>
+                    <% if(userId){ %>
+                    <button class="btn btn-light btn-lg" formaction="/products/add-to-wishlist">ADD TO WISHLIST</button>  
+                    <% } %>
+                </div>
 
             </form>    
 
@@ -33,5 +47,28 @@
         </div>
     </div>
 </div>
-<%- include('innerPartials/footer'); %>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script>
 
+// parse the stored stringified item in json to able to use it in defer code
+let item = JSON.parse(document.getElementById("itemValueTemp").value);
+
+// call function right on load of webpage to show instant quantity for a selected value in selectbox
+handleQuantity();
+
+function handleQuantity (){
+
+    // get value of id category in selectbox and find the selected option 
+    var categoryValue = $("#category").find('option:selected');
+
+    // to get specific content of "value" attrib in selectbox
+    var value = categoryValue.val();
+
+    // find the variation array for the selected variation value using ,find and passing the var value
+    let selectVariation = item.variations.find(x=>(x.name === value));
+   
+    // id of span element displaying quantity on selectvar value    
+    $("#qtydisplay").text(selectVariation.quantity)
+}
+</script>
+<%- include('innerPartials/footer'); %>

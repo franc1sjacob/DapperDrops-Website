@@ -1,17 +1,37 @@
 <%- include('../innerPartials/admin/header', {name: fullName}); %>
-<h1 class="fw-bold text-center mt-2 mb-3">Orders</h1> 
-<nav class="navbar p-0">
-    <div class="container justify-content-end">
+<div class="container">
+    <h1 class="fw-bold text-center mt-2 mb-3">Orders</h1> 
+    <nav class="navbar p-0 mb-3">
+        <div class="dropdown">
+            <div class="btn-group">
+                <a class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Filter</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/admin/orders">All Orders</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders-Completed">Completed</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders-Confirmed">Confirmed</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders-Pending">Pending</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders-Declined">Declined</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders-Refunded">Refunded</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders-Cancelled">Cancelled</a></li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Sort</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/admin/orders">Oldest</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders-Completed">Newest</a></li>
+                </ul>
+            </div>
+        </div>
+        
         <div class="float-end ms-3 mb-1">
-            <form action="" method="post" class="row d-flex">
-                <input class="form-control col me-3" type="search" placeholder="Search" name="">
-                <input class= "btn btn-outline-dark col-2 me-3" type="button" name="" value = "Go">  
-                <a class="btn btn-light col-3 me-3" href="#" name="">Sort<i class="fa-solid fa-filter"></i></a>
+            <form action="/products/search" method="GET" class="input-group">
+                <input type="text" name="query" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon1"><i class="fa-solid fa-magnifying-glass"></i></button>
             </form>
         </div>
-    </div>
-</nav>
-<div class="container">
+    </nav>
+
     <div class="col-lg col-md">
         <div class="card shadow p-3 bg-body rounded">
             <div class="card-body">

@@ -87,14 +87,9 @@ const adminFeedbackRoute = require("./routes/admin/Feedback");
 app.use("/admin/feedback/", adminFeedbackRoute);
 
 //INDEX
-app.get("/", function(req, res){
-    Product.find({}, function (err, allProducts) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('index', { newProducts: allProducts });
-        }
-    });
+app.get("/", async function(req, res){
+    const newArrivals = await Product.aggregate([]).sort({ dateCreated: -1}).limit(3);
+    res.render('index', { newArrivals: newArrivals });
 });
 
 app.get("/about", function(req, res){

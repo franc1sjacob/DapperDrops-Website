@@ -2,9 +2,9 @@
 <div class="container">
     <h1 class="fw-bold text-center mt-2 mb-3">Orders</h1> 
     <nav class="navbar p-0 mb-3">
-        <div class="dropdown">
-            <div class="btn-group">
-                <a class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Filter</a>
+        <div class="btn-group">
+            <div class="ms-1">
+                <a class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Order Status</a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="/admin/orders">All Orders</a></li>
                   <li><a class="dropdown-item" href="/admin/orders-Completed">Completed</a></li>
@@ -15,11 +15,14 @@
                   <li><a class="dropdown-item" href="/admin/orders-Cancelled">Cancelled</a></li>
                 </ul>
             </div>
-            <div class="btn-group">
-                <a class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Sort</a>
+            <div class="ms-1">
+                <button class="btn btn-outline-dark" data-bs-toggle="dropdown" href="#" role="button"><i class="fa-solid fa-sort"></i></button>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="/admin/orders">Oldest</a></li>
-                  <li><a class="dropdown-item" href="/admin/orders-Completed">Newest</a></li>
+                    <li>
+                        <div class="dropdown-item">Sort by:</div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/admin/orders-Completed">Newest</a></li>
                 </ul>
             </div>
         </div>

@@ -87,7 +87,7 @@ router.get("/item/:productId", function(req, res){
     const userId = req.session.userId;
 
     Product.findOne({_id:productId}, function(err, item){
-        res.render('view-item', {item: item, userId: userId});
+        res.render('view-item', {item: item, userId: userId,isError:false,error:""});
     });
 });
 

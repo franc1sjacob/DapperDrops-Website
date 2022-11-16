@@ -39,7 +39,7 @@ router.get("/", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.post("/confirmed-order", isAuth, isAdmin, function(req, res){
+router.post("/confirm-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
     Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, async function(err, order){
         if(err){

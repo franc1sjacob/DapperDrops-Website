@@ -21,7 +21,7 @@ const isAdmin = function(req, res, next){
 }
 
 const Product = require("../../models/productModel");
-const Inventory = require("../../models/inventoryModel");
+
 
 var fs = require('fs');
 var path = require('path');
@@ -76,19 +76,6 @@ router.post("/add-product", isAuth, isAdmin, upload, function(req, res){
             console.log(err);
         }
         
-        var status = "";
-            const inventory = new Inventory({
-                _id: productId,
-                sales: 0,
-                sold: 0,
-                productId: productId
-            })
-
-            inventory.save(function(err){
-                if(err){
-                    console.log(err);
-                }
-            })
         console.log("Product ID:");
         console.log(productId);
         req.session.productId = productId;
@@ -173,26 +160,39 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
     status: status
 };
    console.log(variation);
-   Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
-    variations: [variation],
-}}, function(err, product){
-        if(err){
-            console.log(err);
-        } else {
-            if(product.category == "On-Hand"){
-                res.redirect('/admin/products/onhand-products')
-               }
-               else if(product.category == "Pre-Order"){
-                res.redirect('/admin/products/preorder-products')
-               }
-               else if(product.category == "Apparel"){
-                res.redirect('/admin/products/apparel-products')
-               }
-               else if(product.category == "Accessories"){
-                res.redirect('/admin/products/accessories-products')
-               }
-        }
-    });
+   if(req.body.button == "submit"){
+    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
+        variations: [variation],
+    }}, function(err, product){
+            if(err){
+                console.log(err);
+            } else {
+                if(product.category == "On-Hand"){
+                    res.redirect('/admin/products/onhand-products')
+                   }
+                   else if(product.category == "Pre-Order"){
+                    res.redirect('/admin/products/preorder-products')
+                   }
+                   else if(product.category == "Apparel"){
+                    res.redirect('/admin/products/apparel-products')
+                   }
+                   else if(product.category == "Accessories"){
+                    res.redirect('/admin/products/accessories-products')
+                   }
+            }
+        });
+   }
+   else if(req.body.button == "add"){
+    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
+        variations: [variation],
+    }}, function(err, product){
+            if(err){
+                console.log(err);
+            } else {
+                res.redirect("/admin/products/"+productId+"/add-new-variation")
+            }
+        });
+   }
 
 
     

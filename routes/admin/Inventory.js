@@ -21,7 +21,7 @@ const isAdmin = function(req, res, next){
 }
 
 const Product = require("../../models/productModel");
-const Inventory = require("../../models/inventoryModel");
+
 
 var fs = require('fs');
 var path = require('path');
@@ -156,6 +156,17 @@ router.get("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
 });
 
 router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
+    const productId = req.params.productId;
+    console.log(productId);
+    Product.findOne({ _id:productId }, function(err, product){
+        res.render('admin/add-new-variation', {
+            fullName: req.session.firstName + " " + req.session.lastName,
+             product:product
+        });
+    })
+});
+
+router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
     const {productId, name, quantity} = req.body;
     let status="";
     console.log(req.body);
@@ -174,17 +185,32 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
     status: status
 };
    console.log(variation);
-   Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
-    variations: [variation],
-}}, function(err, product){
-        if(err){
-            console.log(err);
-        } else {
-            res.redirect('/admin/inventory')
-        }
-    });
+   if(req.body.button == "submit"){
+    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
+        variations: [variation],
+    }}, function(err, product){
+            if(err){
+                console.log(err);
+            } else {
+                res.redirect('/admin/inventory')
+            }
+        });
+   }
+   else if(req.body.button == "add"){
+    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
+        variations: [variation],
+    }}, function(err, product){
+            if(err){
+                console.log(err);
+            } else {
+                res.redirect("/admin/inventory/"+productId+"/add-new-variation")
+            }
+        });
+   }
 
 
+    
+   
     
 });
 

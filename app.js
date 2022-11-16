@@ -16,9 +16,9 @@ const port = 3000 || process.env.PORT;
 const User = require("./models/userModel");
 const Product = require("./models/productModel");
 const Cart = require("./models/cartModel");
-const Inventory = require("./models/inventoryModel");
 const Wishlist = require("./models/wishlistModel");
 const Order = require("./models/orderModel");
+const Content = require("./models/contentModel");
 
 //MongoDB
 const mongoUri = "mongodb://localhost:27017/dapperdropsDB";
@@ -85,6 +85,9 @@ app.use("/admin/reports/", adminReportRoute);
 
 const adminFeedbackRoute = require("./routes/admin/Feedback");
 app.use("/admin/feedback/", adminFeedbackRoute);
+
+const adminContentRoute = require("./routes/admin/Content");
+app.use("/admin/content/", adminContentRoute);
 
 //INDEX
 app.get("/", async function(req, res){

@@ -6,7 +6,6 @@ const Product = require("../../models/productModel");
 const Cart = require("../../models/cartModel");
 const Order = require("../../models/orderModel");
 const Sale = require("../../models/salesModel");
-const Inventory = require("../../models/inventoryModel");
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -28,7 +27,7 @@ const isAdmin = function(req, res, next){
 router.get("/", isAuth, isAdmin, async function(req, res){
     const { stype, sdir } = req.query;
     const orders = await Order.find({}).sort({ [stype] : sdir });
-    res.render('admin/orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName});
+    res.render('admin/orders/orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName});
 });
 
 router.get('/status-:orderStatus', async function(req, res){
@@ -39,10 +38,10 @@ router.get('/status-:orderStatus', async function(req, res){
     if(orderStatus == "Pending" || orderStatus == "Confirmed" || orderStatus == "Completed" || orderStatus == "Declined" || orderStatus == "Refunded" || orderStatus == "Cancelled") {
         orders = await Order.find({ orderStatus: orderStatus }).sort({ [stype] : sdir });
     } else {
-        res.redirect('/admin/orders');
+        res.redirect('/admin/orders/orders');
     }
 
-    res.render('admin/orders-status',  {orders: orders, fullName: req.session.firstName + " " + req.session.lastName, orderStatus: orderStatus})
+    res.render('admin/orders/orders-status',  {orders: orders, fullName: req.session.firstName + " " + req.session.lastName, orderStatus: orderStatus})
 });
 
 router.get('/search-orders', async function(req, res){
@@ -59,7 +58,7 @@ router.get('/search-orders', async function(req, res){
         ]
     }).sort({ [stype]: sdir });
 
-    res.render('admin/search-orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName, query: query});
+    res.render('admin/orders/search-orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName, query: query});
 });
 
 router.post("/confirm-order", isAuth, isAdmin, function(req, res){
@@ -174,9 +173,6 @@ router.post("/pending-order", isAuth, isAdmin, function(req, res){
                 };
                 const update = {
                     $set: { totalEarnings : originalTotalEarnings[i] + earnings[i], totalQuantitySold : originalTotalQuantitySold[i] + quantitySold[i] }
-                };
-                const inventoryUpdate = {
-                    $set: { sales : originalTotalEarnings[i] + earnings[i], sold : originalTotalQuantitySold[i] + quantitySold[i] }
                 };
 
                 Product.findOneAndUpdate(conditions, update, function(err){

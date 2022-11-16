@@ -25,6 +25,7 @@
                 <div class="mb-3 form-outline">
                     <input type="number" name="quantity" class="form-control" value="1" min="1" required>
                 </div>
+                
                 <input type="hidden" name="itemValueTemp" id ="itemValueTemp" value="<%= JSON.stringify(item) %>">
                 <input type="hidden" name="prodId" value="<%= item._id %>">
                 
@@ -49,12 +50,14 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script>
-
 // parse the stored stringified item in json to able to use it in defer code
-let item = JSON.parse(document.getElementById("itemValueTemp").value);
+var item = JSON.parse(document.getElementById("itemValueTemp").value);
+console.log(item);
 
 // call function right on load of webpage to show instant quantity for a selected value in selectbox
 handleQuantity();
+
+var currentQty = 0;
 
 function handleQuantity (){
 
@@ -65,8 +68,9 @@ function handleQuantity (){
     var value = categoryValue.val();
 
     // find the variation array for the selected variation value using ,find and passing the var value
-    let selectVariation = item.variations.find(x=>(x.name === value));
-   
+    var selectVariation = item.variations.find(x=>(x.name === value));
+    currentQty = selectVariation.quantity;
+
     // id of span element displaying quantity on selectvar value    
     $("#qtydisplay").text(selectVariation.quantity)
 }

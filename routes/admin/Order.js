@@ -75,22 +75,20 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                     'variations.name': {$eq: variations[i]}
                 };
                 
-                // if(originalQuantity[i] - quantity[i] === 5){
-                //     status = "In-Stock"
-                // }
+                if(originalQuantity[i] - quantity[i] > 0){
+                    const update = {
+                        $set:{'variations.$.quantity': originalQuantity[i] - quantity[i],
+                        
+                        }
+                    };
 
-                const update = {
-                    $set:{'variations.$.quantity': originalQuantity[i] - quantity[i],
-                    // 'variations.$.status': status
-
-                    }
-                };
-
-                Product.findOneAndUpdate(conditions, update, function(err){
-                    if(err){
-                        console.log(err);
-                    }
-                });
+                    Product.findOneAndUpdate(conditions, update, function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                    });
+                }    
+                res.redirect('/admin/orders');
             };  
             res.redirect('/admin/orders');
         }

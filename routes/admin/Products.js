@@ -76,6 +76,56 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
     })
 });
 
+router.get('/:category', async function(req, res){
+    const category = req.params.category;
+    let products, categoryName;
+    const { stype, sdir, ftype, fvalue } = req.query;
+
+
+    if(category == 'onhand'){
+        categoryName = 'On-Hand';
+    } else if (category == 'preorder') {
+        categoryName = 'Pre-Order';
+    } else if (category == 'apparel') {
+        categoryName = 'Apparel';
+    } else if (category == 'accessories') {
+        categoryName = 'Accessories';
+    } else {
+        res.redirect('/admin/products');
+    }
+    
+    if(!stype && !sdir && !ftype && !fvalue){
+        products = await Product.find({ category: categoryName });
+    } else if (!stype && !sdir) {
+        products = await Product.find({ category: categoryName, [ftype] : fvalue });
+    } else if (!ftype && !fvalue) {
+        products = await Product.find({ category: categoryName }).sort({ [stype] : sdir });
+    } else {
+        products = await Product.find({ category: categoryName, [ftype] : fvalue }).sort({ [stype] : sdir });
+    }
+
+    const brands = await Product.aggregate([
+        { $match: { category: categoryName }},
+        { $group: {
+            _id: {
+                brand: "$brand"
+            }
+        } }
+    ]).sort({ "_id.brand": 1 });
+
+    res.render('admin/product-category', {
+        products: products,
+        brands: brands,
+        fullName: req.session.firstName + " " + req.session.lastName,
+        stype: stype,
+        sdir: sdir,
+        ftype: ftype,
+        fvalue: fvalue,
+        categoryName: categoryName,
+        category: category
+    });
+});
+
 router.get("/add-product", isAuth, isAdmin, function(req, res){
     res.render('admin/add-product', {fullName: req.session.firstName + " " + req.session.lastName});
 });
@@ -419,46 +469,6 @@ router.get("/delete-variation/:variationId-:productId", isAuth, isAdmin, functio
         }
         else{
             res.redirect("/admin/products/"+productId+"/view");
-        }
-    });
-});
-
-router.get("/onhand-products", isAuth, isAdmin, function(req, res){
-    Product.find({category:"On-Hand"}, function (err, allProducts) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('admin/onhand-products', {fullName: req.session.firstName + " " + req.session.lastName, newOnHandProducts: allProducts});
-        }
-    });
-});
-
-router.get("/preorder-products", isAuth, isAdmin, function(req, res){
-    Product.find({category:"Pre-Order"}, function (err, allProducts) {
-        if (err) {
-            console.log(err);
-        } else {
-        res.render('admin/preorder-products', {fullName: req.session.firstName + " " + req.session.lastName,  newPreOrderProducts: allProducts});
-        }
-    });
-});
-
-router.get("/apparel-products", isAuth, isAdmin, function(req, res){
-    Product.find({category:"Apparel"}, function (err, allProducts) {
-        if (err) {
-            console.log(err);
-        } else {
-    res.render('admin/apparel-products', {fullName: req.session.firstName + " " + req.session.lastName, newApparelProducts:allProducts});
-        }
-    });
-});
-
-router.get("/accessories-products", isAuth, isAdmin, function(req, res){
-    Product.find({category:"Accessories"}, function (err, allProducts) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('admin/accessories-products', {fullName: req.session.firstName + " " + req.session.lastName, newAccessoriesProducts: allProducts});
         }
     });
 });

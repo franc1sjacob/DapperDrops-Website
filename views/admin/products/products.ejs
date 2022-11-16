@@ -1,4 +1,4 @@
-<%- include('../partials/admin/header', {name: fullName}); %>
+<%- include('../../partials/admin/header', {name: fullName}); %>
 <div class="container">
     <h1 class="fw-bold text-center mt-2 mb-3">Product</h1> 
     <nav class="navbar p-0 mb-3">  
@@ -7,21 +7,21 @@
                 <a class="nav-link active" href="/admin/products">All</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/admin/products/onhand">On-hand</a>
+                <a class="nav-link" href="/admin/products/category-onhand">On-hand</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/admin/products/preorder">Pre-order</a>
+                <a class="nav-link" href="/admin/products/category-preorder">Pre-order</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/admin/products/apparel">Apparel</a>
+                <a class="nav-link" href="/admin/products/category-apparel">Apparel</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/admin/products/accessories">Accessories</a>
+                <a class="nav-link" href="/admin/products/category-accessories">Accessories</a>
             </li>
         </ul>
         <div class="btn-group">
             <div class="ms-1">
-                <form action="/products/search" method="GET" class="input-group">
+                <form action="/admin/products/search-products" method="GET" class="input-group">
                     <input type="text" name="query" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
                     <button class="btn btn-outline-secondary" type="submit" id="button-addon1"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
@@ -161,4 +161,4 @@
         </div>
     </div>
 </div>
-<%- include('../partials/admin/footer'); %>
+<%- include('../../partials/admin/footer'); %>

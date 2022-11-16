@@ -1,4 +1,4 @@
-<%- include('../innerPartials/admin/header', {name: fullName}); %>
+<%- include('../../innerPartials/admin/header', {name: fullName}); %>
 <div class="container">
     <h1 class="fw-bold text-center mt-2 mb-3">Product</h1> 
     <nav class="navbar p-0 mb-3">  
@@ -8,36 +8,36 @@
             </li>
             <li class="nav-item">
                 <% if(categoryName == 'On-Hand'){ %>
-                    <a class="nav-link active " href="/admin/products/onhand">On-hand</a>
+                    <a class="nav-link active " href="/admin/products/category-onhand">On-hand</a>
                 <% } else { %>
-                    <a class="nav-link" href="/admin/products/onhand">On-hand</a>
+                    <a class="nav-link" href="/admin/products/category-onhand">On-hand</a>
                 <% } %>
             </li>
             <li class="nav-item">
                 <% if(categoryName == 'Pre-Order'){ %>
-                    <a class="nav-link active" href="/admin/products/preorder">Pre-order</a>
+                    <a class="nav-link active" href="/admin/products/category-preorder">Pre-order</a>
                 <% } else { %>
-                    <a class="nav-link" href="/admin/products/preorder">Pre-order</a>
+                    <a class="nav-link" href="/admin/products/category-preorder">Pre-order</a>
                 <% } %>
             </li>
             <li class="nav-item">
                 <% if(categoryName == 'Apparel'){ %>
-                    <a class="nav-link active" href="/admin/products/apparel">Apparel</a>
+                    <a class="nav-link active" href="/admin/products/category-apparel">Apparel</a>
                 <% } else { %>
-                    <a class="nav-link" href="/admin/products/apparel">Apparel</a>
+                    <a class="nav-link" href="/admin/products/category-apparel">Apparel</a>
                 <% } %>
             </li>
             <li class="nav-item">
                 <% if(categoryName == 'Accessories'){ %>
-                    <a class="nav-link active" href="/admin/products/accessories">Accessories</a>
+                    <a class="nav-link active" href="/admin/products/category-accessories">Accessories</a>
                 <% } else { %>
-                    <a class="nav-link" href="/admin/products/accessories">Accessories</a>
+                    <a class="nav-link" href="/admin/products/category-accessories">Accessories</a>
                 <% } %>
             </li>
         </ul>
         <div class="btn-group">
             <div class="ms-1">
-                <form action="/products/search" method="GET" class="input-group">
+                <form action="/admin/products/search-products" method="GET" class="input-group">
                     <input type="text" name="query" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
                     <button class="btn btn-outline-secondary" type="submit" id="button-addon1"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
@@ -56,9 +56,9 @@
                         <% brands.forEach(function(brand){ %>
                             <li>
                                 <% if(!stype || !sdir) { %>
-                                    <a class="dropdown-item" href="/admin/products/<%= category %>?ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
+                                    <a class="dropdown-item" href="/admin/products/category-<%= category %>?ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
                                     <% } else { %>
-                                    <a class="dropdown-item" href="/admin/products/<%= category %>?stype=<%= stype %>&sdir=<%= sdir %>&ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
+                                    <a class="dropdown-item" href="/admin/products/category-<%= category %>?stype=<%= stype %>&sdir=<%= sdir %>&ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
                                     <% } %>
                             </li>
                         <% }) %>          
@@ -73,47 +73,47 @@
                         <li><hr class="dropdown-divider"></li>
                         <% if(!ftype || !fvalue){ %>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?stype=totalQuantitySold&sdir=-1">Best Sellers</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?stype=totalQuantitySold&sdir=-1">Best Sellers</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?stype=name&sdir=1">A - Z</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?stype=name&sdir=1">A - Z</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?stype=name&sdir=-1">Z - A</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?stype=name&sdir=-1">Z - A</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?stype=price&sdir=1">Price Low to High</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?stype=price&sdir=1">Price Low to High</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?stype=price&sdir=-1">Price High to Low</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?stype=price&sdir=-1">Price High to Low</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?stype=dateCreated&sdir=1">Oldest</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?stype=dateCreated&sdir=1">Oldest</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?stype=dateCreated&sdir=-1">Newest</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?stype=dateCreated&sdir=-1">Newest</a>
                             </li>
                             <% } else { %>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=totalQuantitySold&sdir=1">Best Sellers</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=totalQuantitySold&sdir=1">Best Sellers</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=1">A - Z</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=1">A - Z</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=-1">Z - A</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=-1">Z - A</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=1">Price Low to High</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=1">Price Low to High</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=-1">Price High to Low</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=-1">Price High to Low</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=1">Oldest</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=1">Oldest</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="/admin/products/<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=-1">Newest</a>
+                                <a class="dropdown-item" href="/admin/products/category-<%= category %>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=-1">Newest</a>
                         <% } %>          
                     </ul>
                 </div>
@@ -177,4 +177,4 @@
         </div>
     </div>
 </div>
-<%- include('../innerPartials/admin/footer'); %>
+<%- include('../../innerPartials/admin/footer'); %>

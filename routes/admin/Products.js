@@ -65,7 +65,7 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
         } }
     ]).sort({ "_id.brand": 1 });
 
-    res.render('admin/products', {
+    res.render('admin/products/products', {
         products: products,
         brands: brands,
         fullName: req.session.firstName + " " + req.session.lastName,
@@ -76,11 +76,48 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
     })
 });
 
-router.get('/:category', async function(req, res){
+router.get('/search-products', async function(req, res){
+    const { stype, sdir } = req.query; 
+    let query = req.query.query;
+    let searchedProducts, brands;
+
+    if(!query) {
+        query = "";
+    }
+
+    searchedProducts = await Product.find({
+        $or: [
+            { name: { $regex: query, $options: "i" } },
+            { brand: { $regex: query, $options: "i" } }
+        ]
+    }).sort({ [stype]: sdir });
+
+    brands = await Product.aggregate([
+        { $group: {
+            _id: {
+                brand: "$brand"
+            }
+        } }
+    ]).sort({ "_id.brand": 1 });
+
+    console.log(searchedProducts);
+
+    res.render("admin/products/search-products", {
+        fullName: req.session.firstName + " " + req.session.lastName,
+        products: searchedProducts,
+        query: query,
+        stype: stype,
+        sdir: sdir,
+    });
+    
+});
+
+router.get('/category-:category', async function(req, res){
     const category = req.params.category;
     let products, categoryName;
     const { stype, sdir, ftype, fvalue } = req.query;
 
+    console.log(category);
 
     if(category == 'onhand'){
         categoryName = 'On-Hand';
@@ -113,7 +150,7 @@ router.get('/:category', async function(req, res){
         } }
     ]).sort({ "_id.brand": 1 });
 
-    res.render('admin/product-category', {
+    res.render('admin/products/product-category', {
         products: products,
         brands: brands,
         fullName: req.session.firstName + " " + req.session.lastName,
@@ -196,24 +233,20 @@ router.post("/add-variations", isAuth, isAdmin, function(req, res){
             console.log(err);
         } else {
            if(product.category == "On-Hand"){
-            res.redirect('/admin/products/onhand-products')
+            res.redirect('/admin/products/category-onhand')
            }
            else if(product.category == "Pre-Order"){
-            res.redirect('/admin/products/preorder-products')
+            res.redirect('/admin/products/category-preorder')
            }
            else if(product.category == "Apparel"){
-            res.redirect('/admin/products/apparel-products')
+            res.redirect('/admin/products/category-apparel')
            }
            else if(product.category == "Accessories"){
-            res.redirect('/admin/products/accessories-products')
+            res.redirect('/admin/products/category-accessories')
            }
             
         }
     });
-
-
-
-    
 });
 
 router.get("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
@@ -253,24 +286,19 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
             console.log(err);
         } else {
             if(product.category == "On-Hand"){
-                res.redirect('/admin/products/onhand-products')
+                res.redirect('/admin/products/category-onhand')
                }
                else if(product.category == "Pre-Order"){
-                res.redirect('/admin/products/preorder-products')
+                res.redirect('/admin/products/category-preorder')
                }
                else if(product.category == "Apparel"){
-                res.redirect('/admin/products/apparel-products')
+                res.redirect('/admin/products/category-apparel')
                }
                else if(product.category == "Accessories"){
-                res.redirect('/admin/products/accessories-products')
+                res.redirect('/admin/products/category-accessories')
                }
         }
     });
-
-
-    
-   
-   
 });
 
 router.get("/:productId/view", isAuth, isAdmin, upload, function(req, res){
@@ -325,16 +353,16 @@ router.post("/:productId", isAuth, isAdmin, upload, function(req, res){
         }}, function(err, results){
             if(!err){
                 if(req.body.category == "On-Hand"){
-                    res.redirect('/admin/products/onhand-products')
+                    res.redirect('/admin/products/category-onhand')
                    }
                    else if(req.body.category == "Pre-Order"){
-                    res.redirect('/admin/products/preorder-products')
+                    res.redirect('/admin/products/category-preorder')
                    }
                    else if(req.body.category == "Apparel"){
-                    res.redirect('/admin/products/apparel-products')
+                    res.redirect('/admin/products/category-apparel')
                    }
                    else if(req.body.category == "Accessories"){
-                    res.redirect('/admin/products/accessories-products')
+                    res.redirect('/admin/products/category-accessories')
                    }
             } else {
                 console.log(err);
@@ -370,16 +398,16 @@ router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
         } else {
             console.log("Deleted!" + productId);
             if(result.category == "On-Hand"){
-                res.redirect('/admin/products/onhand-products')
+                res.redirect('/admin/products/category-onhand')
                }
                else if(result.category == "Pre-Order"){
-                res.redirect('/admin/products/preorder-products')
+                res.redirect('/admin/products/category-preorder')
                }
                else if(result.category == "Apparel"){
-                res.redirect('/admin/products/apparel-products')
+                res.redirect('/admin/products/category-apparel')
                }
                else if(result.category == "Accessories"){
-                res.redirect('/admin/products/accessories-products')
+                res.redirect('/admin/products/category-accessories')
                }
         }
     });

@@ -199,10 +199,14 @@ router.get("/verify", function(req, res){
                 userId: req.query.id
             });
             wishlist.save();  
-            res.render('login', {message: "Your email has been verified. You may now login."});
+            res.redirect('/account/verified');
         }
     });
 });
+
+router.get('/verified', function(req, res){
+    res.render('email-verified');
+})
 
 router.get("/forgot", function(req, res){
     res.render('forgot');

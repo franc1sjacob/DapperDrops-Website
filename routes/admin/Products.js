@@ -43,14 +43,37 @@ const upload = multer({
 }).single('image');
 
 
-router.get("/", isAuth, isAdmin, function (req, res) {   
-    Product.find({}, function (err, allProducts) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('admin/products', { products: allProducts, fullName: req.session.firstName + " " + req.session.lastName })
-        }
-    });
+router.get("/", isAuth, isAdmin, async function (req, res) {  
+    const { stype, sdir, ftype, fvalue } = req.query;
+    let products;
+    
+    if(!stype && !sdir && !ftype && !fvalue){
+        products = await Product.find({});
+    } else if (!stype && !sdir) {
+        products = await Product.find({ [ftype] : fvalue });
+    } else if (!ftype && !fvalue) {
+        products = await Product.find({}).sort({ [stype] : sdir });
+    } else {
+        products = await Product.find({ [ftype] : fvalue }).sort({ [stype] : sdir });
+    }
+
+    const brands = await Product.aggregate([
+        { $group: {
+            _id: {
+                brand: "$brand"
+            }
+        } }
+    ]).sort({ "_id.brand": 1 });
+
+    res.render('admin/products', {
+        products: products,
+        brands: brands,
+        fullName: req.session.firstName + " " + req.session.lastName,
+        stype: stype,
+        sdir: sdir,
+        ftype: ftype,
+        fvalue: fvalue
+    })
 });
 
 router.get("/add-product", isAuth, isAdmin, function(req, res){

@@ -19,14 +19,96 @@
                 <a class="nav-link" href="/admin/products/accessories-products">Accessories</a>
             </li>
         </ul>
-        <div class="float-end ms-3 mb-1">
-            <form action="" method="post" class="row">
-                <input class="form-control col me-3" type="search" placeholder="Search" name="productSearch">
-                <input class= "btn btn-outline-dark col-2 me-3" type="button" name="" value = "Go">  
-                <a class="btn btn-light col-2 me-3" href="#" name="">Sort<i class="fa-solid fa-filter"></i></a>
-                <a class="btn btn-success col-3 me-3" href="/admin/products/add-product" name="">Add<i class="fa-solid fa-plus ms-1"></i></a>
-            </form>
-        </div>
+
+            
+
+    
+            <div class="btn-group">
+                <div class="ms-1">
+                    <form action="/products/search" method="GET" class="input-group">
+                        <input type="search" name="query" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
+                        <button class="btn btn-outline-secondary" type="submit" id="button-addon1" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </form>
+                </div>
+                <div class="ms-1">
+                    <a class="btn btn-success" href="/admin/products/add-product" name=""><i class="fa-solid fa-add"></i></a>
+                </div>
+                <div class="btn-group">
+                    <div class="ms-1">
+                        <button class="btn btn-outline-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-filter"></i></button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <div class="dropdown-item">Filter by:</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <% brands.forEach(function(brand){ %>
+                                <li>
+                                    <% if(!stype || !sdir) { %>
+                                        <a class="dropdown-item" href="/admin/products?ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
+                                      <% } else { %>
+                                        <a class="dropdown-item" href="/admin/products?stype=<%= stype %>&sdir=<%= sdir %>&ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
+                                      <% } %>
+                                </li>
+                            <% }) %>          
+                        </ul>
+                    </div>
+                    <div class="ms-1">
+                        <button class="btn btn-outline-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-sort"></i></button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <div class="dropdown-item">Sort by:</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <% if(!ftype || !fvalue){ %>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?stype=totalQuantitySold&sdir=-1">Best Sellers</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?stype=name&sdir=1">A - Z</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?stype=name&sdir=-1">Z - A</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?stype=price&sdir=1">Price Low to High</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?stype=price&sdir=-1">Price High to Low</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?stype=dateCreated&sdir=1">Oldest</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?stype=dateCreated&sdir=-1">Newest</a>
+                                </li>
+                              <% } else { %>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=totalQuantitySold&sdir=1">Best Sellers</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=1">A - Z</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=-1">Z - A</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=1">Price Low to High</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=-1">Price High to Low</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=1">Oldest</a>
+                                </li>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/products?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=-1">Newest</a>
+                              <% } %>          
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        
     </nav>    
 </div>  
 <div class="container">
@@ -35,6 +117,9 @@
             <div class="card-body">
                 <div class="table table-responsive">
                     <table class="table table-sm">
+                        <% if(products == undefined){ %>
+                            <h4 class="text-center">Sorry there are no products with the filter you've specified... </h4>
+                        <% } else { %>
                         <tr>
                             <th>Brand</th>
                             <th>Name</th>
@@ -44,37 +129,38 @@
                             <th>Image</th>
                             <th>Actions</th>
                         </tr>
-                        <%products.forEach(function(product){%>
-                            <tr>
-                                <td><%= product.brand %> </td>
-                                <td><%= product.name %> </td>
-                                <td><%= product.price %> </td>
-                                <td><%= product.description %> </td>
-                                <td><%= product.category %> </td>
-                                <td><img src="/uploads/<%= product.image %>" width="50"></td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        </button>
-                                        <ul class="dropdown-menu">                                
-                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/edit" >Update Product</a>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/view" >View Product</a>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/delete" >Delete Product</a>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/add-new-variation" >Add Variation</a>
-                                                <!-- <form action="/admin/products/<%= product._id %>/add-new-variation" method="get">
-                                                    <li><button class="dropdown-item">Add Variation</button></li>
+                            <%products.forEach(function(product){%>
+                                <tr>
+                                    <td><%= product.brand %> </td>
+                                    <td><%= product.name %> </td>
+                                    <td><%= product.price %> </td>
+                                    <td><%= product.description %> </td>
+                                    <td><%= product.category %> </td>
+                                    <td><img src="/uploads/<%= product.image %>" width="50"></td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            </button>
+                                            <ul class="dropdown-menu">                                
+                                                    <a class ="dropdown-item" href="/admin/products/<%= product._id %>/edit" >Update Product</a>
                                                     <li><hr class="dropdown-divider"></li>
-                                                </form> -->
-    
-                                             
-                                        </ul>
-                                      </div>
-                                </td>
-                            </tr>
-                        <% }); %>
+                                                    <a class ="dropdown-item" href="/admin/products/<%= product._id %>/view" >View Product</a>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <a class ="dropdown-item" href="/admin/products/<%= product._id %>/delete" >Delete Product</a>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <a class ="dropdown-item" href="/admin/products/<%= product._id %>/add-new-variation" >Add Variation</a>
+                                                    <!-- <form action="/admin/products/<%= product._id %>/add-new-variation" method="get">
+                                                        <li><button class="dropdown-item">Add Variation</button></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                    </form> -->
+        
+                                                
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } %>
 
                     </table>
                 </div>

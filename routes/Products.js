@@ -58,7 +58,7 @@ router.get("/:category", async function(req, res){
 
     if(!ftype || !fvalue){
         products = await Product.find({ category: category }).sort({ [stype]: sdir });
-    } else {
+    } else if (!stype || !sdir) {
         products = await Product.find({ category: category, [ftype]: fvalue }).sort({ [stype]: sdir });
     }
 

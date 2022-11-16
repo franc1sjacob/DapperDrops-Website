@@ -104,3 +104,18 @@
     border: solid 3px rgb(0, 0, 0);
     background: white;
   }
+
+  
+.img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1; 
+  object-fit: cover; 
+}
+
+.tablesquare{
+  width: 50;
+  height: 50;
+  aspect-ratio: 1; 
+  object-fit: cover; 
+}

@@ -35,6 +35,11 @@
 
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
+      <%
+                    if(typeof message !== "undefined"){ %>
+                        <p style="color: green;"><%= message %></p>
+                    <% }
+                %>
 </div>
 
 <%- include('../innerPartials/admin/footer'); %>

@@ -21,7 +21,7 @@ const isAdmin = function(req, res, next){
 }
 
 const Product = require("../../models/productModel");
-
+const Inventory = require("../../models/inventoryModel");
 
 var fs = require('fs');
 var path = require('path');
@@ -40,17 +40,50 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage, 
+    fileFilter: function (req, file, callback) {
+        var ext = path.extname(file.originalname);
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg' && ext !== '.jfif') {
+            return callback(new Error('Only images are allowed'))
+        }
+        callback(null, true)
+    },
+    limits:{
+        fileSize: 1024 * 1024
+    }
 }).single('image');
 
 
-router.get("/", isAuth, isAdmin, function (req, res) {   
-    Product.find({}, function (err, allProducts) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('admin/products', { products: allProducts, fullName: req.session.firstName + " " + req.session.lastName })
-        }
-    });
+router.get("/", isAuth, isAdmin, async function (req, res) {  
+    const { stype, sdir, ftype, fvalue } = req.query;
+    let products;
+    
+    if(!stype && !sdir && !ftype && !fvalue){
+        products = await Product.find({});
+    } else if (!stype && !sdir) {
+        products = await Product.find({ [ftype] : fvalue });
+    } else if (!ftype && !fvalue) {
+        products = await Product.find({}).sort({ [stype] : sdir });
+    } else {
+        products = await Product.find({ [ftype] : fvalue }).sort({ [stype] : sdir });
+    }
+
+    const brands = await Product.aggregate([
+        { $group: {
+            _id: {
+                brand: "$brand"
+            }
+        } }
+    ]).sort({ "_id.brand": 1 });
+
+    res.render('admin/products', {
+        products: products,
+        brands: brands,
+        fullName: req.session.firstName + " " + req.session.lastName,
+        stype: stype,
+        sdir: sdir,
+        ftype: ftype,
+        fvalue: fvalue
+    })
 });
 
 router.get("/add-product", isAuth, isAdmin, function(req, res){
@@ -75,7 +108,8 @@ router.post("/add-product", isAuth, isAdmin, upload, function(req, res){
         if(err){
             console.log(err);
         }
-        
+
+            
         console.log("Product ID:");
         console.log(productId);
         req.session.productId = productId;
@@ -193,9 +227,6 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
             }
         });
    }
-
-
-    
    
    
 });
@@ -205,6 +236,24 @@ router.get("/:productId/view", isAuth, isAdmin, upload, function(req, res){
 
     Product.findOne({ _id:productId }, function(err, allProducts){
         res.render('admin/view-product', { newListProducts:allProducts,
+            fullName: req.session.firstName + " " + req.session.lastName
+        });
+    })
+});
+
+router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
+    const productId = req.params.productId;
+
+    Product.findOne({ _id:productId }, function(err, product){
+        res.render('admin/update-product', {
+            _id: productId,
+            brand: product.brand,
+            name: product.name,
+            price: product.price,
+            description: product.description,
+            quantity: product.quantity,
+            image: product.image,
+            category: product.category,
             fullName: req.session.firstName + " " + req.session.lastName
         });
     })

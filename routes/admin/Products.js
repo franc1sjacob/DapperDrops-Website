@@ -100,8 +100,6 @@ router.get('/search-products', async function(req, res){
         } }
     ]).sort({ "_id.brand": 1 });
 
-    console.log(searchedProducts);
-
     res.render("admin/products/search-products", {
         fullName: req.session.firstName + " " + req.session.lastName,
         products: searchedProducts,

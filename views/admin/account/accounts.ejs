@@ -1,0 +1,129 @@
+<%- include('../../partials/admin/header', {name: fullName}); %>
+<h1 class="fw-bold text-center mt-2 mb-3">Accounts</h1> 
+<nav class="navbar p-0">
+    <div class="container justify-content-end mb-3">
+        <div class="ms-1">
+            <form action="/admin/accounts" method="GET" class="input-group">
+                <input type="text" name="query" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon1"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+        </div>
+        <div class="btn-group">
+            <div class="ms-1">
+                <button class="btn btn-outline-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-filter"></i></button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <div class="dropdown-item">Filter by:</div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <% if(stype && sdir) { %>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&stype=<%= stype %>&sdir=<%= sdir %>&ftype=accountType&fvalue=user">User</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&stype=<%= stype %>&sdir=<%= sdir %>&ftype=accountType&fvalue=admin">Admin</a>
+                        </li>
+                    <% } else { %>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?ftype=accountType&fvalue=user&query=<%= query %>">User</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?ftype=accountType&fvalue=admin&query=<%= query %>">Admin</a>
+                        </li>
+                    <% } %>
+
+                </ul>
+            </div>
+            <div class="ms-1">
+                <button class="btn btn-outline-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-sort"></i></button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <div class="dropdown-item">Sort by:</div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <% if(!ftype || !fvalue) { %>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&stype=firstName&sdir=1">A - Z</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&stype=firstName&sdir=-1">Z - A</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&stype=isVerified&sdir=-1">Verified - Unverified</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&stype=isVerified&sdir=1">Unverified - Verified</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&stype=accountType&sdir=1">Admin - User</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&stype=accountType&sdir=-1">User - Admin</a>
+                        </li>
+                    <% } else { %>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=firstName&sdir=1">A - Z</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=firstName&sdir=-1">Z - A</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=isVerified&sdir=-1">Verified - Unverified</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=isVerified&sdir=1">Unverified - Verified</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=accountType&sdir=1">Admin - User</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/accounts?query=<%= query %>&ftype=accountType&sdir=-1">User - Admin</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</nav>
+<div class="container">
+    <div class="col-lg col-md">
+        <div class="card shadow p-3 bg-body rounded">
+            <div class="card-body">
+                <div class="table table-responsive">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Account Type</th>
+                            <th>Verification Status</th>
+                            <th>Action</th>
+                        </tr>
+                        <%accounts.forEach(function(account){%>
+                            <tr>
+                                <td><%= account.firstName + " " + account.lastName %></td>
+                                <td><%= account.email %></td>
+                                <td><%= account.accountType %></td>
+                                <td><%= account.isVerified %></td>
+                                <td>
+                                    <% if(account.email === "sammygarma26@gmail.com" && account.accountType === "admin"){ %>
+                                    <%} else if(account.accountType === "admin"){ %>
+                                        <form action="/admin/accounts/downgrade-account" method="post">
+                                            <button type="submit" class="btn btn-sm btn-danger" name="downgradeId" value="<%= account._id %>">Downgrade</button>
+                                        </form>
+                                    <% } else { %>
+                                        <form action="/admin/accounts/upgrade-account" method="post">
+                                            <button type="submit" class="btn btn-sm btn-success" name="upgradeId" value="<%= account._id %>">Upgrade</button>
+                                        </form>
+                                    <% } %>
+
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../../partials/admin/footer'); %>

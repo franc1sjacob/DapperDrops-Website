@@ -78,7 +78,7 @@ router.get("/profile", isAuth, function(req, res){
                     cart = new Cart(order.cart);
                     order.items = cart.generateArray();
                 });
-                res.render('profile', { orders: orders, user: user });
+                res.render('profile/profile', { orders: orders, user: user });
             }
         });
         // res.render('profile', { user: user });
@@ -208,10 +208,14 @@ router.get("/verify", function(req, res){
                 userId: req.query.id
             });
             wishlist.save();  
-            res.render('login', {message: "Your email has been verified. You may now login."});
+            res.redirect('/account/verified');
         }
     });
 });
+
+router.get('/verified', function(req, res){
+    res.render('email-verified');
+})
 
 router.get("/forgot", function(req, res){
     res.render('forgot');
@@ -303,7 +307,7 @@ router.post("/forget-password", async function(req, res){
 router.get('/address', isAuth, function(req, res){
     const userId = req.session.userId;
     User.findById(userId, function(err, user){
-        res.render('address', { user: user });
+        res.render('profile/address', { user: user });
     });
 });
 
@@ -403,7 +407,7 @@ router.get('/wishlist', isAuth, function(req, res){
         if(err){
             console.log(err);
         } else {
-            res.render('wishlist', { wishlist: wishlist });
+            res.render('profile/wishlist', { wishlist: wishlist });
         }
     });
 });
@@ -433,7 +437,7 @@ router.get('/view-orders', isAuth, function(req, res){
                 cart = new Cart(order.cart);
                 order.items = cart.generateArray();
             });
-            res.render('view-orders', { orders: orders });
+            res.render('profile/view-orders', { orders: orders });
         }
     });
 });
@@ -450,7 +454,7 @@ router.get('/view-orders-:status', isAuth, function(req, res){
                     cart = new Cart(order.cart);
                     order.items = cart.generateArray();
                 });
-                res.render('view-orders', { orders: orders, status: orderStatus });
+                res.render('profile/view-orders', { orders: orders, status: orderStatus });
             }
         });
     } else {
@@ -466,14 +470,14 @@ router.get('/view-order/:orderId', isAuth, function(req, res){
         } else {
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
-            res.render('view-order', { order: order });
+            res.render('profile/view-order', { order: order });
         }
     });
 });
 
 
 router.get('/change-password', isAuth, function(req, res){
-    res.render('change-password', { errorMessage: null, successMessage: null });
+    res.render('profile/change-password', { errorMessage: null, successMessage: null });
 });
 
 router.post('/change-password', isAuth, async function(req, res){
@@ -485,10 +489,10 @@ router.post('/change-password', isAuth, async function(req, res){
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if(newPassword != confirmPassword){
-        return res.render('change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null});
+        return res.render('profile/change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null});
         
     } else if(!isMatch){
-        return res.render('change-password', { errorMessage: "The old password you entered is incorrect.", successMessage: null});
+        return res.render('profile/change-password', { errorMessage: "The old password you entered is incorrect.", successMessage: null});
 
     } else {
         const newHashedPassword = await bcrypt.hash(newPassword, 12);
@@ -497,7 +501,7 @@ router.post('/change-password', isAuth, async function(req, res){
             if(err){
                 console.log(err);
             } else {
-                res.render('change-password', { successMessage: "Your password has successfully been changed!", errorMessage: null});
+                res.render('profile/change-password', { successMessage: "Your password has successfully been changed!", errorMessage: null});
             }
         });
     }
@@ -510,7 +514,7 @@ router.get("/send-payment-proof/:orderId", isAuth, function(req, res){
             console.log(err);
         }
         else{
-            res.render('send-payment-proof', {order: foundOrder});
+            res.render('profile/send-payment-proof', {order: foundOrder});
         }
     });
 });
@@ -545,7 +549,7 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, function(req, res){
         }
         else{
             const chosenPayment = foundOrder.paymentsInfo.find(obj => obj.id === paymentId);
-            res.render('view-payment-info', {order: foundOrder, chosenPayment: chosenPayment});
+            res.render('profile/view-payment-info', {order: foundOrder, chosenPayment: chosenPayment});
         }
     });
 });

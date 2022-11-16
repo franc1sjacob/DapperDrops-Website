@@ -1,0 +1,59 @@
+<%- include('partials/header'); %>
+    <div class="container">
+        <div class="d-flex mb-3">
+          <div class="me-auto">
+            <% if(query != undefined){ %>
+              <h3 class="mb-2"><%= products.length %> Search results for: <span class="fst-italic">"<%= query %>"</span></h3>
+            <% } %>
+          </div>
+          <div class="ms-auto mb-2">
+            <div class="btn-group">
+              <div class="mx-1 my-1">
+                <button class="btn btn-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Sort <i class="fa-solid fa-sort"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="/products/search?query=<%= query %>&stype=totalQuantitySold&sdir=1">Best Sellers</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/products/search?query=<%= query %>&stype=name&sdir=1">A - Z</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/products/search?query=<%= query %>&stype=name&sdir=-1">Z - A</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/products/search?query=<%= query %>&stype=price&sdir=1">Price Low to High</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/products/search?query=<%= query %>&stype=price&sdir=-1">Price High to Low</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/products/search?query=<%= query %>&stype=dateCreated&sdir=1">Oldest</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/products/search?query=<%= query %>&stype=dateCreated&sdir=-1">Newest</a>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+            <%products.forEach(function(product){%>
+              <div class="col-lg-3 col-sm-6">
+                <a href="/products/item/<%= product._id %>" class="cust-prod-link">
+                  <div class="card border-0">
+                    <img src="/uploads/<%= product.image %>" height="200" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <p class="card-text"><%= product.brand %> </p>
+                      <p class="card-text fw-bold"><%= product.name %></p>
+                      <p class="card-text fw-bold">₱<%= product.price %></p>
+                    </div>
+                  </div>
+                </a> 
+              </div>
+            <% }) %>   
+          </div>
+    </div>
+<%- include('partials/footer'); %>

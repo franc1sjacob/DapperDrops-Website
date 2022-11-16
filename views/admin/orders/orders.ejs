@@ -1,0 +1,177 @@
+<%- include('../innerPartials/admin/header', {name: fullName}); %>
+<div class="container">
+    <h1 class="fw-bold text-center mt-2 mb-3">Orders</h1> 
+    <nav class="navbar p-0 mb-3">
+        <div class="btn-group">
+            <div class="ms-1">
+                <a class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Order Status</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/admin/orders">All Orders</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders/status-Completed">Completed</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders/status-Confirmed">Confirmed</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders/status-Pending">Pending</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders/status-Declined">Declined</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders/status-Refunded">Refunded</a></li>
+                  <li><a class="dropdown-item" href="/admin/orders/status-Cancelled">Cancelled</a></li>
+                </ul>
+            </div>
+            <div class="ms-1">
+                <button class="btn btn-outline-dark" data-bs-toggle="dropdown" href="#" role="button"><i class="fa-solid fa-sort"></i></button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <div class="dropdown-item">Sort by:</div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/admin/orders?stype=dateCreated&sdir=-1">Newest</a></li>
+                    <li><a class="dropdown-item" href="/admin/orders?stype=dateCreated&sdir=1">Oldest</a></li>
+                    <li><a class="dropdown-item" href="/admin/orders?stype=amountPaid&sdir=-1">Balance Paid (Highest - Lowest)</a></li>
+                    <li><a class="dropdown-item" href="/admin/orders?stype=amountPaid&sdir=1">Balance Paid (Lowest - Highest)</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="float-end ms-3 mb-1">
+            <form action="/admin/orders/search-orders" method="GET" class="input-group">
+                <input type="text" name="query" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon1"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="col-lg col-md">
+        <div class="card shadow p-3 bg-body rounded">
+            <div class="card-body">
+                <div class="table table-responsive">
+                    <table class="table table-sm">
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Shipping Status</th>
+                            <th>Order Status</th>
+                            <th>Payment Status</th>
+                            <th>Paid</th>
+                            <th>Remaining</th>
+                            <th>Action</th>
+                        </tr>
+
+                        <%orders.forEach(function(order){%>
+                        <tr>
+                            <td><%= order._id %></td>
+                            <td><%= order.dateCreated.toISOString().slice(0, 10) %></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <%= order.shippingStatus %>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <form action="/admin/orders/shipping-Pending" method="post">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <li><button class="dropdown-item">Pending</button></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                        </form>
+                                        <form action="/admin/orders/shipping-Processing" method="post">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <li><button class="dropdown-item">Processing</button></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                        </form>
+                                        <form action="/admin/orders/shipping-In-transit" method="post">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <li><button class="dropdown-item">In-transit</button></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                        </form>
+                                        <form action="/admin/orders/shipping-Delivered" method="post">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <li><button class="dropdown-item">Delivered</button></li>
+                                        </form>
+                                    </ul>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <%= order.orderStatus %>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                    
+                                            <% if(order.orderStatus === "Pending"){ %>
+                                                
+                                            <form action="/admin/orders/confirm-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Confirm</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </form>
+
+                                            <form action="/admin/orders/decline-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Decline</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </form>
+
+                                            <form action="/admin/orders/delete-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Delete</button></li>
+                                            </form>
+
+                                            <% } else if(order.orderStatus === "Confirmed"){%>
+
+                                            <form action="/admin/orders/complete-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Complete</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </form>
+    
+                                            <form action="/admin/orders/cancel-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Cancel</button></li>
+                                            </form>
+
+                                        <% } else if(order.orderStatus === "Completed"){%>    
+    
+                                            <form action="/admin/orders/refund-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Refund</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </form>
+
+                                            <form action="/admin/orders/delete-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Delete</button></li>
+                                            </form>
+
+                                        <% } else if(order.orderStatus === "Cancelled" || order.orderStatus === "Declined" || order.orderStatus === "Refunded"){%>   
+
+                                            <form action="/admin/orders/pending-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Pending</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </form>
+
+                                            <form action="/admin/orders/delete-order" method="post">
+                                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                <li><button class="dropdown-item">Delete</button></li>
+                                            </form>
+
+                                        <% } %>
+
+                                    </ul>
+                                  </div>
+                            </td>
+                            <td>
+                                <a href="/admin/orders/update-payment-<%= order._id %>"><i class="fa-solid fa-pen-to-square me-2"></i></a>
+                                <%= order.paymentStatus %>
+                            </td>
+                            <td>₱<%= order.amountPaid %></td>
+                            <td>₱<%= order.amountRemaining %></td>
+                            <td>
+                                <a href="/admin/orders/view-order-<%= order._id %>"><i class="fa-solid fa-eye me-1"></i></a>
+                                <a class="btn btn-sm btn-light" href="#">Send Email</a>
+                            </td>
+                        </tr>   
+                        <% }) %>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../innerPartials/admin/footer'); %>

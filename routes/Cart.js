@@ -21,11 +21,12 @@ router.get("/view-cart", function(req, res){
         res.render('view-cart', {usercart: null});
     } else{
         const cart = new Cart(req.session.cart);
-        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty});
+        // res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty});
+        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:false,error:""});
     }
 });
 
-router.post("/add-to-cart", function(req, res){
+router.post("/add-to-cart", async function(req, res){
     const userId = req.session.userId;
     const { prodId, variation, quantity} = req.body;
     const selectQty = quantity;
@@ -33,15 +34,26 @@ router.post("/add-to-cart", function(req, res){
     // console.log(quantity);
     const cart = new Cart(req.session.cart ? req.session.cart : {});
 
-    Product.findById(prodId, function(err, product){
-        if (err){
-            console.log(err);
-        } else{
-            cart.add(product, product._id+selectVar, selectQty, selectVar);
-            req.session.cart = cart;
-            res.redirect('/cart/view-cart');
-        }
-    });
+    try {
+      
+        let product = await Product.findById(prodId);
+        product.variations.forEach((foundVariation)=>{
+            console.log(foundVariation,"variations found")
+            if(foundVariation.name === selectVar && selectQty > foundVariation.quantity){
+                console.log("error found , throw now");
+                throw "Some items became available. Update the quantity and try again."
+            }
+        })
+
+        cart.add(product, product._id+selectVar, selectQty, selectVar);
+        req.session.cart = cart;
+        res.redirect('/cart/view-cart');
+
+    } catch (error) {
+        let product = await Product.findById(prodId)
+        res.render('view-item', {item: product, userId: userId,isError:true,error:error}); 
+    }
+    
 });
 
 router.post("/reduce-one", function(req, res){
@@ -82,9 +94,40 @@ router.get("/checkout", isAuth, function(req, res){
     User.findById({ _id: userId }, function(err, user){
         if(err){
             console.log(err);
-        } else {
-            const cart = new Cart(req.session.cart);
-            res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user});
+        } 
+        else 
+        {
+            try 
+            {
+                const cart = new Cart(req.session.cart);
+                var errorValues = [];
+                console.log(Object.values(cart.items),"item bhenchod");
+                Object.values(cart.items).forEach((foundProduct)=>{
+                    console.log("variations find",foundProduct.variation,foundProduct.qty,foundProduct.item.name);
+                    foundProduct.item.variations.forEach((foundVariation)=>{                   
+                        if(foundProduct.variation === foundVariation.name){
+                            if(foundProduct.qty > foundVariation.quantity){
+                                console.log(foundVariation,'oh yeah');
+                                errorValues.push(foundProduct.item.brand+" "+foundProduct.item.name+", "+"Size: "+foundProduct.variation+" ");
+                                console.log("MATCHED ERROR" ,foundProduct.qty,foundVariation.quantity );   
+                            }
+                        }
+                    });
+                })
+                console.log(errorValues.length,"error valuesss");
+                if(errorValues.length > 0){
+                    throw errorValues
+                }
+                
+                res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user});
+            } 
+            catch (error) 
+            {
+                console.log(error,"catch")
+                const cart = new Cart(req.session.cart);
+                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error});
+
+            }
         }
     })
 });
@@ -202,6 +245,7 @@ router.get('/checkout-confirmation', isAuth, function(req, res){
             console.log(err);
         } else {
             const cart = new Cart(req.session.cart);
+           
             res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: null});
         }
     })

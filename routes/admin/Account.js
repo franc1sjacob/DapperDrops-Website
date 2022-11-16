@@ -20,23 +20,47 @@ const isAdmin = function(req, res, next){
     }
 }
 
-router.get("/", isAuth, isAdmin, function(req, res){
-    User.find({}, function(err, foundAccounts){
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.render('admin/accounts', {accounts: foundAccounts, fullName: req.session.firstName + " " + req.session.lastName });
-        }
+router.get("/", isAuth, isAdmin, async function(req, res){
+    const { stype, sdir, ftype, fvalue } = req.query;
+    let users;
+
+    let query = req.query.query;
+
+    if(!query) {
+        query = "";
+    }
+
+    if(!ftype){
+        users = await User.find({
+            $or: [
+                { firstName: { $regex: query, $options: "i" } },
+                { lastName: { $regex: query, $options: "i" } },
+                { email: { $regex: query, $options: "i" } },
+                { accountType: { $regex: query, $options: "i" } }
+            ]
+        }).sort({ [stype]: sdir });
+
+    } else {
+        users = await User.find({
+            [ftype]: fvalue,
+            $or: [
+                { firstName: { $regex: query, $options: "i" } },
+                { lastName: { $regex: query, $options: "i" } },
+                { email: { $regex: query, $options: "i" } },
+                { accountType: { $regex: query, $options: "i" } }
+            ]
+        }).sort({ [stype]: sdir });
+    }
+
+    res.render('admin/account/accounts', {
+        accounts: users,
+        fullName: req.session.firstName + " " + req.session.lastName,
+        query: query,
+        stype: stype,
+        sdir: sdir,
+        ftype: ftype,
+        fvalue: fvalue
     });
-});
-
-router.get("/upgrade-account", isAuth, isAdmin, function(req, res){
-    res.render('admin/accounts');
-});
-
-router.get("/downgrade-account", isAuth, isAdmin, function(req, res){
-    res.render('admin/accounts');
 });
 
 router.post("/upgrade-account", isAuth, isAdmin, function(req, res){

@@ -28,7 +28,7 @@ const isAdmin = function(req, res, next){
 router.get("/", isAuth, isAdmin, async function(req, res){
     const { stype, sdir } = req.query;
     const orders = await Order.find({}).sort({ [stype] : sdir });
-    res.render('admin/orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName});
+    res.render('admin/orders/orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName});
 });
 
 router.get('/status-:orderStatus', async function(req, res){
@@ -62,7 +62,6 @@ router.get('/search-orders', async function(req, res){
     res.render('admin/search-orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName, query: query});
 });
 
-router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 router.post("/confirm-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
     Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, async function(err, order){

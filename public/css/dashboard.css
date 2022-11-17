@@ -119,3 +119,8 @@
   aspect-ratio: 1; 
   object-fit: cover; 
 }
+
+.image-container{
+
+	position: relative;
+}

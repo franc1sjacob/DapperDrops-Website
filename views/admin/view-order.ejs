@@ -78,7 +78,7 @@
             </tr>
             <%order.items.forEach(function(cart){%> 
             <tr>
-                <td><img src="/uploads/<%= cart.item.image %>" style="height:200px;"></td>
+                <td><img src="/uploads/<%= cart.item.image %>" class="img" style="height:200px;"></td>
                 <td>
                     <p><%= cart.item.brand %></p>
                     <p class="fw-semibold"><%= cart.item.name %></p>

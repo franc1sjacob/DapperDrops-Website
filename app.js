@@ -91,12 +91,14 @@ app.use("/admin/content/", adminContentRoute);
 
 //INDEX
 app.get("/", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const newArrivals = await Product.aggregate([]).sort({ dateCreated: -1}).limit(3);
-    res.render('index', { newArrivals: newArrivals });
+    res.render('index', { newArrivals: newArrivals, content: content });
 });
 
-app.get("/about", function(req, res){
-    res.render('about');
+app.get("/about", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('about', { content: content });
 });
 
 app.listen(port, function(){

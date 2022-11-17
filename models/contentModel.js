@@ -14,7 +14,15 @@ const contentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    aboutUsText: {
+    aboutUsParagraph1: {
+        type: String,
+        required: true
+    },
+    aboutUsParagraph2: {
+        type: String,
+        required: true
+    },
+    aboutUsParagraph3: {
         type: String,
         required: true
     },

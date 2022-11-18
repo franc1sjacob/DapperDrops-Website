@@ -312,16 +312,6 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
    
 });
 
-router.get("/:productId/view", isAuth, isAdmin, upload, function(req, res){
-    const productId = req.params.productId;
-
-    Product.findOne({ _id:productId }, function(err, allProducts){
-        res.render('admin/view-product', { newListProducts:allProducts,
-            fullName: req.session.firstName + " " + req.session.lastName
-        });
-    })
-});
-
 
 router.get("/:productId/view", isAuth, isAdmin, upload, function(req, res){
     const productId = req.params.productId;

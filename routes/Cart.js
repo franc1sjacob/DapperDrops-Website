@@ -103,18 +103,18 @@ router.get("/checkout", isAuth, function(req, res){
                 var errorValues = [];
                 console.log(Object.values(cart.items),"item bhenchod");
                 Object.values(cart.items).forEach((foundProduct)=>{
-                    console.log("variations find",foundProduct.variation,foundProduct.qty,foundProduct.item.name);
+                    // console.log("variations find",foundProduct.variation,foundProduct.qty,foundProduct.item.name);
                     foundProduct.item.variations.forEach((foundVariation)=>{                   
                         if(foundProduct.variation === foundVariation.name){
                             if(foundProduct.qty > foundVariation.quantity){
                                 console.log(foundVariation,'oh yeah');
                                 errorValues.push(foundProduct.item.brand+" "+foundProduct.item.name+", "+"Size: "+foundProduct.variation+" ");
-                                console.log("MATCHED ERROR" ,foundProduct.qty,foundVariation.quantity );   
+                                // console.log("MATCHED ERROR" ,foundProduct.qty,foundVariation.quantity );   
                             }
                         }
                     });
                 })
-                console.log(errorValues.length,"error valuesss");
+                // console.log(errorValues.length,"error valuesss");
                 if(errorValues.length > 0){
                     throw errorValues
                 }
@@ -123,7 +123,7 @@ router.get("/checkout", isAuth, function(req, res){
             } 
             catch (error) 
             {
-                console.log(error,"catch")
+                // console.log(error,"catch")
                 const cart = new Cart(req.session.cart);
                 res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error});
 

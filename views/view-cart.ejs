@@ -9,13 +9,13 @@
           </div>
           <div class="card-body">
             <% if(usercart){ %>
-              <% usercart.forEach(function(cart){ %>
+              <% for(let i = 0; i < products.length; i++){ %>
                 <!-- Single item -->
                 <div class="row">
                   <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
                     <!-- Image -->
                     <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
-                      <img src="/uploads/<%= cart.item.image %>"
+                      <img src="/uploads/<%= products[i].image %>"
                         class="w-100" alt="Blue Jeans Jacket" />
                       <a href="#!">
                         <div class="mask" style="background-color: rgba(251, 251, 251, 0.2)"></div>
@@ -26,10 +26,10 @@
 
                   <div class="col-lg-5 col-md-6 mb-4 mb-lg-0">
                     <!-- Data -->
-                    <p><strong><%=cart.item.name%></strong></p>
-                    <p><%=cart.item.brand%></p>
-                    <p>Size: <%=cart.variation%></p>
-                    <a href="/cart/remove-item/<%= cart.item._id %>/<%=cart.variation%>" class="btn btn-danger btn me-1 mb-2"><i class="fas fa-trash"></i></a>
+                    <p><strong><%=products[i].name%></strong></p>
+                    <p><%=products[i].brand%></p>
+                    <p>Size: <%=usercart[i].variation%></p>
+                    <a href="/cart/remove-item/<%= products[i]._id %>/<%=products[i].usercart%>" class="btn btn-danger btn me-1 mb-2"><i class="fas fa-trash"></i></a>
                     <!-- Data -->
                   </div>
 
@@ -38,8 +38,8 @@
                     <div class="d-flex mb-4" style="max-width: 300px">
 
                       <form action="/cart/reduce-one" method="post">
-                        <input type="hidden" name="prodId" value="<%= cart.item._id %>">
-                        <input type="hidden" name="variation" value="<%=cart.variation%>">
+                        <input type="hidden" name="prodId" value="<%= products[i]._id %>">
+                        <input type="hidden" name="variation" value="<%= usercart[i].variation %>">
                         <button class="btn btn-dark px-3 me-2"
                           onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
                           <i class="fas fa-minus"></i>
@@ -47,13 +47,13 @@
                       </form>
 
                       <div class="form-outline">
-                        <input id="form1" min="0" name="quantity" value="<%= cart.qty %>"  type="number" class="form-control" disabled/>
-                        <input type="hidden" name="currentQy" value="<%= cart.qty %>">
+                        <input id="form1" min="0" name="quantity" value="<%= usercart[i].qty %>"  type="number" class="form-control" disabled/>
+                        <input type="hidden" name="currentQy" value="<%= products[i].qty %>">
                       </div>
 
                       <form action="/cart/add-one" method="post">
-                        <input type="hidden" name="prodId" value="<%= cart.item._id %>">
-                        <input type="hidden" name="variation" value="<%=cart.variation%>">
+                        <input type="hidden" name="prodId" value="<%= products[i]._id %>">
+                        <input type="hidden" name="variation" value="<%=products[i].variation%>">
                         <button class="btn btn-dark px-3 ms-2"
                           onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
                           <i class="fas fa-plus"></i>
@@ -65,14 +65,14 @@
 
                     <!-- Price -->
                     <p class="text-start text-md-center">
-                      <strong>₱<%=cart.price%></strong>
+                      <strong>₱<%=products[i].price%></strong>
                     </p>
                     <!-- Price -->
                   </div>
                 </div>
                 <!-- Single item -->
                 <hr class="my-4">
-                <% }) %>
+              <% } %>
 
           </div>
         </div>
@@ -103,7 +103,7 @@
               </li>
             </ul>
 
-            <a href="/cart/checkout" class="btn btn-dark btn-block" data-mdb-ripple-color="dark">CHECKOUT</a>
+            <a href="/cart/newCheckout" class="btn btn-dark btn-block" data-mdb-ripple-color="dark">CHECKOUT</a>
           </div>
 
         </div>
@@ -112,15 +112,12 @@
           <% if(isError){ %>
             <div class="alert alert-danger" role="alert">
                 <p style="color: red;">Error In quantity of
-                  <% error.forEach(function(e){ %>
-                    <span> <%=e%></span>
-                  <% }) %>
+
                 </p>  
             </div>
         </div>
-          <% } %>
         </div>
-          
+          <% } %>
       </div>
       
       <% } else{ %>

@@ -18,13 +18,28 @@ const isAuth = function(req, res, next){
 }
 
 router.get("/view-cart", async function(req, res){
+    const productIdsSelected = [];
+    let productDetailsSelected = [];
+    let x =[];
     const content = await Content.findOne({ status: 'active' });
     if(!req.session.cart || req.session.cart.totalPrice === 0){
         res.render('view-cart', {usercart: null, content: content});
     } else {
         const cart = new Cart(req.session.cart);
+        const cartArr = cart.generateArray();
+        let cartLength = cartArr.length;
+        cartArr.forEach(function(items){
+            productIdsSelected.push(items.item._id);
+        });
+
+        for(let i = 0; i < cartLength; i++){
+            x = await Product.findById(productIdsSelected[i]);
+            productDetailsSelected.push(x);
+        }
+
+        console.log(productDetailsSelected);
         // res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty});
-        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:false,error:"", content: content});
+        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:false,error:"", content: content, products: productDetailsSelected});
     }
 });
 
@@ -90,20 +105,34 @@ router.get("/remove-item/:id/:variation", function(req, res){
 }); 
 
 router.get("/checkout", isAuth, async function(req, res){
+    const productIdsSelected = [];
+    let productDetailsSelected = [];
+    let x = [];
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     if(!req.session.cart){
         res.redirect('/cart/view-cart');
     }
-    User.findById({ _id: userId }, function(err, user){
+    User.findById({ _id: userId }, async function(err, user){
         if(err){
             console.log(err);
-        } 
-        else 
-        {
+        } else {
+            console.log("TRY");
             try 
             {
+                console.log("LOOB TRY");
                 const cart = new Cart(req.session.cart);
+                const cartArr = cart.generateArray();
+                let cartLength = cartArr.length;
+                cartArr.forEach(function(items){
+                    productIdsSelected.push(items.item._id);
+                });
+
+                for(let i = 0; i < cartLength; i++){
+                    x = await Product.findById(productIdsSelected[i]);
+                    productDetailsSelected.push(x);
+                }
+
                 var errorValues = [];
                 console.log(Object.values(cart.items),"item bhenchod");
                 Object.values(cart.items).forEach((foundProduct)=>{
@@ -118,23 +147,56 @@ router.get("/checkout", isAuth, async function(req, res){
                         }
                     });
                 })
-                // console.log(errorValues.length,"error valuesss");
+                console.log(errorValues.length,"error valuesss");
                 if(errorValues.length > 0){
                     throw errorValues
                 }
-                
-                res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user, content: content});
+                console.log(cartArr);
+                res.render('checkout', {usercart: cartArr, cart: cart, user: user, content: content, products: productDetailsSelected});
             } 
             catch (error) 
             {
-                // console.log(error,"catch")
+                console.log(error,"catch")
                 const cart = new Cart(req.session.cart);
-                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});
-
+                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content, products: productDetailsSelected});
             }
         }
     })
 });
+
+router.get("/newCheckout", isAuth, async function(req, res){
+    const productIdsSelected = [];
+    let productDetailsSelected = [];
+    let x = [];
+    const content = await Content.findOne({ status: 'active' });
+    const userId = req.session.userId;
+    if(!req.session.cart){
+        res.redirect('/cart/view-cart');
+    }
+    User.findById({ _id: userId }, async function(err, user){
+        if(err){
+            console.log(err);
+        } else {
+            const cart = new Cart(req.session.cart);
+            const cartArr = cart.generateArray();
+            let cartLength = cartArr.length;
+            cartArr.forEach(function(items){
+                productIdsSelected.push(items.item._id);
+            });
+
+            for(let i = 0; i < cartLength; i++){
+                x = await Product.findById(productIdsSelected[i]);
+                productDetailsSelected.push(x);
+            }
+
+        
+            console.log("CART ARRR", cartArr);
+            console.log(cart);
+            res.render('newcheckout', {usercart: cartArr, cart: cart, user: user, content: content, products: productDetailsSelected});
+        } 
+    })
+});
+
 
 router.post("/place-order", isAuth, async function(req, res){
     const content = await Content.findOne({ status: 'active' });
@@ -146,31 +208,36 @@ router.post("/place-order", isAuth, async function(req, res){
     var today = new Date();
 
     if(termsCheckbox == "agree"){
-        User.findById(userId, function(err, result){
-            if(err){
-                console.log(err);
-            } else {
-                const order = new Order({
-                    _id: orderId,
-                    userId: userId,
-                    cart: cart,
-                    address: result.defaultAddress,
-                    paymentMethod: paymentMethod,
-                    dateCreated: today,
-                    amountRemaining: cart.totalPrice
-                });
+        //eto yung object name prod id + varname
+        let x = '6373cfe1dacffe2d93853b8112';
+
+        // cart.items[x].item.name = "WOOOOOOOOOOOOOOOOOOOOOOO";
+        console.log(cart.items[x].item.name);
+        // User.findById(userId, function(err, result){
+        //     if(err){
+        //         console.log(err);
+        //     } else {
+        //         const order = new Order({
+        //             _id: orderId,
+        //             userId: userId,
+        //             cart: cart,
+        //             address: result.defaultAddress,
+        //             paymentMethod: paymentMethod,
+        //             dateCreated: today,
+        //             amountRemaining: cart.totalPrice
+        //         });
             
-                order.save(function(err, result){
-                    if(err){
-                        console.log(err);
-                    }
-                    else{
-                        req.session.cart = null;
-                        res.redirect('/cart/order-confirmed/' + orderId);
-                    }
-                });
-            }
-        });
+        //         order.save(function(err, result){
+        //             if(err){
+        //                 console.log(err);
+        //             }
+        //             else{
+        //                 req.session.cart = null;
+        //                 res.redirect('/cart/order-confirmed/' + orderId);
+        //             }
+        //         });
+        //     }
+        // });
     } else {
         User.findById({ _id: userId }, function(err, user){
             res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: "Please read and accept the terms and conditions to proceed with your order.", content: content});

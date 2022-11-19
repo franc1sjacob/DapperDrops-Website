@@ -1,0 +1,173 @@
+<%- include('../../partials/admin/header', {name: fullName}); %>
+
+    <div class="container">
+        <h1 class="fw-bold text-center mt-2 mb-3">Content</h1>
+        <% if(content == null || content == undefined){ %>
+            <h4 class="fw-bold text-center">Please create an active content document in the contents collection..</h4>
+            <form action="/admin/content/add" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label name="homeText" for="hometext" class="form-label">Home Text</label>
+                    <input name="homeText" type="text" class="form-control" id="hometext" required>
+                </div>
+                <div class="mb-3" class="form-group">
+                    <label for="file1">Upload Home Image 1:</label>
+                    <input type="file" class="form-control" name="homeImage1" required>
+                </div>
+                <div class="mb-3" class="form-group">
+                    <label for="file2">Upload Home Image 2:</label>
+                    <input type="file" class="form-control" name="homeImage2" required>
+                </div>
+                <div class="mb-3" class="form-group">
+                    <label for="file2">Upload Home Image 3:</label>
+                    <input type="file" class="form-control" name="homeImage3" required>
+                </div>
+                <div class="mb-3">
+                    <label for="aboutus1" class="form-label">About Us Paragraph 1</label>
+                    <textarea name="aboutUsParagraph1" class="form-control" id="aboutus1" rows="4" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="aboutus2" class="form-label">About Us Paragraph 2</label>
+                    <textarea name="aboutUsParagraph2" class="form-control" id="aboutus2" rows="4" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="aboutus3" class="form-label">About Us Paragraph 3</label>
+                    <textarea name="aboutUsParagraph3"class="form-control" id="aboutus3" rows="4" required></textarea>
+                </div>
+                <div class="mb-3" class="form-group">
+                    <label for="file1">Upload About Us Image 1:</label>
+                    <input type="file" class="form-control" name="aboutUsImage1" required>
+                </div>
+                <div class="mb-3" class="form-group">
+                    <label for="file2">Upload About Us Image 2:</label>
+                    <input type="file" class="form-control" name="aboutUsImage2" required>
+                </div>
+                <div class="mb-3" class="form-group">
+                    <label for="file2">Upload About Us Image 3:</label>
+                    <input type="file" class="form-control" name="aboutUsImage3" required>
+                </div>
+                <div class="mb-3">
+                    <label for="footerText" class="form-label">Footer Description</label>
+                    <input type="text" name="footerText" class="form-control" id="footerText" required>
+                </div>
+                <div class="mb-3">
+                    <label for="footerContactEmail" class="form-label">Footer Contact Email</label>
+                    <input type="text" name="footerContactEmail" class="form-control" id="footerContactEmail" required>
+                </div>
+                <div class="mb-3">
+                    <label for="footerContactNumber" class="form-label">Footer Contact Number</label>
+                    <input type="text" name="footerContactNumber" class="form-control" id="footerContactNumber" required>
+                </div>
+                <button class="btn btn-primary ms-1" type="submit">Submit</button>
+                <a class="btn btn-secondary ms-1" href="/admin/dashboard">Cancel</a>
+
+
+            </form>
+        <% } else { %>
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">Home: Text</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-text-homeText"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    <%= content.homeText %>
+                </div>
+            </div>
+    
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">Home: Image</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-image-homeImage"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    <% content.homeImage.forEach(function(image){ %>
+                        <img src="/images/content/home/<%= image.image %>" style="height: 100px; width: 100px;">
+                    <% }); %>
+                </div>
+            </div>
+    
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">About Us: Paragraph 1</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-text-aboutUsParagraph1"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    <%= content.aboutUsParagraph1 %>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">About Us: Paragraph 2</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-text-aboutUsParagraph2"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    <%= content.aboutUsParagraph2 %>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">About Us: Paragraph 3</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-text-aboutUsParagraph3"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    <%= content.aboutUsParagraph3 %>
+                </div>
+            </div>
+    
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">About Us: Images</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-image-aboutUsImage"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    <% content.aboutUsImage.forEach(function(image){ %>
+                        <img src="/images/content/aboutus/<%= image.image %>" style="height: 100px; width: 100px;">
+                    <% }); %>
+
+                </div>
+            </div>
+    
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">Footer: Text</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-text-footerText"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    <%= content.footerText %>
+                </div>
+            </div>
+    
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">Footer: Contact Email</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-text-footerContactEmail"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    <%= content.footerContactEmail %>
+                </div>
+            </div>
+    
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">Footer: Contact Number</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-text-footerContactNumber"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    <%= content.footerContactNumber %>
+                </div>
+            </div>
+    
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">Payment Details</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-paymentDetails"><i class="fa-solid fa-pen-to-square"></i></a>
+                </div>
+                <div class="card-body">
+                    
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+<%- include('../../partials/admin/footer'); %>

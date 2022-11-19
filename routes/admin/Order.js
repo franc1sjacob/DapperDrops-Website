@@ -6,7 +6,6 @@ const Product = require("../../models/productModel");
 const Cart = require("../../models/cartModel");
 const Order = require("../../models/orderModel");
 const Sale = require("../../models/salesModel");
-const Inventory = require("../../models/inventoryModel");
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -25,20 +24,46 @@ const isAdmin = function(req, res, next){
     }
 }
 
-router.get("/", isAuth, isAdmin, function(req, res){
-    Order.find({}, function(err, orders){
-        if(err){
-            console.log(err);
-        } else {
-            orders.forEach(function(order) {
-                cart = new Cart(order.cart);
-                order.items = cart.generateArray();
-            });
-            res.render('admin/orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName});
-        }
-    });
+router.get("/", isAuth, isAdmin, async function(req, res){
+    const { stype, sdir } = req.query;
+    const orders = await Order.find({}).sort({ [stype] : sdir });
+    res.render('admin/orders/orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName});
 });
 
+<<<<<<< HEAD
+=======
+router.get('/status-:orderStatus', async function(req, res){
+    let orderStatus = req.params.orderStatus;
+    const { stype, sdir } = req.query;
+    let orders;
+
+    if(orderStatus == "Pending" || orderStatus == "Confirmed" || orderStatus == "Completed" || orderStatus == "Declined" || orderStatus == "Refunded" || orderStatus == "Cancelled") {
+        orders = await Order.find({ orderStatus: orderStatus }).sort({ [stype] : sdir });
+    } else {
+        res.redirect('/admin/orders/orders');
+    }
+
+    res.render('admin/orders/orders-status',  {orders: orders, fullName: req.session.firstName + " " + req.session.lastName, orderStatus: orderStatus})
+});
+
+router.get('/search-orders', async function(req, res){
+    let query = req.query.query;
+    const { stype, sdir } = req.query;
+
+    if(!query) {
+        query = "";
+    }
+
+    orders = await Order.find({
+        $or: [
+            { 'address.firstName' : { $regex: query, $options: "i" } }
+        ]
+    }).sort({ [stype]: sdir });
+
+    res.render('admin/orders/search-orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName, query: query});
+});
+
+>>>>>>> main
 router.post("/confirm-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
     Order.findById(orderId, async function(err, order){
@@ -121,6 +146,85 @@ router.post("/pending-order", isAuth, isAdmin, function(req, res){
         if(err){
             console.log(err);
         } else {
+<<<<<<< HEAD
+=======
+            //For Sales DB
+            let item;
+            let items = [];
+
+            //For updating product total quantity sold and total earnings.
+            const quantitySold = [];
+            const itemId = [];
+            const earnings = []
+            const originalTotalEarnings = [];
+            const originalTotalQuantitySold = [];
+
+            const itemsLength = Object.keys(order.cart.items).length;
+
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+
+            //Getting product detail inside of cart.
+            order.items.forEach(function(cart){
+                //To be inserted in sales db.
+                item = {
+                    itemBrand: cart.item.brand,
+                    itemName: cart.item.name,
+                    itemPrice: cart.item.price,
+                    itemVariation: cart.variation,
+                    itemQuantity: cart.qty,
+                    itemTotal: cart.price
+                }
+
+                items.push(item);
+                itemId.push(cart.item._id);
+                quantitySold.push(cart.qty);
+                earnings.push(cart.price);
+            });
+
+            //Updating the total sales and total quantity sold.
+            for(let i = 0; i < itemsLength; i++){
+
+                let productObject = await Product.findOne({_id: itemId[i]});
+                let totalEarnings = productObject.totalEarnings;
+                let totalQuantitySold = productObject.totalQuantitySold;
+
+                originalTotalQuantitySold.push(totalQuantitySold);
+                originalTotalEarnings.push(totalEarnings);
+    
+                const conditions = {
+                    _id: itemId[i],
+                };
+                const update = {
+                    $set: { totalEarnings : originalTotalEarnings[i] + earnings[i], totalQuantitySold : originalTotalQuantitySold[i] + quantitySold[i] }
+                };
+
+                Product.findOneAndUpdate(conditions, update, function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                });
+                
+                
+            };  
+
+            //Creating new sale object to be inserted to sales database.
+            sale = new Sale({
+                orderId: orderId,
+                dateSold: order.dateCreated,
+                earnings: order.amountPaid,
+                items: items,
+            });
+
+            sale.save(function (err){
+                if(err){
+                    console.log(err);
+                } else {
+                    console.log("save success");
+                }
+            });
+        
+>>>>>>> main
             res.redirect('/admin/orders');
         }
     });

@@ -21,7 +21,6 @@ const isAdmin = function(req, res, next){
 }
 
 const Product = require("../../models/productModel");
-const Inventory = require("../../models/inventoryModel");
 
 var fs = require('fs');
 var path = require('path');
@@ -185,18 +184,6 @@ router.post("/add-product", isAuth, isAdmin, upload, function(req, res){
         }
         
         var status = "";
-            const inventory = new Inventory({
-                _id: productId,
-                sales: 0,
-                sold: 0,
-                productId: productId
-            })
-
-            inventory.save(function(err){
-                if(err){
-                    console.log(err);
-                }
-            })
         console.log("Product ID:");
         console.log(productId);
         req.session.productId = productId;
@@ -376,13 +363,6 @@ router.get("/:productId/search", isAuth, isAdmin, function(req,res){
 
 router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
-    Inventory.findByIdAndRemove({ _id:productId }, function(err, result){
-       
-        
-        if(err){
-            console.log(err);
-        } 
-    });
     Product.findByIdAndRemove({ _id:productId }, function(err, result){
         if(result.image != ''){
             try{

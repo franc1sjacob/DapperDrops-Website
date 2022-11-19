@@ -16,9 +16,9 @@ const port = 3000 || process.env.PORT;
 const User = require("./models/userModel");
 const Product = require("./models/productModel");
 const Cart = require("./models/cartModel");
-const Inventory = require("./models/inventoryModel");
 const Wishlist = require("./models/wishlistModel");
 const Order = require("./models/orderModel");
+const Content = require("./models/contentModel");
 
 //MongoDB
 const mongoUri = "mongodb://localhost:27017/dapperdropsDB";
@@ -86,14 +86,19 @@ app.use("/admin/reports/", adminReportRoute);
 const adminFeedbackRoute = require("./routes/admin/Feedback");
 app.use("/admin/feedback/", adminFeedbackRoute);
 
+const adminContentRoute = require("./routes/admin/Content");
+app.use("/admin/content/", adminContentRoute);
+
 //INDEX
 app.get("/", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const newArrivals = await Product.aggregate([]).sort({ dateCreated: -1}).limit(3);
-    res.render('index', { newArrivals: newArrivals });
+    res.render('index', { newArrivals: newArrivals, content: content });
 });
 
-app.get("/about", function(req, res){
-    res.render('about');
+app.get("/about", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('about', { content: content });
 });
 
 app.listen(port, function(){

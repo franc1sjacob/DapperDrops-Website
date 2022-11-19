@@ -3,6 +3,7 @@ const router = express.Router();
 
 const Product = require("../models/productModel");
 const Wishlist = require("../models/wishlistModel");
+const Content = require("../models/contentModel");
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -13,6 +14,7 @@ const isAuth = function(req, res, next){
 }
 
 router.get('/search', async function(req, res) {
+    const content = await Content.findOne({ status: 'active' });
     let searchQuery = req.query.query;
 
     if(!searchQuery) {
@@ -34,11 +36,13 @@ router.get('/search', async function(req, res) {
     res.render("search", { products: searchedProducts,
         query: searchQuery,
         stype: stype,
-        sdir: sdir
+        sdir: sdir,
+        content: content
     });
 });
 
 router.get("/:category", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     let products;
     let category = req.params.category;
 
@@ -77,17 +81,19 @@ router.get("/:category", async function(req, res){
         sdir: sdir,
         ftype: ftype,
         fvalue: fvalue,
-        category: category
+        category: category,
+        content: content
     });
 });
 
 
-router.get("/item/:productId", function(req, res){
+router.get("/item/:productId", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const productId = req.params.productId;
     const userId = req.session.userId;
 
     Product.findOne({_id:productId}, function(err, item){
-        res.render('view-item', {item: item, userId: userId,isError:false,error:""});
+        res.render('view-item', {item: item, userId: userId,isError:false,error:"", content: content});
     });
 });
 

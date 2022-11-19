@@ -21,7 +21,6 @@ const isAdmin = function(req, res, next){
 }
 
 const Product = require("../../models/productModel");
-const Inventory = require("../../models/inventoryModel");
 
 var fs = require('fs');
 var path = require('path');
@@ -102,13 +101,6 @@ router.get("/:productId/view", isAuth, isAdmin, upload, function(req, res){
 
 router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
-    Inventory.findByIdAndRemove({ _id:productId }, function(err, result){
-       
-        
-        if(err){
-            console.log(err);
-        } 
-    });
     Product.findByIdAndRemove({ _id:productId }, function(err, result){
         if(result.image != ''){
             try{

@@ -68,15 +68,18 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                 let productObject = await Product.findOne({_id: itemId[i]});
                 let productObjectVariations = productObject.variations;
 
+                console.log('productObject',productObjectVariations);
+
                 //GET QUANTITY OF EACH SELECTED VARIATION
                 const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
                 originalQuantity.push(origQty.quantity);
                 minusedValues.push(originalQuantity[i] - quantity[i]);    
             };  
+            
 
             console.log(minusedValues);
             let hasNegative = minusedValues.some(v => v < 0);
-            console.log(hasNegative);
+            let status = "";
             if(hasNegative){
                 res.redirect('/admin/orders');    
             } else{
@@ -86,23 +89,28 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                         'variations.name': {$eq: variations[i]}
                     };
                     
+                    if(minusedValues[i] >= 6){
+                        status = "In-Stock";
+                    }
+                    else if(minusedValues[i] <= 5 && minusedValues[i] >=1){
+                        status = "Few-Stocks";
+                    }
+                    else{
+                        status = "Out-of-Stock";
+                    }
+
                     const update = {
-                        $set:{'variations.$.quantity': minusedValues[i],
-                        
+                        $set:{
+                            'variations.$.quantity': minusedValues[i],
+                            'variations.$.status': status
                         }
                     };
 
                     Product.findOneAndUpdate(conditions, update, function(err){});
                 };
-                res.redirect('/admin/orders');    
+                Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, function(err, order){});
+                res.redirect('/admin/orders');
             }
-        }
-    });
-    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, async function(err, order){
-        if(err){
-            console.log(err);
-        } else {
-            res.redirect('/admin/orders');
         }
     });
 });
@@ -247,14 +255,27 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                 const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
                 console.log(origQty);
                 originalQuantity.push(origQty.quantity);
-    
+
+                let status = "";
+
+                if(originalQuantity[i] + quantity[i] >= 6){
+                    status = "In-Stock";
+                }else if(originalQuantity[i] + quantity[i] <= 5 && originalQuantity[i] + quantity[i] >=1){
+                    status = "Few-Stocks";
+                }else{
+                    status = "Out-of-Stock";
+                }
+
                 const conditions = {
                     _id: itemId[i],
                     'variations.name': {$eq: variations[i]}
                 };
 
                 const update = {
-                    $set:{'variations.$.quantity': originalQuantity[i] + quantity[i]}
+                    $set:{
+                        'variations.$.quantity': originalQuantity[i] + quantity[i],
+                        'variations.$.status': status
+                    }
                 };
 
                 Product.findOneAndUpdate(conditions, update, function(err){
@@ -322,13 +343,26 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
                 originalTotalQuantitySold.push(totalQuantitySold);
                 originalTotalEarnings.push(totalEarnings);
                 
+                let status = "";
+
+                if(originalQuantity[i] + quantity[i] >= 6){
+                    status = "In-Stock";
+                }
+                else if(originalQuantity[i] + quantity[i] <= 5 && originalQuantity[i] + quantity[i] >=1){
+                    status = "Few-Stocks";
+                }
+                else{
+                    status = "Out-of-Stock";
+                }
+                
                 const conditions = {
                     _id: itemId[i],
                     'variations.name': {$eq: variations[i]}
                 };
 
                 const update = {
-                    $set:{'variations.$.quantity': originalQuantity[i] + quantity[i], totalEarnings : originalTotalEarnings[i] - earnings[i], totalQuantitySold : originalTotalQuantitySold[i] - quantitySold[i]}
+                    $set:{
+                        'variations.$.quantity': originalQuantity[i] + quantity[i], 'variations.$.status': status, totalEarnings : originalTotalEarnings[i] - earnings[i], totalQuantitySold : originalTotalQuantitySold[i] - quantitySold[i]}
                 };
 
                 //Adds back the subtracted quantity, subtracts from total earnings and total quantity sold.

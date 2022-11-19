@@ -411,6 +411,24 @@ router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
     });
 });
 
+router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
+    const productId = req.params.productId;
+
+    Product.findOne({ _id:productId }, function(err, product){
+        res.render('admin/update-product', {
+            _id: productId,
+            brand: product.brand,
+            name: product.name,
+            price: product.price,
+            description: product.description,
+            quantity: product.quantity,
+            image: product.image,
+            category: product.category,
+            fullName: req.session.firstName + " " + req.session.lastName
+        });
+    })
+});
+
 router.get("/update-variation/:variationId-:productId", isAuth, isAdmin, upload, function(req, res){
     const variationId = req.params.variationId;
     const productId = req.params.productId;

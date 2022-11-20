@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const nodemailer = require("nodemailer");
 
 const User = require("../../models/userModel");
 const Product = require("../../models/productModel");
@@ -485,7 +486,7 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, isAdmin, function(r
     });
 });
 
-router.post('/shipping-:status', function(req, res){
+router.post('/shipping-:status', isAuth, isAdmin, function(req, res){
     const status = req.params.status;
     const { orderId } = req.body;
     if(status == "Pending" || status == "Processing" || status == "In-transit" || status == "Delivered"){
@@ -500,5 +501,76 @@ router.post('/shipping-:status', function(req, res){
         res.redirect('/admin/orders');
     }
 });
+
+router.get("/send-ship-mail-:orderId", isAuth, isAdmin, function(req, res){
+    const orderId = req.params.orderId;
+    console.log()
+    Order.findById(orderId, function(err, foundOrder){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.render('admin/send-ship-mail', {fullName: req.session.firstName + " " + req.session.lastName, order: foundOrder});
+        }
+    });
+});
+
+router.post("/send-mail-shipped-:orderId", isAuth, isAdmin, async function(req, res){
+    const orderId = req.params.orderId;
+    const{shippingCompany, trackNumber, shippingLink} = req.body;
+    Order.findById((orderId), function(err, foundOrder){
+        if(err){
+            console.log(err);
+        }
+        else{
+            User.findById(foundOrder.userId, function(err, foundUser){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    sendShippingMail(foundUser.firstName, foundUser.email, foundOrder._id, shippingCompany, trackNumber, shippingLink);
+                    console.log(foundUser.firstName + foundUser.email);
+                    res.redirect('/admin/orders');
+                }
+            });
+        }
+    });
+});
+
+const sendShippingMail = async function(name, email, orderID, company, track, shipLink){
+    try {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth:{
+                user: process.env.SECRETEMAIL,
+                pass: process.env.SECRETPASSWORD
+            },
+            tls:{
+                rejectUnauthorized: false
+            }
+        });
+        
+        const mailOptions= {
+            from: process.env.SECRETEMAIL,
+            to: email,
+            subject: "Tracking Order",
+            html:'<p>Hi ' + name + ', your order with the Order ID of ' + orderID + ' is now shipped through the company courier services of ' + company + ' please click at this link <a href="'+shipLink+'"> View Shipping Courier Services</a> and view details of your shipped order, by entering your received tracking number: ' + track + ' in the link.</p>'
+        }
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            }
+            else{
+                console.log("Email has been sent:- ", info.response);
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
 
 module.exports = router;

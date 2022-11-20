@@ -1,0 +1,36 @@
+<%- include('../../innerPartials/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="fw-bold text-center mt-2 mb-3">View Payment Details</h1>
+    <% if(content.payment.length == 0) { %>
+        <h3 class="fw-bold text-center">There are no payment details set yet..</h3>
+        <a class="btn btn-outline-success mb-3" href="add-payment-details"><i class="fa-solid fa-plus"></i></a>
+    <% } else { %>
+        <a class="btn btn-outline-success mb-3" href="add-payment-details"><i class="fa-solid fa-plus"></i></a>
+        <div class="row">
+        <%content.payment.forEach(function(payment){%>
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex">
+                        <div>
+                            <%= payment.paymentName %>
+                        </div>
+                        <div class="ms-auto">
+                            <form action="/admin/content/delete-payment-details/<%= payment._id %>" method="POST">
+                                <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">User Name: <%= payment.userName %></p>
+                        <p class="card-text">Bank Number: <%= payment.bankNumber %></p>
+                        <img src="/images/content/payment/<%= payment.qrCodeImage %>" class="w-100">
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('../../innerPartials/admin/footer'); %>

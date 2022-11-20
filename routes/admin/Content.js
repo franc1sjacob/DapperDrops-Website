@@ -43,26 +43,32 @@ const aboutUsStorage = multer.diskStorage({
     }
 });
 
-const homeAboutUsStorage = multer.diskStorage({
+const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         if(file.fieldname == 'homeImage1' || file.fieldname == 'homeImage2' || file.fieldname == 'homeImage3'){
-            cb(null, 'public/images/content/home')
+            cb(null, 'public/images/content/home');
+        } else if (file.fieldname == 'aboutUsImage1' || file.fieldname == 'aboutUsImage2' || file.fieldname == 'aboutUsImage3') {
+            cb(null, 'public/images/content/aboutus');
         } else {
-            cb(null, 'public/images/content/aboutus')
+            cb(null, 'public/images/content/payment');
         }
     },
     filename: (req, file, cb) => {
-        cb(null, file.fieldname + path.extname(file.originalname))
+        if(file.fieldname == 'qrCodeImage'){
+            cb(null, file.fieldname + '_' + Date.now() + "_" + file.originalname)
+        } else {
+            cb(null, file.fieldname + path.extname(file.originalname))
+        }
+
     }
 });
   
-const uploadHomeImages = multer({ storage: homeStorage });
-const uploadAboutUsImages = multer({ storage: aboutUsStorage });
-const uploadhomeAboutUsImages = multer({ storage: homeAboutUsStorage });
+const uploadMultiple = multer({ storage: storage });
+const uploadSingle = multer({ storage: storage }).single('qrCodeImage');
 
-const multipleUploadHome = uploadHomeImages.fields([{ name: 'homeImage1' }, { name: 'homeImage2' }, { name: 'homeImage3' }])
-const multipleUploadAboutUs = uploadAboutUsImages.fields([{ name: 'aboutUsImage1' }, { name: 'aboutUsImage2' }, { name: 'aboutUsImage3' }])
-const multipleUploadHomeAboutUs = uploadhomeAboutUsImages.fields([{ name: 'homeImage1' }, { name: 'homeImage2' }, { name: 'homeImage3' }, { name: 'aboutUsImage1' }, { name: 'aboutUsImage2' }, { name: 'aboutUsImage3' } ]);
+const multipleUploadHome = uploadMultiple.fields([{ name: 'homeImage1' }, { name: 'homeImage2' }, { name: 'homeImage3' }])
+const multipleUploadAboutUs = uploadMultiple.fields([{ name: 'aboutUsImage1' }, { name: 'aboutUsImage2' }, { name: 'aboutUsImage3' }])
+const multipleUploadHomeAboutUs = uploadMultiple.fields([{ name: 'homeImage1' }, { name: 'homeImage2' }, { name: 'homeImage3' }, { name: 'aboutUsImage1' }, { name: 'aboutUsImage2' }, { name: 'aboutUsImage3' } ]);
 
 router.get('/', isAuth, isAdmin, async function(req, res){
     const content = await Content.findOne({ status: 'active' });
@@ -104,6 +110,48 @@ router.get('/edit-text-:field', function(req, res){
         res.redirect('/admin/content')
     }
 
+});
+
+router.get('/view-payment-details', async (req, res) => {
+    const content = await Content.findOne({ status: 'active' });
+    res.render('admin/content/view-payment-details', { content: content, fullName: req.session.firstName + " " + req.session.lastName });
+});
+
+router.get('/add-payment-details', async function(req, res){
+    res.render('admin/content/add-payment-details', { fullName: req.session.firstName + " " + req.session.lastName });
+});
+
+router.post('/add-payment-details', uploadSingle, function(req, res){
+    const { paymentName, userName, bankNumber } = req.body;
+    const qrCodeImage = req.file.filename;
+
+    const payment = {
+        paymentName: paymentName,
+        userName: userName, 
+        bankNumber: bankNumber,
+        qrCodeImage: qrCodeImage
+    };
+
+    Content.findOneAndUpdate({ status: 'active' }, { $push: { payment: [payment] } }, function(err, result){
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect('/admin/content/view-payment-details');
+        }
+    });
+});
+
+router.post('/delete-payment-details/:paymentId', function(req, res){
+    const { paymentId } = req.params;
+    Content.findOneAndUpdate({ status: 'active' }, { $pull: { payment: { _id: paymentId } } }, function(err, result){
+        if(err) {
+            console.log(err);
+        } else {
+            var image = result.payment.find(item => item._id == paymentId);
+            fs.unlinkSync('public/images/content/payment/' + image.qrCodeImage)
+            res.redirect('/admin/content/view-payment-details');
+        }
+    });
 });
 
 router.post('/edit-text-:field', function(req, res){

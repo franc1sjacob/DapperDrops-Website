@@ -24,3 +24,16 @@ body{
 .img-logo{
     width: 60px;
 }
+
+/* Image Content */
+
+.squareHomeAboutUs {
+    aspect-ratio: 1/1;
+    width: 100%;
+}
+
+.paymentImage {
+    aspect-ratio: 1/1;
+    width: 50%;
+}
+

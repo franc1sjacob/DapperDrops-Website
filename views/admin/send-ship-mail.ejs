@@ -1,0 +1,28 @@
+<%- include('../innerPartials/admin/header', {name: fullName}); %>
+<div class="container">
+    <form action="/admin/orders/send-mail-shipped-<%= order._id %>" method="post">
+        <h1 class="fw-bold text-center mt-2 mb-3">Send Shipping Mail Link</h1>
+        
+        <div class="mb-3">
+            <label for="shippingCompany" class="form-label">Shipping Company:</label>
+            <input type="text" class="form-control" id="shippingCompany" name="shippingCompany" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="trackNumber" class="form-label">Tracking Number:</label>
+            <input type="text" class="form-control" id="trackNumber" name="trackNumber" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="shippingLink" class="form-label">Shipping Link:</label>
+            <input type="text" class="form-control" id="shippingLink" name="shippingLink" required>
+        </div>
+
+        <input type="hidden" name="orderId" value="<%= order._id %>">
+        
+        <button type="submit" class="btn btn-primary mt-3" type="submit">Send Email</button>
+        <a class="btn btn-secondary mt-3" href="/admin/orders">Cancel</a>
+
+    </form>
+</div>
+<%- include('../innerPartials/admin/footer'); %>

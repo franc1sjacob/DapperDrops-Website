@@ -13,17 +13,17 @@
             <div class="d-grid gap-2">
             <form action="/cart/add-to-cart" method="post">
                 <div class="mb-3">
-                    <label for="variation" class="form-label">Size:</label>
+                    <label for="variation" class="form-label">Size: <span style="color:red" id="errorDisabledValue"></span></label>
                     <select name="variation" onchange="handleQuantity();" id="category" class="form-control">
                         <% item.variations.forEach(function(variation){ %>
-                            <option value="<%= variation.name %>"><%= variation.name %></option>
+                            <option id = "categoryValue" value="<%= variation.name %>"><%= variation.name %></option>
                         <% }) %>
                     </select>
                 </div>
                     
                 <p class="mb-3">Available Quantity: <span id="qtydisplay" style="color:green"></span></p>
                 <div class="mb-3 form-outline">
-                    <input type="number" name="quantity" class="form-control" value="1" min="1" required>
+                    <input type="number" name="quantity" id = "inputQty" class="form-control" value="1" min="1" required>
                 </div>
                 
                 <input type="hidden" name="itemValueTemp" id ="itemValueTemp" value="<%= JSON.stringify(item) %>">
@@ -36,7 +36,7 @@
                 <% } %>
 
                 <div class="d-grid gap-2">
-                    <button class="btn btn-dark btn-lg" type="submit">ADD TO CART</button>
+                    <button class="btn btn-dark btn-lg" id="submit" type="submit">ADD TO CART</button>
                     <% if(userId){ %>
                     <button class="btn btn-light btn-lg" formaction="/products/add-to-wishlist">ADD TO WISHLIST</button>  
                     <% } %>
@@ -52,7 +52,7 @@
 <script>
 // parse the stored stringified item in json to able to use it in defer code
 var item = JSON.parse(document.getElementById("itemValueTemp").value);
-console.log(item);
+
 
 // call function right on load of webpage to show instant quantity for a selected value in selectbox
 handleQuantity();
@@ -60,7 +60,7 @@ handleQuantity();
 var currentQty = 0;
 
 function handleQuantity (){
-
+   
     // get value of id category in selectbox and find the selected option 
     var categoryValue = $("#category").find('option:selected');
 
@@ -71,8 +71,48 @@ function handleQuantity (){
     var selectVariation = item.variations.find(x=>(x.name === value));
     currentQty = selectVariation.quantity;
 
+  
     // id of span element displaying quantity on selectvar value    
-    $("#qtydisplay").text(selectVariation.quantity)
+    $("#qtydisplay").text(selectVariation.quantity);
+    if(currentQty === 0){
+            $("#submit").prop("disabled", true);
+            // $('#categoryValue option[value="'+categoryValue+'"]').attr("disabled", true);
+            $('select option[value="'+value+'"]').attr("disabled",true).append(" Size No longer available").css({"color":"red"});
+            //  $("#categoryValue").prop("disabled", true);
+            $('#categoryValue option[value="'+categoryValue+'"]').append(" Size No longer available")
+            $("#errorDisabledValue").text("Size Not Available");
+             
+    }else{
+        $("#submit").prop("disabled", false);
+        $("#errorDisabledValue").text("");
+    }
 }
+
+
+$(document).change(function() {
+    var categoryValue = $("#category").find('option:selected');
+
+    // to get specific content of "value" attrib in selectbox
+    var value = categoryValue.val();
+
+    // find the variation array for the selected variation value using ,find and passing the var value
+    var selectVariation = item.variations.find(x=>(x.name === value));
+    currentQty = selectVariation.quantity;
+    
+    $("input").attr({
+       "max" : currentQty,
+       "min" : 1      
+    });
+
+    var selectedInputValue = $("input").val();
+    if(currentQty === 0){
+        console.log(currentQty,"current on changed",value);
+    
+        $("#submit").prop("disabled", true);
+        $('select option[value="'+value+'"]').attr("disabled",true);
+        // $("#categoryValue").prop("disabled", true);
+      
+    }
+});
 </script>
 <%- include('innerPartials/footer'); %>

@@ -78,7 +78,7 @@ router.post("/add-one", function(req, res){
 }); 
 
 
-router.get("/remove-item/:id/:variation", function(req, res){
+router.post("/remove-item/:id/:variation", function(req, res){
     const prodId = req.params.id;
     const variation = req.params.variation;
     const cart = new Cart(req.session.cart ? req.session.cart : {});
@@ -95,42 +95,52 @@ router.get("/checkout", isAuth, async function(req, res){
     if(!req.session.cart){
         res.redirect('/cart/view-cart');
     }
-    User.findById({ _id: userId }, function(err, user){
+    User.findById({ _id: userId },  async function(err, user){
         if(err){
             console.log(err);
-        } 
-        else 
-        {
-            try 
-            {
+        } else {
+
+            try {
                 const cart = new Cart(req.session.cart);
                 var errorValues = [];
-                console.log(Object.values(cart.items),"item bhenchod");
+                let adminChanged = false;
+                let cartItemList = Object.values(cart.items);
+                
+                for (let j = 0; j < cartItemList.length; j++) {
+                    let i = cartItemList[j];           
+                    const getProductCheck = await Product.findById({_id:i.item._id.valueOf()});
+                    console.log(i.item._id.valueOf(),i.item.name , getProductCheck.name ,i.item.brand , getProductCheck.brand,i.item.price , getProductCheck.price,i.item.description , getProductCheck.description)
+                    if(i.item.name != getProductCheck.name ||i.item.brand != getProductCheck.brand||i.item.price != getProductCheck.price){
+                        errorValues.push("Existing product in cart was changed by admin, please empty your cart or reload your page");    
+                    }
+                }
+                
+                if(errorValues.length > 0){
+                    throw errorValues
+                }
+               
                 Object.values(cart.items).forEach((foundProduct)=>{
-                    // console.log("variations find",foundProduct.variation,foundProduct.qty,foundProduct.item.name);
-                    foundProduct.item.variations.forEach((foundVariation)=>{                   
+                    foundProduct.item.variations.forEach((foundVariation)=>{                  
                         if(foundProduct.variation === foundVariation.name){
                             if(foundProduct.qty > foundVariation.quantity){
-                                console.log(foundVariation,'oh yeah');
                                 errorValues.push(foundProduct.item.brand+" "+foundProduct.item.name+", "+"Size: "+foundProduct.variation+" ");
-                                // console.log("MATCHED ERROR" ,foundProduct.qty,foundVariation.quantity );   
                             }
                         }
                     });
                 })
-                // console.log(errorValues.length,"error valuesss");
+
                 if(errorValues.length > 0){
                     throw errorValues
                 }
-                
                 res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user, content: content});
-            } 
-            catch (error) 
-            {
-                // console.log(error,"catch")
-                const cart = new Cart(req.session.cart);
-                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});
 
+            } catch (error) {
+                console.log(error,"catching")
+                const cart = new Cart(req.session.cart);
+                if(error.includes('Product changed , please empty your cart')){
+                    req.session.cart = "";
+                }
+                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});
             }
         }
     })

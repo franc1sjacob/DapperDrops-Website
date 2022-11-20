@@ -137,7 +137,7 @@ router.get("/checkout", isAuth, async function(req, res){
             } catch (error) {
                 console.log(error,"catching")
                 const cart = new Cart(req.session.cart);
-                if(error.includes('Product changed , please empty your cart')){
+                if(error.includes("Existing product in cart was changed by admin, please empty your cart or reload your page")){
                     req.session.cart = "";
                 }
                 res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});

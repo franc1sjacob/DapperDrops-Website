@@ -113,7 +113,11 @@
         <div class="col-md-12">
           <% if(isError){ %>
             <div class="alert alert-danger" role="alert">
-                <p style="color: red;"><%= error %></p>  
+                <p style="color: red;">Error In quantity of
+                  <% error.forEach(function(e){ %>
+                    <span> <%=e%></span>
+                  <% }) %>
+                </p>  
             </div>
         </div>
           <% } %>

@@ -1,0 +1,21 @@
+<%- include('../../innerPartials/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="fw-bold text-center mt-2 mb-3">Add FAQs</h1>
+    <form action="/admin/content/add-faqs" method="POST">
+        <div class="mb-3">
+            <label for="question">Question: </label>
+            <input class="form-control" type="text" name="question" id="question" required>
+        </div>
+        <div class="mb-3">
+            <label for="answer">Answer: </label>
+            <input class="form-control" type="text" name="answer" id="answer" required>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-success">Add FAQ</button>
+            <a class="btn btn-secondary" href="/admin/content">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<%- include('../../innerPartials/admin/footer'); %>

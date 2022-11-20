@@ -4,9 +4,11 @@
     <h1 class="fw-bold text-center mt-2 mb-3">View Payment Details</h1>
     <% if(content.payment.length == 0) { %>
         <h3 class="fw-bold text-center">There are no payment details set yet..</h3>
-        <a class="btn btn-outline-success mb-3" href="add-payment-details"><i class="fa-solid fa-plus"></i></a>
+        <a class="btn btn-outline-secondary mb-3" href="/admin/content"><i class="fa-solid fa-left-long"></i> Back</a>
+        <a class="btn btn-outline-success mb-3 float-end" href="add-payment-details"><i class="fa-solid fa-plus"></i></a>
     <% } else { %>
-        <a class="btn btn-outline-success mb-3" href="add-payment-details"><i class="fa-solid fa-plus"></i></a>
+        <a class="btn btn-outline-secondary mb-3" href="/admin/content"><i class="fa-solid fa-left-long"></i> Back</a>
+        <a class="btn btn-outline-success mb-3 float-end" href="add-payment-details"><i class="fa-solid fa-plus"></i></a>
         <div class="row">
         <%content.payment.forEach(function(payment){%>
             <div class="col-lg-4 mb-4">

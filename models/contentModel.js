@@ -45,6 +45,10 @@ const contentSchema = new mongoose.Schema({
         userName: String,
         bankNumber: String,
         qrCodeImage: String
+    }],
+    faqs: [{
+        question: String,
+        answer: String
     }]
 });
 

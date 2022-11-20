@@ -75,7 +75,7 @@ router.get('/', isAuth, isAdmin, async function(req, res){
     res.render('admin/content/content', {fullName: req.session.firstName + " " + req.session.lastName, content: content});
 });
 
-router.get('/edit-text-:field', function(req, res){
+router.get('/edit-text-:field', isAuth, isAdmin, function(req, res){
     const field = req.params.field;
     let title, check;
 
@@ -112,16 +112,56 @@ router.get('/edit-text-:field', function(req, res){
 
 });
 
-router.get('/view-payment-details', async (req, res) => {
+router.get('/view-faqs', isAuth, isAdmin, async (req, res) => {
+    const content = await Content.findOne({ status: 'active' });
+    res.render('admin/content/view-faqs', { content: content, fullName: req.session.firstName + " " + req.session.lastName });
+});
+
+router.get('/add-faqs', isAuth, isAdmin, async function(req, res){
+    res.render('admin/content/add-faqs', { fullName: req.session.firstName + " " + req.session.lastName });
+});
+
+router.post('/add-faqs', isAuth, isAdmin, function(req, res){
+    const { question, answer } = req.body;
+
+    console.log(req.body);
+
+    const faq = {
+        question: question,
+        answer: answer
+    };
+
+    Content.findOneAndUpdate({ status: 'active' }, { $push: { faqs: [faq] } }, function(err, result){
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect('/admin/content/view-faqs');
+        }
+    });
+});
+
+router.post('/delete-faq/:faqId', isAuth, isAdmin, function(req, res){
+    const { faqId } = req.params;
+    Content.findOneAndUpdate({ status: 'active' }, { $pull: { faqs: { _id: faqId } } }, function(err, result){
+        if(err) {
+            console.log(err);
+        } else {
+            var image = result.payment.find(item => item._id == paymentId);
+            res.redirect('/admin/content/view-faqs');
+        }
+    });
+});
+
+router.get('/view-payment-details', isAuth, isAdmin, async (req, res) => {
     const content = await Content.findOne({ status: 'active' });
     res.render('admin/content/view-payment-details', { content: content, fullName: req.session.firstName + " " + req.session.lastName });
 });
 
-router.get('/add-payment-details', async function(req, res){
+router.get('/add-payment-details', isAuth, isAdmin, function(req, res){
     res.render('admin/content/add-payment-details', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 
-router.post('/add-payment-details', uploadSingle, function(req, res){
+router.post('/add-payment-details', isAuth, isAdmin, uploadSingle, function(req, res){
     const { paymentName, userName, bankNumber } = req.body;
     const qrCodeImage = req.file.filename;
 
@@ -141,7 +181,7 @@ router.post('/add-payment-details', uploadSingle, function(req, res){
     });
 });
 
-router.post('/delete-payment-details/:paymentId', function(req, res){
+router.post('/delete-payment-details/:paymentId', isAuth, isAdmin, function(req, res){
     const { paymentId } = req.params;
     Content.findOneAndUpdate({ status: 'active' }, { $pull: { payment: { _id: paymentId } } }, function(err, result){
         if(err) {
@@ -154,7 +194,7 @@ router.post('/delete-payment-details/:paymentId', function(req, res){
     });
 });
 
-router.post('/edit-text-:field', function(req, res){
+router.post('/edit-text-:field', isAuth, isAdmin, function(req, res){
     const { newText } = req.body;
     const { field } = req.params
     Content.findOneAndUpdate({ status: 'active' }, { $set: { [field] : newText } }, function(err, result){
@@ -166,15 +206,15 @@ router.post('/edit-text-:field', function(req, res){
     });
 });
 
-router.get('/edit-image-homeImage', function(req, res){
+router.get('/edit-image-homeImage', isAuth, isAdmin, function(req, res){
     res.render('admin/content/edit-image-home-content', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 
-router.get('/edit-image-aboutUsImage', function(req, res){
+router.get('/edit-image-aboutUsImage', isAuth, isAdmin, function(req, res){
     res.render('admin/content/edit-image-aboutus-content', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 
-router.post('/edit-image-homeImage', multipleUploadHome, function(req, res){
+router.post('/edit-image-homeImage', isAuth, isAdmin, multipleUploadHome, function(req, res){
     const images = req.files;
     const imageArr = [images.homeImage1[0].filename, images.homeImage2[0].filename, images.homeImage3[0].filename];
     const imageObject = [
@@ -191,7 +231,7 @@ router.post('/edit-image-homeImage', multipleUploadHome, function(req, res){
     });
 });
 
-router.post('/edit-image-aboutUsImage', multipleUploadAboutUs, function(req, res){
+router.post('/edit-image-aboutUsImage', isAuth, isAdmin, multipleUploadAboutUs, function(req, res){
     const images = req.files;
     const imageArr = [images.aboutUsImage1[0].filename, images.aboutUsImage2[0].filename, images.aboutUsImage3[0].filename];
     const imageObject = [

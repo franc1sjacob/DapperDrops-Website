@@ -101,6 +101,16 @@ app.get("/about", async function(req, res){
     res.render('about', { content: content });
 });
 
+app.get("/faqs", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('faqs', { content: content });
+});
+
+app.get("/tos", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('tos', { content: content });
+});
+
 app.listen(port, function(){
     console.log("Server started on port " + port);
 });

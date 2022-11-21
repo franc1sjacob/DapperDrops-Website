@@ -173,7 +173,7 @@ router.post("/decline-order", isAuth, isAdmin, function(req, res){
 
 router.post("/complete-order", isAuth, isAdmin, function(req, res){
     const {orderId} = req.body;
-    Order.findById(orderId, {$set: {orderStatus: "Completed"}}, async function(err, order){
+    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, async function(err, order){
         if(err){
             console.log(err);
         } else {
@@ -394,11 +394,9 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
 
                 if(originalQuantity[i] + quantity[i] >= 6){
                     status = "In-Stock";
-                }
-                else if(originalQuantity[i] + quantity[i] <= 5 && originalQuantity[i] + quantity[i] >=1){
+                } else if(originalQuantity[i] + quantity[i] <= 5 && originalQuantity[i] + quantity[i] >=1){
                     status = "Few-Stocks";
-                }
-                else{
+                } else{
                     status = "Out-of-Stock";
                 }
                 

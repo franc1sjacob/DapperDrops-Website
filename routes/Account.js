@@ -129,6 +129,7 @@ router.get("/register", async function(req, res){
 });
 
 router.post("/register", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const { firstName, lastName, email, password } = req.body;
 
     let user = await User.findOne({ email });

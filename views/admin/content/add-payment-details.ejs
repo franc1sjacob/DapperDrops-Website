@@ -1,0 +1,29 @@
+<%- include('../../innerPartials/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="fw-bold text-center mt-2 mb-3">Add Payment Details</h1>
+    <form action="/admin/content/add-payment-details" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="paymentName">Payment Name: </label>
+            <input class="form-control" type="text" name="paymentName" id="paymentName" required>
+        </div>
+        <div class="mb-3">
+            <label for="userName">User Name: </label>
+            <input class="form-control" type="text" name="userName" id="userName" required>
+        </div>
+        <div class="mb-3">
+            <label for="bankNumber">Bank Number: </label>
+            <input class="form-control" type="text" name="bankNumber" id="bankNumber" required>
+        </div>
+        <div class="mb-3">
+            <label for="qrCodeImage">QR Code Image: </label>
+            <input class="form-control" type="file" name="qrCodeImage" id="qrCodeImage" required>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-success">Add Payment Option</button>
+            <a class="btn btn-secondary" href="/admin/content">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<%- include('../../innerPartials/admin/footer'); %>

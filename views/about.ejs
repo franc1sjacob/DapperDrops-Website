@@ -4,24 +4,60 @@
       <h1 class="cust-title-text mb-5 text-center">About Us</h1>
       <div class="row">
         <div class="col-lg-6">
-          <img src="images/about-us/image1.jpg" class="mb-5" style="width: 100%;" alt="">
+          <% if(content == null){ %>
+            <img src="images/default/aboutus/image1.jpg" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+          <% } else { %>
+            
+            <% if(content.aboutUsImage.length == 0){ %>
+              <img src="images/default/aboutus/image1.jpg" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+            <% } else { %>
+              <img src="images/content/aboutus/<%= content.aboutUsImage[0].image %>" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+            <% } %>
+
+          <% } %>
         </div>
         <div class="col-lg-6">
-          <p class="fw-bold">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint a totam adipisci deleniti quos laudantium voluptates ducimus suscipit voluptate architecto voluptatem, dignissimos dolorum asperiores! Nesciunt sed odio obcaecati nostrum illum!</p>
-          <p class="fw-bold">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint a totam adipisci deleniti quos laudantium voluptates ducimus suscipit voluptate architecto voluptatem, dignissimos dolorum asperiores! Nesciunt sed odio obcaecati nostrum illum!</p>
-          <p class="fw-bold">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint a totam adipisci deleniti quos laudantium voluptates ducimus suscipit voluptate architecto voluptatem, dignissimos dolorum asperiores! Nesciunt sed odio obcaecati nostrum illum!</p>
-          <p class="fw-bold">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint a totam adipisci deleniti quos laudantium voluptates ducimus suscipit voluptate architecto voluptatem, dignissimos dolorum asperiores! Nesciunt sed odio obcaecati nostrum illum!</p>
+          <% if(content == null || content == undefined){ %>
+            <p class="fw-bold">DEFAULT PARAGRAPH</p>
+            <p class="fw-bold">DEFAULT PARAGRAPH</p>
+            <p class="fw-bold">DEFAULT PARAGRAPH</p>
+          <% } else { %>
+            <p class="fw-bold"><%= content.aboutUsParagraph1 %></p>
+            <p class="fw-bold"><%= content.aboutUsParagraph2 %></p>
+            <p class="fw-bold"><%= content.aboutUsParagraph3 %></p>
+          <% } %>
         </div>
       </div>
 
       <div class="row">
         <div class="col-lg-6">
-          <img src="images/about-us/image2.png" class="mb-5" style="width: 100%;" alt="">
+        <% if(content == null){ %>
+          <img src="images/default/aboutus/image2.png" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+        <% } else { %>
+
+          <% if(content.aboutUsImage.length == 0){ %>
+            <img src="images/default/aboutus/image2.png" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+          <% } else { %>
+            <img src="images/content/aboutus/<%= content.aboutUsImage[1].image %>" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+          <% } %>
+          
+        <% } %>
         </div>
         <div class="col-lg-6">
-          <img src="images/about-us/image3.png" class="mb-5" style="width: 100%;" alt="">
+          <% if(content == null){ %>
+            <img src="images/default/aboutus/image3.png" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+          <% } else { %>
+
+            <% if(content.aboutUsImage.length == 0){ %>
+              <img src="images/default/aboutus/image3.jpg" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+            <% } else { %>
+              <img src="images/content/aboutus/<%= content.aboutUsImage[2].image %>" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+            <% } %>
+            
+
+          <% } %>
         </div>
       </div>
     </div>
     
-<%- include('partials/footer') %>
+<%- include('partials/footer', { content: content }) %>

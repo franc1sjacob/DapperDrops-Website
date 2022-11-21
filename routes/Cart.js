@@ -6,6 +6,7 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
+const Content = require("../models/contentModel");
 const { ObjectID } = require('bson');
 
 const isAuth = function(req, res, next){
@@ -16,17 +17,19 @@ const isAuth = function(req, res, next){
     }
 }
 
-router.get("/view-cart", function(req, res){
+router.get("/view-cart", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     if(!req.session.cart || req.session.cart.totalPrice === 0){
-        res.render('view-cart', {usercart: null});
-    } else{
+        res.render('view-cart', {usercart: null, content: content});
+    } else {
         const cart = new Cart(req.session.cart);
         // res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty});
-        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:false,error:""});
+        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:false,error:"", content: content});
     }
 });
 
 router.post("/add-to-cart", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     const { prodId, variation, quantity} = req.body;
     const selectQty = quantity;
@@ -51,7 +54,7 @@ router.post("/add-to-cart", async function(req, res){
 
     } catch (error) {
         let product = await Product.findById(prodId)
-        res.render('view-item', {item: product, userId: userId,isError:true,error:error}); 
+        res.render('view-item', {item: product, userId: userId,isError:true,error:error, content: content}); 
     }
     
 });
@@ -75,7 +78,7 @@ router.post("/add-one", function(req, res){
 }); 
 
 
-router.get("/remove-item/:id/:variation", function(req, res){
+router.post("/remove-item/:id/:variation", function(req, res){
     const prodId = req.params.id;
     const variation = req.params.variation;
     const cart = new Cart(req.session.cart ? req.session.cart : {});
@@ -86,53 +89,81 @@ router.get("/remove-item/:id/:variation", function(req, res){
     
 }); 
 
-router.get("/checkout", isAuth, function(req, res){
+router.get("/checkout", isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     if(!req.session.cart){
         res.redirect('/cart/view-cart');
     }
-    User.findById({ _id: userId }, function(err, user){
+    User.findById({ _id: userId },  async function(err, user){
         if(err){
             console.log(err);
-        } 
-        else 
-        {
-            try 
-            {
+        } else {
+
+            try {
                 const cart = new Cart(req.session.cart);
                 var errorValues = [];
-                console.log(Object.values(cart.items),"item bhenchod");
+                let adminChanged = false;
+                let cartItemList = Object.values(cart.items);
+                
+                for (let j = 0; j < cartItemList.length; j++) {
+                    let i = cartItemList[j];           
+                    const getProductCheck = await Product.findById({_id:i.item._id.valueOf()});
+                    console.log(getProductCheck, "getProductCheck");
+                    
+                    if(!getProductCheck){
+                        if(errorValues.length === 0){
+                            errorValues.push("Item/s in cart were removed suddenly, please reload your cart and page"); 
+                        }  
+                    }
+                    if(errorValues.length > 0){
+                        throw errorValues
+                    }
+                    console.log(i.item._id.valueOf(),i.item.name , getProductCheck.name ,i.item.brand , getProductCheck.brand,i.item.price , getProductCheck.price,i.item.description , getProductCheck.description)
+                    if(i.item.name != getProductCheck.name ||i.item.brand != getProductCheck.brand||i.item.price != getProductCheck.price){
+                        console.log(errorValues.length, 'errorValues');
+                        if(errorValues.length === 0){
+                            errorValues.push("Existing product/s in cart were changed by admin, please empty your cart or reload your page"); 
+                        }   
+                    }
+                }
+                
+                if(errorValues.length > 0){
+                    throw errorValues
+                }
+               
                 Object.values(cart.items).forEach((foundProduct)=>{
-                    console.log("variations find",foundProduct.variation,foundProduct.qty,foundProduct.item.name);
-                    foundProduct.item.variations.forEach((foundVariation)=>{                   
+                    foundProduct.item.variations.forEach((foundVariation)=>{                  
                         if(foundProduct.variation === foundVariation.name){
                             if(foundProduct.qty > foundVariation.quantity){
-                                console.log(foundVariation,'oh yeah');
-                                errorValues.push(foundProduct.item.brand+" "+foundProduct.item.name+", "+"Size: "+foundProduct.variation+" ");
-                                console.log("MATCHED ERROR" ,foundProduct.qty,foundVariation.quantity );   
+                                errorValues.push("Error In quantity of " + foundProduct.item.brand+" "+foundProduct.item.name+", "+"Size: "+foundProduct.variation+". ");
                             }
                         }
                     });
                 })
-                console.log(errorValues.length,"error valuesss");
+
                 if(errorValues.length > 0){
                     throw errorValues
                 }
-                
-                res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user});
-            } 
-            catch (error) 
-            {
-                console.log(error,"catch")
-                const cart = new Cart(req.session.cart);
-                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error});
+                res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user, content: content});
 
+            } catch (error) {
+                console.log(error,"catching")
+                const cart = new Cart(req.session.cart);
+                if(error.includes("Item/s in cart were removed suddenly, please reload your cart and page")){
+                    req.session.cart = "";
+                }
+                if(error.includes("Existing product/s in cart were changed by admin, please empty your cart or reload your page")){
+                    req.session.cart = "";
+                }
+                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});
             }
         }
     })
 });
 
-router.post("/place-order", isAuth, function(req, res){
+router.post("/place-order", isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const orderId = new mongoose.Types.ObjectId();
     const { paymentMethod, termsCheckbox } = req.body;
     const userId = req.session.userId;
@@ -168,7 +199,7 @@ router.post("/place-order", isAuth, function(req, res){
         });
     } else {
         User.findById({ _id: userId }, function(err, user){
-            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: "Please read and accept the terms and conditions to proceed with your order."});
+            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: "Please read and accept the terms and conditions to proceed with your order.", content: content});
         });
     }
 });
@@ -235,7 +266,8 @@ router.post('/add-default-address', isAuth, function(req, res){
     });
 });
 
-router.get('/checkout-confirmation', isAuth, function(req, res){
+router.get('/checkout-confirmation', isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     if(!req.session.cart){
         res.redirect('/cart/view-cart');
@@ -246,12 +278,13 @@ router.get('/checkout-confirmation', isAuth, function(req, res){
         } else {
             const cart = new Cart(req.session.cart);
            
-            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: null});
+            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: null, content: content});
         }
     })
 });
 
-router.get('/order-confirmed/:orderId', function(req, res){
+router.get('/order-confirmed/:orderId', async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const orderId = req.params.orderId
     if(orderId == undefined){
         res.redirect('/cart/view-cart');
@@ -262,7 +295,7 @@ router.get('/order-confirmed/:orderId', function(req, res){
         } else {
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
-            res.render('order-confirmed', { order: order });
+            res.render('order-confirmed', { order: order, content: content });
         }
     });
 });

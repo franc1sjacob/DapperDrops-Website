@@ -12,6 +12,9 @@
   },
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "16.7.0"
+  },
   "bugs": {
     "url": "https://github.com/cisjacob/DapperDrops-Website/issues"
   },

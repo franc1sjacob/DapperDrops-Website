@@ -13,6 +13,7 @@ const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Wishlist = require("../models/wishlistModel");
 const Order = require("../models/orderModel");
+const Content = require("../models/contentModel");
 
 var fs = require('fs');
 var path = require('path');
@@ -57,17 +58,19 @@ const isAdmin = function(req, res, next){
     }
 }
 
-router.get("/login", function(req, res){
+router.get("/login", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     //Checks whether user is logged in or not.
     if(req.session.isAuth === true){
         res.redirect("/account/profile");
     } else {
-        res.render('login');
+        res.render('login', { content: content });
     }
 
 });
 
-router.get("/profile", isAuth, function(req, res){
+router.get("/profile", isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     userId = req.session.userId;
     User.findById(userId, function(err, user){
         Order.find({ userId: userId }, function(err, orders){
@@ -78,7 +81,7 @@ router.get("/profile", isAuth, function(req, res){
                     cart = new Cart(order.cart);
                     order.items = cart.generateArray();
                 });
-                res.render('profile/profile', { orders: orders, user: user });
+                res.render('profile/profile', { orders: orders, user: user, content: content });
             }
         });
         // res.render('profile', { user: user });
@@ -87,12 +90,13 @@ router.get("/profile", isAuth, function(req, res){
 
 
 router.post("/login", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
 
     if(!user){
-        return res.render('login', { message: "The email you entered isn’t connected to an account."});
+        return res.render('login', { message: "The email you entered isn’t connected to an account.", content: content});
     }
 
     //Returns true if password matches.
@@ -128,18 +132,20 @@ router.post('/logout', isAuth, function(req, res){
     res.redirect('/account/login');
 });
 
-router.get("/register", function(req, res){
-    res.render('register');
+router.get("/register", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('register', { content: content });
 });
 
 router.post("/register", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const { firstName, lastName, email, password } = req.body;
 
     let user = await User.findOne({ email });
 
     //Check if email exists
     if(user){
-        return res.render('register', { message: "The email you've entered is already registered." });
+        return res.render('register', { message: "The email you've entered is already registered.", content: content});
     }
 
     //Hash password
@@ -158,7 +164,7 @@ router.post("/register", async function(req, res){
             console.log(err);
         } else {
             sendVerifyMail(firstName, email, user._id);
-            res.render('register', {message: "Your registration has been successful. Please check your email and verify your account."});
+            res.render('register', {message: "Your registration has been successful. Please check your email and verify your account.", content: content});
         }
     });
 });
@@ -213,28 +219,31 @@ router.get("/verify", function(req, res){
     });
 });
 
-router.get('/verified', function(req, res){
-    res.render('email-verified');
+router.get('/verified', async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('email-verified', { content: content });
 })
 
-router.get("/forgot", function(req, res){
-    res.render('forgot');
+router.get("/forgot", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('forgot', { content: content });
 });
 
-router.post("/forgot", function(req, res){
+router.post("/forgot", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const { email } = req.body;
     User.findOne({email: email}, function(err, user){
         if(user){
             if(user.isVerified === "false"){
-                res.render('forgot', {message: "Please check your email and verify your account."});
+                res.render('forgot', {message: "Please check your email and verify your account.", content: content});
             } else{
                 const randomString = randomstring.generate();
                 User.updateOne({email: email}, {$set: {token: randomString}}, function(err, user){});
                 sendResetPasswordMail(user.firstName, user.email, randomString);
-                res.render('forgot', {message: "Please check your email for the reset link of forgotten password."});
+                res.render('forgot', {message: "Please check your email for the reset link of forgotten password.", content: content});
             }
         } else {
-            res.render('forgot', {message: "The email you entered isn’t connected to an account."});
+            res.render('forgot', {message: "The email you entered isn’t connected to an account.", content: content});
         }
     });
 });
@@ -279,18 +288,20 @@ const sendResetPasswordMail = async function(name, email, token){
     }
 }
 
-router.get("/forget-password", function(req, res){
+router.get("/forget-password", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const forgotToken = req.query.token;
     User.findOne({token: forgotToken}, function(err, foundToken){
         if(foundToken){
-            res.render('forget-password', {userId: foundToken._id});
+            res.render('forget-password', {userId: foundToken._id, content: content});
         } else {
-            res.render('404', {message: "Token is invalid"});
+            res.render('404', {message: "Token is invalid", content: content});
         }
     });
 });
 
 router.post("/forget-password", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const { password, userId } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -299,15 +310,16 @@ router.post("/forget-password", async function(req, res){
         if(err){
             console.log(err);
         } else {
-            res.render('login', { message: "Your password is now reset, you can now login with your new password." });
+            res.render('login', { message: "Your password is now reset, you can now login with your new password.", content: content });
         }
     });
 });
 
-router.get('/address', isAuth, function(req, res){
+router.get('/address', isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     User.findById(userId, function(err, user){
-        res.render('profile/address', { user: user });
+        res.render('profile/address', { user: user, content: content});
     });
 });
 
@@ -401,13 +413,14 @@ router.post('/deleteAddress/:addressId', isAuth, function(req, res){
 });
 
 
-router.get('/wishlist', isAuth, function(req, res){
+router.get('/wishlist', isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     Wishlist.findOne({ userId: userId }, function(err, wishlist){
         if(err){
             console.log(err);
         } else {
-            res.render('profile/wishlist', { wishlist: wishlist });
+            res.render('profile/wishlist', { wishlist: wishlist, content: content });
         }
     });
 });
@@ -427,7 +440,8 @@ router.post('/delete-wishlist', isAuth, function(req, res){
     });
 });
 
-router.get('/view-orders', isAuth, function(req, res){
+router.get('/view-orders', isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     Order.find({ userId: userId }, function(err, orders){
         if(err){
@@ -437,12 +451,13 @@ router.get('/view-orders', isAuth, function(req, res){
                 cart = new Cart(order.cart);
                 order.items = cart.generateArray();
             });
-            res.render('profile/view-orders', { orders: orders });
+            res.render('profile/view-orders', { orders: orders, content: content });
         }
     });
 });
 
-router.get('/view-orders-:status', isAuth, function(req, res){
+router.get('/view-orders-:status', isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     const orderStatus = req.params.status;
     if(orderStatus == "Completed" || orderStatus == "Confirmed" || orderStatus == "Pending" || orderStatus == "Declined" || orderStatus == "Refunded" || orderStatus == "Cancelled"){
@@ -454,7 +469,7 @@ router.get('/view-orders-:status', isAuth, function(req, res){
                     cart = new Cart(order.cart);
                     order.items = cart.generateArray();
                 });
-                res.render('profile/view-orders', { orders: orders, status: orderStatus });
+                res.render('profile/view-orders', { orders: orders, status: orderStatus, content: content });
             }
         });
     } else {
@@ -462,7 +477,8 @@ router.get('/view-orders-:status', isAuth, function(req, res){
     }
 });
 
-router.get('/view-order/:orderId', isAuth, function(req, res){
+router.get('/view-order/:orderId', isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const orderId = req.params.orderId;
     Order.findById({ _id: orderId }, function(err, order){
         if(err){
@@ -470,17 +486,19 @@ router.get('/view-order/:orderId', isAuth, function(req, res){
         } else {
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
-            res.render('profile/view-order', { order: order });
+            res.render('profile/view-order', { order: order, content: content });
         }
     });
 });
 
 
-router.get('/change-password', isAuth, function(req, res){
-    res.render('profile/change-password', { errorMessage: null, successMessage: null });
+router.get('/change-password', isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('profile/change-password', { errorMessage: null, successMessage: null, content: content });
 });
 
 router.post('/change-password', isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     const { oldPassword, newPassword, confirmPassword } = req.body;
 
@@ -489,10 +507,10 @@ router.post('/change-password', isAuth, async function(req, res){
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if(newPassword != confirmPassword){
-        return res.render('profile/change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null});
+        return res.render('profile/change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null, content: content});
         
     } else if(!isMatch){
-        return res.render('profile/change-password', { errorMessage: "The old password you entered is incorrect.", successMessage: null});
+        return res.render('profile/change-password', { errorMessage: "The old password you entered is incorrect.", successMessage: null, content: content});
 
     } else {
         const newHashedPassword = await bcrypt.hash(newPassword, 12);
@@ -501,20 +519,21 @@ router.post('/change-password', isAuth, async function(req, res){
             if(err){
                 console.log(err);
             } else {
-                res.render('profile/change-password', { successMessage: "Your password has successfully been changed!", errorMessage: null});
+                res.render('profile/change-password', { successMessage: "Your password has successfully been changed!", errorMessage: null, content: content});
             }
         });
     }
 });
 
-router.get("/send-payment-proof/:orderId", isAuth, function(req, res){
+router.get("/send-payment-proof/:orderId", isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const orderId = req.params.orderId;
     Order.findById(orderId, function(err, foundOrder){
         if(err){
             console.log(err);
         }
         else{
-            res.render('profile/send-payment-proof', {order: foundOrder});
+            res.render('profile/send-payment-proof', {order: foundOrder, content: content});
         }
     });
 });
@@ -539,7 +558,8 @@ router.post("/send-payment-proof/:orderId", isAuth, upload, function(req, res){
     });
 });
 
-router.get("/view-payment-info-:orderId-:paymentId", isAuth, function(req, res){
+router.get("/view-payment-info-:orderId-:paymentId", isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const orderId = req.params.orderId;
     const paymentId = req.params.paymentId;
 
@@ -549,17 +569,18 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, function(req, res){
         }
         else{
             const chosenPayment = foundOrder.paymentsInfo.find(obj => obj.id === paymentId);
-            res.render('profile/view-payment-info', {order: foundOrder, chosenPayment: chosenPayment});
+            res.render('profile/view-payment-info', {order: foundOrder, chosenPayment: chosenPayment, content: content});
         }
     });
 });
 
-router.get('/send-feedback-:orderId-:status', isAuth, function(req, res){
+router.get('/send-feedback-:orderId-:status', isAuth, async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const { orderId, status } = req.params;
     if(status != "Completed"){
         res.redirect('/account/view-orders');
     } else {
-        res.render('profile/send-feedback', { orderId: orderId });
+        res.render('profile/send-feedback', { orderId: orderId, content: content });
     }
 
 });

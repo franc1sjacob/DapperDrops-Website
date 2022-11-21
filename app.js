@@ -9,7 +9,10 @@ const MongoDBSession = require('connect-mongodb-session')(session);
 
 
 const app = express();
-const port = 3000 || process.env.PORT;
+let port = process.env.PORT;
+if(port == null || port == ""){
+    port = 3000;
+}
 
 
 //EXPORT MODELS

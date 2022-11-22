@@ -78,7 +78,8 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
-            
+            let orderedList = Object.values(order.items);
+
             //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
             order.items.forEach(function(cart){
                 itemId.push(cart.item._id);
@@ -87,8 +88,10 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
             });
 
             let errorCount = 0;
-            
+            let changedProductDetails = 0;
             for(let i = 0; i < itemsLength; i++){
+                let j = orderedList[i]; 
+                
                 let productObject = await Product.findOne({_id: itemId[i]});
                 if(!productObject){
                     errorCount++;
@@ -104,14 +107,18 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                         } else{
                             originalQuantity.push(origQty.quantity);
                             minusedValues.push(originalQuantity[i] - quantity[i]);
+                            // console.log(productObject.name, "kokooo", j.item.name);
+                            // console.log("AWITTT", itemId[i]);
+                            if(j.item.name != productObject.name ||j.item.brand != productObject.brand||j.item.price != productObject.price){
+                                errorCount++;
+                            }
                         }
-                 
                     }
                 }  
             };  
 
             if(errorCount > 0){
-                console.log("Order must be declined as an item or variation in order was removed by admin.")
+                console.log("Order must be declined as an item or variation in order was removed or changed by admin.")
                 res.redirect('/admin/orders');
             } else{
                 console.log(minusedValues);
@@ -120,6 +127,7 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                 if(hasNegative){
                     res.redirect('/admin/orders');    
                 } else{
+                    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, function(err, order){});
                     for(let i = 0; i < itemsLength; i++){
                         const conditions = {
                             _id: itemId[i],
@@ -145,7 +153,6 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 
                         Product.findOneAndUpdate(conditions, update, function(err){});
                     };
-                    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, function(err, order){});
                     res.redirect('/admin/orders');
                 }
             }
@@ -254,7 +261,6 @@ router.post("/complete-order", isAuth, isAdmin, function(req, res){
                     console.log("save success");
                 }
             });
-        
             res.redirect('/admin/orders');
         }
     });
@@ -345,7 +351,7 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
 router.post("/refund-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
 
-    Order.findById(orderId, async function(err, order){
+    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Refunded"}}, async function(err, order){
         if(err){
             console.log(err);
         } else {
@@ -355,7 +361,6 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
             const variations = [];
             const quantity = [];
             const originalQuantity = [];
-            const addedValues = [];
 
             //For updating total quantity sold and total earnings.
             const quantitySold = [];
@@ -381,75 +386,57 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
                 earnings.push(cart.price);
             });
 
-            let errorCount = 0;
-
+            
             for(let i = 0; i < itemsLength; i++){
                 let productObject = await Product.findOne({_id: itemId[i]});
-                if(!productObject){
-                    errorCount++;
-                }else{
-                    let productObjectVariations = productObject.variations;
-                    if(!productObjectVariations){
-                        errorCount++;
-                    }else{
-                        //Getting the original quantity per variation.
-                        const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
-                        if(!origQty){
-                            errorCount++;
-                        }else{
-                            originalQuantity.push(origQty.quantity);
-                            addedValues.push(originalQuantity[i] + quantity[i]); 
-                        }
-                    }
-                }
-            };
+                let productObjectVariations = productObject.variations;
 
-            if(errorCount > 0){
-                console.log("Order must be declined as an item or variation in order was removed by admin.")
-                res.redirect('/admin/orders');
-            }else{
+                //Getting the original quantity per variation.
+                const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
+                originalQuantity.push(origQty.quantity);
+                
+                //Getting the original total earnings and total quantity sold.
+                let totalEarnings = productObject.totalEarnings;
+                let totalQuantitySold = productObject.totalQuantitySold;
+
+                originalTotalQuantitySold.push(totalQuantitySold);
+                originalTotalEarnings.push(totalEarnings);
+                
                 let status = "";
-                for(let i = 0; i < itemsLength; i++){
-                    //Getting the original total earnings and total quantity sold.
-                    let totalEarnings = productObject.totalEarnings;
-                    let totalQuantitySold = productObject.totalQuantitySold;
 
-                    originalTotalQuantitySold.push(totalQuantitySold);
-                    originalTotalEarnings.push(totalEarnings);
-
-                    if(addedValues[i] >= 6){
-                        status = "In-Stock";
-                    } else if(addedValues[i] <= 5 && addedValues[i] >=1){
-                        status = "Few-Stocks";
-                    } else{
-                        status = "Out-of-Stock";
-                    }
-                    
-                    const conditions = {
-                        _id: itemId[i],
-                        'variations.name': {$eq: variations[i]}
-                    };
-
-                    const update = {
-                        $set:{
-                            'variations.$.quantity': addedValues[i], 'variations.$.status': status, totalEarnings : originalTotalEarnings[i] - earnings[i], totalQuantitySold : originalTotalQuantitySold[i] - quantitySold[i]}
-                    };
-
-                    //Adds back the subtracted quantity, subtracts from total earnings and total quantity sold.
-                    Product.findOneAndUpdate(conditions, update, function(err){
-                        if(err){
-                            console.log(err);
-                        }
-                    });
-
-                    //Deletes the sale document.
-                    Sale.findOneAndDelete({ orderId: orderId }, function(err, sale){
-                        if(err){ console.log(err) }
-                    }); 
+                if(originalQuantity[i] + quantity[i] >= 6){
+                    status = "In-Stock";
+                }
+                else if(originalQuantity[i] + quantity[i] <= 5 && originalQuantity[i] + quantity[i] >=1){
+                    status = "Few-Stocks";
+                }
+                else{
+                    status = "Out-of-Stock";
+                }
+                
+                const conditions = {
+                    _id: itemId[i],
+                    'variations.name': {$eq: variations[i]}
                 };
-                Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Refunded"}}, function(err, order){});
-                res.redirect('/admin/orders');
-            }
+
+                const update = {
+                    $set:{
+                        'variations.$.quantity': originalQuantity[i] + quantity[i], 'variations.$.status': status, totalEarnings : originalTotalEarnings[i] - earnings[i], totalQuantitySold : originalTotalQuantitySold[i] - quantitySold[i]}
+                };
+
+                //Adds back the subtracted quantity, subtracts from total earnings and total quantity sold.
+                Product.findOneAndUpdate(conditions, update, function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                });
+
+                //Deletes the sale document.
+                Sale.findOneAndDelete({ orderId: orderId }, function(err, sale){
+                    if(err){ console.log(err) }
+                }); 
+            };  
+            res.redirect('/admin/orders');
         }
     });
 });

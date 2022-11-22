@@ -105,12 +105,13 @@ router.get("/checkout", isAuth, async function(req, res){
                 var errorValues = [];
                 let adminChanged = false;
                 let cartItemList = Object.values(cart.items);
+                console.log(cartItemList);
                 
                 for (let j = 0; j < cartItemList.length; j++) {
                     let i = cartItemList[j];           
                     const getProductCheck = await Product.findById({_id:i.item._id.valueOf()});
                     // console.log(getProductCheck, "getProductCheck");
-                    
+                    console.log('meeowwwwwwwwwwww',i.item._id);
                     if(!getProductCheck){
                         if(errorValues.length === 0){
                             errorValues.push("Item was deleted from the admin please empty your cart or reload your page"); 

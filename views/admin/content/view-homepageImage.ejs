@@ -1,0 +1,33 @@
+<%- include('../../innerPartials/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="fw-bold text-center mt-2 mb-3">View Homepage Image</h1>
+    <% if(content.homeImage.length == 0) { %>
+        <h3 class="fw-bold text-center">There are no home images yet</h3>
+        <a class="btn btn-outline-secondary mb-3" href="/admin/content"><i class="fa-solid fa-left-long"></i> Back</a>
+        <a class="btn btn-outline-success mb-3 float-end" href="add-homepageImage"><i class="fa-solid fa-plus"></i></a>
+    <% } else { %>
+        <a class="btn btn-outline-secondary mb-3" href="/admin/content"><i class="fa-solid fa-left-long"></i> Back</a>
+        <a class="btn btn-outline-success mb-3 float-end" href="add-homepageImage"><i class="fa-solid fa-plus"></i></a>
+        <div class="row">
+        <%content.homeImage.forEach(function(homeImage){%>
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex">
+                        <div class="ms-auto">
+                            <form action="/admin/content/delete-payment-details/<%= homeImage.image._id %>" method="POST">
+                                <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <img src="<%= homeImage.image.url %>" class="w-100">
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('../../innerPartials/admin/footer'); %>

@@ -41,6 +41,8 @@ limits:{
     fileSize: 1024 * 1024
 }}).single('paymentProof');
 
+const cloudinary = require('cloudinary').v2;
+
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
         next();
@@ -538,14 +540,19 @@ router.get("/send-payment-proof/:orderId", isAuth, async function(req, res){
     });
 });
 
-router.post("/send-payment-proof/:orderId", isAuth, upload, function(req, res){
+router.post("/send-payment-proof/:orderId", isAuth, upload, async function(req, res){
     const {description} = req.body;
     const orderId = req.params.orderId;
-    const paymentProof= req.file.filename;
+    const result = await cloudinary.uploader.upload(req.file.path,{
+        folder: "proofOfPayment",
+    })
 
     const paymentInfo = {
         paymentDescription: description,
-        paymentProof: paymentProof
+        paymentProof: {
+            public_id: result.public_id,
+            url: result.secure_url
+        },
     };
 
     Order.findByIdAndUpdate(orderId, { $push: { paymentsInfo: [paymentInfo]}},  function(err, result){

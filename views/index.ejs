@@ -26,11 +26,11 @@
                 <% for(let i = 0; i < content.homeImage.length; i++){ %>
                   <% if(i == content.homeImage.length - 1) { %>
                     <div class="carousel-item active">
-                      <img src="images/content/home/<%= content.homeImage[i].image %>" class="d-block squareHomeAboutUs" alt="...">
+                      <img src="<%= content.homeImage[i].image.url %>" class="d-block squareHomeAboutUs" alt="...">
                     </div>
                   <% } else { %>
                     <div class="carousel-item">
-                      <img src="images/content/home/<%= content.homeImage[i].image %>" class="d-block squareHomeAboutUs" alt="...">
+                      <img src="<%= content.homeImage[i].image.url %>" class="d-block squareHomeAboutUs" alt="...">
                     </div>
                   <% } %>
                 <% } %>
@@ -79,7 +79,7 @@
       <div class="col-lg-4 col-sm-6">
         <a href="/products/item/<%= product._id %>" class="cust-prod-link">
           <div class="card border-0 " style="width: 18rem;">
-            <img src="/uploads/<%= product.image %>" class="card-img-top" style="width: 250px; height:250px;object-fit:cover;"  alt="...">
+            <img src="<%= product.image.url %>" class="card-img-top" style="width: 250px; height:250px;object-fit:cover;"  alt="...">
             <div class="card-body">
               <p class="card-text"> <%= product.brand %></p>
               <p class="card-text cust-prod-text"> <%= product.name %> </p>
@@ -100,7 +100,7 @@
       <div class="col-lg-4 col-sm-6">
         <a href="/products/item/<%= product._id %>" class="cust-prod-link">
           <div class="card border-0 " style="width: 18rem;">
-            <img src="/uploads/<%= product.image %>" class="card-img-top" style="width: 250px; height:250px;object-fit:cover;"  alt="...">
+            <img src="<%= product.image.url %>" class="card-img-top" style="width: 250px; height:250px;object-fit:cover;"  alt="...">
             <div class="card-body">
               <p class="card-text"> <%= product.brand %></p>
               <p class="card-text cust-prod-text"> <%= product.name %> </p>

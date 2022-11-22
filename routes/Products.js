@@ -93,7 +93,7 @@ router.get("/item/:productId", async function(req, res){
     const userId = req.session.userId;
 
     Product.findOne({_id:productId}, function(err, item){
-        res.render('view-item', {item: item, userId: userId,isError:false,error:"", content: content});
+        res.render('view-item', {item: item,  userId: userId,isError:false,error:"", content: content});
     });
 });
 
@@ -106,7 +106,7 @@ router.post('/add-to-wishlist', isAuth, function(req, res){
 
         newProduct = {
             productId: prodId,
-            image: product.image,
+            image: product.image.url,
             name: product.name,
             brand: product.brand,
             category: product.category,

@@ -1,0 +1,15 @@
+<%- include('../../innerPartials/admin/header', {name: fullName}); %>
+<div class="container">
+    <h1 class="fw-bold text-center mt-2 mb-3">Add Payment Details</h1>
+    <form action="/admin/content/add-aboutusImage2" method="POST" enctype="multipart/form-data">
+        <div class="mb-3" class="form-group">
+            <label for="file1">Upload Home Image:</label>
+            <input type="file" class="form-control" name="aboutUsImage2" required>
+        </div>
+        <button type="submit" class="btn btn-success">Add Image</button>
+            <a class="btn btn-secondary" href="/admin/content/view-aboutusImage">Cancel</a>
+    </form>
+</div>
+
+
+<%- include('../../innerPartials/admin/footer'); %>

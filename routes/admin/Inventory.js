@@ -159,17 +159,6 @@ router.get("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
 });
 
 router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
-    const productId = req.params.productId;
-    console.log(productId);
-    Product.findOne({ _id:productId }, function(err, product){
-        res.render('admin/add-new-variation', {
-            fullName: req.session.firstName + " " + req.session.lastName,
-             product:product
-        });
-    })
-});
-
-router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
     const {productId, name, quantity} = req.body;
     let status="";
     console.log(req.body);
@@ -188,34 +177,17 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
     status: status
 };
    console.log(variation);
-   if(req.body.button == "submit"){
     Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
         variations: [variation],
     }}, function(err, product){
             if(err){
                 console.log(err);
-            } else {
-                res.redirect('/admin/inventory')
+            } else {           
+               res.redirect("/admin/inventory/"+productId+"/view")
             }
         });
-   }
-   else if(req.body.button == "add"){
-    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
-        variations: [variation],
-    }}, function(err, product){
-            if(err){
-                console.log(err);
-            } else {
-                res.redirect("/admin/inventory/"+productId+"/add-new-variation")
-            }
-        });
-   }
-
-
-    
    
-    
+   
 });
-
 
 module.exports = router;

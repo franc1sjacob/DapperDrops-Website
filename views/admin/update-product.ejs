@@ -26,7 +26,7 @@
         <div class="mb-3">
             <label for="inputImage" class="form-label">Image:</label>
             <input type="file" class="form-control" id="inputImage" name="image" value="<%= image %>">
-            <img src="/uploads/<%= image %>" width="100" class="img-thumbnail mt-1">
+            <img src="<%= image %>" width="100" class="img-thumbnail mt-1">
         </div>
         <input type="hidden" name="productOldImage" value="<%= image %>">
         <div class="mb-3">
@@ -39,7 +39,8 @@
               </select>
         </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        <a class="btn btn-secondary mt-3" href="/admin/products">Cancel</a>
       </form>
 </div>
 

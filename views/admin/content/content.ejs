@@ -4,12 +4,12 @@
         <h1 class="fw-bold text-center mt-2 mb-3">Content</h1>
         <% if(content == null || content == undefined){ %>
             <h4 class="fw-bold text-center">Please create an active content document in the contents collection..</h4>
-            <form action="/admin/content/add" method="POST" enctype="multipart/form-data">
+            <form action="/admin/content/add" method="POST">
                 <div class="mb-3">
                     <label name="homeText" for="hometext" class="form-label">Home Text</label>
                     <input name="homeText" type="text" class="form-control" id="hometext" required>
                 </div>
-                <div class="mb-3" class="form-group">
+                <!-- <div class="mb-3" class="form-group">
                     <label for="file1">Upload Home Image 1:</label>
                     <input type="file" class="form-control" name="homeImage1" required>
                 </div>
@@ -21,6 +21,7 @@
                     <label for="file2">Upload Home Image 3:</label>
                     <input type="file" class="form-control" name="homeImage3" required>
                 </div>
+                <div class="mb-3"> -->
                 <div class="mb-3">
                     <label for="aboutus1" class="form-label">About Us Paragraph 1</label>
                     <textarea name="aboutUsParagraph1" class="form-control" id="aboutus1" rows="4" required></textarea>
@@ -33,7 +34,7 @@
                     <label for="aboutus3" class="form-label">About Us Paragraph 3</label>
                     <textarea name="aboutUsParagraph3"class="form-control" id="aboutus3" rows="4" required></textarea>
                 </div>
-                <div class="mb-3" class="form-group">
+                <!-- <div class="mb-3" class="form-group">
                     <label for="file1">Upload About Us Image 1:</label>
                     <input type="file" class="form-control" name="aboutUsImage1" required>
                 </div>
@@ -44,7 +45,7 @@
                 <div class="mb-3" class="form-group">
                     <label for="file2">Upload About Us Image 3:</label>
                     <input type="file" class="form-control" name="aboutUsImage3" required>
-                </div>
+                </div> -->
                 <div class="mb-3">
                     <label for="footerText" class="form-label">Footer Description</label>
                     <input type="text" name="footerText" class="form-control" id="footerText" required>
@@ -76,13 +77,13 @@
             <div class="card mb-3">
                 <div class="card-header d-flex">
                     <div class="fw-bold">Home: Image</div>
-                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-image-homeImage"><i class="fa-solid fa-pen-to-square"></i></a>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/view-homepageImage"><i class="fa-solid fa-eye"></i></a>
                 </div>
-                <div class="card-body">
+                <!-- <div class="card-body">
                     <% content.homeImage.forEach(function(image){ %>
                         <img src="/images/content/home/<%= image.image %>" style="height: 100px; width: 100px;">
                     <% }); %>
-                </div>
+                </div> -->
             </div>
     
             <div class="card mb-3">
@@ -118,14 +119,14 @@
             <div class="card mb-3">
                 <div class="card-header d-flex">
                     <div class="fw-bold">About Us: Images</div>
-                    <a class="btn btn-primary ms-auto" href="/admin/content/edit-image-aboutUsImage"><i class="fa-solid fa-pen-to-square"></i></a>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/view-aboutusImage"><i class="fa-solid fa-eye"></i></a>
                 </div>
-                <div class="card-body">
+                <!-- <div class="card-body">
                     <% content.aboutUsImage.forEach(function(image){ %>
                         <img src="/images/content/aboutus/<%= image.image %>" style="height: 100px; width: 100px;">
                     <% }); %>
 
-                </div>
+                </div> -->
             </div>
     
             <div class="card mb-3">

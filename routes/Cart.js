@@ -114,23 +114,12 @@ router.get("/checkout", isAuth, async function(req, res){
     if(!req.session.cart){
         res.redirect('/cart/view-cart');
     }
-<<<<<<< HEAD
-    User.findById({ _id: userId }, async function(err, user){
-        if(err){
-            console.log(err);
-        } else {
-            console.log("TRY");
-            try 
-            {
-                console.log("LOOB TRY");
-=======
     User.findById({ _id: userId },  async function(err, user){
         if(err){
             console.log(err);
         } else {
 
             try {
->>>>>>> main
                 const cart = new Cart(req.session.cart);
                 const cartArr = cart.generateArray();
                 let cartLength = cartArr.length;
@@ -182,20 +171,6 @@ router.get("/checkout", isAuth, async function(req, res){
                         }
                     });
                 })
-<<<<<<< HEAD
-                console.log(errorValues.length,"error valuesss");
-                if(errorValues.length > 0){
-                    throw errorValues
-                }
-                console.log(cartArr);
-                res.render('checkout', {usercart: cartArr, cart: cart, user: user, content: content, products: productDetailsSelected});
-            } 
-            catch (error) 
-            {
-                console.log(error,"catch")
-                const cart = new Cart(req.session.cart);
-                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content, products: productDetailsSelected});
-=======
 
                 if(errorValues.length > 0){
                     throw errorValues
@@ -212,7 +187,6 @@ router.get("/checkout", isAuth, async function(req, res){
                     req.session.cart = "";
                 }
                 res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});
->>>>>>> main
             }
         }
     })

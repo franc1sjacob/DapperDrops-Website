@@ -60,7 +60,7 @@
           </button>
         </div>
       </div>
-      <div class="col-lg-6 col-sm-12">
+      <div class="header col-lg-6 col-sm-12">
           <% if(content == null) { %>
             <h1 class="cust-landing-text">DEFAULT TEXT</h1>
           <% } else { %>
@@ -79,7 +79,7 @@
       <div class="col-lg-4 col-sm-6">
         <a href="/products/item/<%= product._id %>" class="cust-prod-link">
           <div class="card border-0 " style="width: 18rem;">
-            <img src="/uploads/<%= product.image %>" class="card-img-top" alt="...">
+            <img src="/uploads/<%= product.image %>" class="card-img-top" style="width: 250px; height:250px;object-fit:cover;"  alt="...">
             <div class="card-body">
               <p class="card-text"> <%= product.brand %></p>
               <p class="card-text cust-prod-text"> <%= product.name %> </p>
@@ -100,7 +100,7 @@
       <div class="col-lg-4 col-sm-6">
         <a href="/products/item/<%= product._id %>" class="cust-prod-link">
           <div class="card border-0 " style="width: 18rem;">
-            <img src="/uploads/<%= product.image %>" class="card-img-top" alt="...">
+            <img src="/uploads/<%= product.image %>" class="card-img-top" style="width: 250px; height:250px;object-fit:cover;"  alt="...">
             <div class="card-body">
               <p class="card-text"> <%= product.brand %></p>
               <p class="card-text cust-prod-text"> <%= product.name %> </p>

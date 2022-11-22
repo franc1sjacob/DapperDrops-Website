@@ -1,9 +1,16 @@
 body{
     font-family: 'Montserrat', sans-serif;
 }
+.header {
+    padding: 60px;
+    text-align: center;
+    background: black;
+    color: palevioletred;
+    font-size: 30px;
+  }
 
 .cust-landing-text{
-    font-size: 10vw;
+    font-size: 6vw;
     font-weight: bold;
 }
 

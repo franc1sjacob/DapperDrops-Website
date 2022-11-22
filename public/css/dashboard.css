@@ -104,3 +104,38 @@
     border: solid 3px rgb(0, 0, 0);
     background: white;
   }
+
+  .card-img-top{
+   object-fit: cover;
+   width: 50px;
+   height: 100px;
+}
+.img {
+  object-fit: cover;
+  width: 250px;
+  height: 250px;
+ 
+
+}
+
+
+.tablesquare{
+  width: 50;
+  height: 50;
+  aspect-ratio: 16/9; 
+  object-fit: cover; 
+  overflow: hidden;
+}
+
+.embed-responsive .card-img-top {
+  width: 50%;
+  height: 50%;
+  object-fit: cover;
+  aspect-ratio: 1; 
+}
+
+/* .image-container{ 
+    overflow: hidden; 
+    aspect-ratio: 16/9; 
+  } */
+

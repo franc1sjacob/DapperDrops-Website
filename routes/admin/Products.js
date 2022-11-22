@@ -39,6 +39,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage, 
+    fileFilter: function (req, file, callback) {
+        var ext = path.extname(file.originalname);
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg' && ext !== '.jfif') {
+            return callback(new Error('Only images are allowed'))
+        }
+        callback(null, true)
+    },
+    limits:{
+        fileSize: 1024 * 1024
+    }
 }).single('image');
 
 
@@ -184,6 +194,18 @@ router.post("/add-product", isAuth, isAdmin, upload, function(req, res){
         }
         
         var status = "";
+            const inventory = new Inventory({
+                _id: productId,
+                sales: 0,
+                sold: 0,
+                productId: productId
+            })
+
+            inventory.save(function(err){
+                if(err){
+                    console.log(err);
+                }
+            })
         console.log("Product ID:");
         console.log(productId);
         req.session.productId = productId;
@@ -264,33 +286,67 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
     status: status
 };
    console.log(variation);
-   Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
-    variations: [variation],
-}}, function(err, product){
-        if(err){
-            console.log(err);
-        } else {
-            if(product.category == "On-Hand"){
-                res.redirect('/admin/products/category-onhand')
-               }
-               else if(product.category == "Pre-Order"){
-                res.redirect('/admin/products/category-preorder')
-               }
-               else if(product.category == "Apparel"){
-                res.redirect('/admin/products/category-apparel')
-               }
-               else if(product.category == "Accessories"){
-                res.redirect('/admin/products/category-accessories')
-               }
-        }
-    });
+   if(req.body.button == "submit"){
+    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
+        variations: [variation],
+    }}, function(err, product){
+            if(err){
+                console.log(err);
+            } else {
+               if(product.category == "On-Hand"){
+            res.redirect('/admin/products/category-onhand')
+           }
+           else if(product.category == "Pre-Order"){
+            res.redirect('/admin/products/category-preorder')
+           }
+           else if(product.category == "Apparel"){
+            res.redirect('/admin/products/category-apparel')
+           }
+           else if(product.category == "Accessories"){
+            res.redirect('/admin/products/category-accessories')
+           }
+            }
+        });
+   }
+   else if(req.body.button == "add"){
+    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
+        variations: [variation],
+    }}, function(err, product){
+            if(err){
+                console.log(err);
+            } else {
+                res.redirect("/admin/products/"+productId+"/add-new-variation")
+            }
+        });
+   }
+   
+   
 });
+
 
 router.get("/:productId/view", isAuth, isAdmin, upload, function(req, res){
     const productId = req.params.productId;
 
     Product.findOne({ _id:productId }, function(err, allProducts){
         res.render('admin/view-product', { newListProducts:allProducts,
+            fullName: req.session.firstName + " " + req.session.lastName
+        });
+    })
+});
+
+router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
+    const productId = req.params.productId;
+
+    Product.findOne({ _id:productId }, function(err, product){
+        res.render('admin/update-product', {
+            _id: productId,
+            brand: product.brand,
+            name: product.name,
+            price: product.price,
+            description: product.description,
+            quantity: product.quantity,
+            image: product.image,
+            category: product.category,
             fullName: req.session.firstName + " " + req.session.lastName
         });
     })

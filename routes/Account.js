@@ -30,7 +30,16 @@ const storage = multer.diskStorage({
 });
   
 
-const upload = multer({storage: storage,}).single('paymentProof');
+const upload = multer({storage: storage,fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if(ext !== '.png' && ext !== '.jpg'  && ext !== '.jpeg' && ext !== '.jfif') {
+        return callback(new Error('Only images are allowed'))
+    }
+    callback(null, true)
+},
+limits:{
+    fileSize: 1024 * 1024
+}}).single('paymentProof');
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){

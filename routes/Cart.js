@@ -9,11 +9,12 @@ const Order = require("../models/orderModel");
 const Content = require("../models/contentModel");
 const { ObjectID } = require('bson');
 
-const isAuth = function(req, res, next){
+const isAuth = async function(req, res, next){
+    const content = await Content.findOne({ status: 'active' });
     if(req.session.isAuth){
         next();
     } else {
-        res.render('login', { message: "Please login to your account to access this page." });
+        res.render('login', { message: "Please login to your account to access this page.", content: content });
     }
 }
 

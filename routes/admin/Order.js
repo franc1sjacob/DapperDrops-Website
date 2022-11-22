@@ -173,7 +173,7 @@ router.post("/decline-order", isAuth, isAdmin, function(req, res){
 
 router.post("/complete-order", isAuth, isAdmin, function(req, res){
     const {orderId} = req.body;
-    Order.findById(orderId, {$set: {orderStatus: "Completed"}}, async function(err, order){
+    Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, async function(err, order){
         if(err){
             console.log(err);
         } else {

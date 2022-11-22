@@ -15,12 +15,12 @@
                 <label for="quantity" class="form-label">Quantity</label>
                 <input type="number" class="form-control" name="quantity" id="quantity">
             
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button class="btn-dark float-right mt-2" onclick="add_more_field()">Add More +</button>
+            <button type="submit" class="btn btn-primary" name="button" value="submit">Submit</button>
+            <!-- <button class="btn-dark float-right mt-2" onclick="add_more_field()">Add More +</button> -->
+            <button class="btn-dark float-right mt-2" name="button" value="add">Add More +</button>
         </div>
-        
     </form>
-        
+    <a href="/admin/products" class="text-body"><i class="fas fa-long-arrow-alt-left me-2"></i>Back to products</a></h6>
 </div>
 <script>
     var counter = 1;

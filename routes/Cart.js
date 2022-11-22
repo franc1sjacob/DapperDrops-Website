@@ -9,11 +9,12 @@ const Order = require("../models/orderModel");
 const Content = require("../models/contentModel");
 const { ObjectID } = require('bson');
 
-const isAuth = function(req, res, next){
+const isAuth = async function(req, res, next){
+    const content = await Content.findOne({ status: 'active' });
     if(req.session.isAuth){
         next();
     } else {
-        res.render('login', { message: "Please login to your account to access this page." });
+        res.render('login', { message: "Please login to your account to access this page.", content: content });
     }
 }
 
@@ -93,7 +94,7 @@ router.post("/add-one", function(req, res){
 }); 
 
 
-router.get("/remove-item/:id/:variation", function(req, res){
+router.post("/remove-item/:id/:variation", function(req, res){
     const prodId = req.params.id;
     const variation = req.params.variation;
     const cart = new Cart(req.session.cart ? req.session.cart : {});
@@ -113,6 +114,7 @@ router.get("/checkout", isAuth, async function(req, res){
     if(!req.session.cart){
         res.redirect('/cart/view-cart');
     }
+<<<<<<< HEAD
     User.findById({ _id: userId }, async function(err, user){
         if(err){
             console.log(err);
@@ -121,6 +123,14 @@ router.get("/checkout", isAuth, async function(req, res){
             try 
             {
                 console.log("LOOB TRY");
+=======
+    User.findById({ _id: userId },  async function(err, user){
+        if(err){
+            console.log(err);
+        } else {
+
+            try {
+>>>>>>> main
                 const cart = new Cart(req.session.cart);
                 const cartArr = cart.generateArray();
                 let cartLength = cartArr.length;
@@ -134,19 +144,45 @@ router.get("/checkout", isAuth, async function(req, res){
                 }
 
                 var errorValues = [];
-                console.log(Object.values(cart.items),"item bhenchod");
+                let adminChanged = false;
+                let cartItemList = Object.values(cart.items);
+                
+                for (let j = 0; j < cartItemList.length; j++) {
+                    let i = cartItemList[j];           
+                    const getProductCheck = await Product.findById({_id:i.item._id.valueOf()});
+                    console.log(getProductCheck, "getProductCheck");
+                    
+                    if(!getProductCheck){
+                        if(errorValues.length === 0){
+                            errorValues.push("Item/s in cart were removed suddenly, please reload your cart and page"); 
+                        }  
+                    }
+                    if(errorValues.length > 0){
+                        throw errorValues
+                    }
+                    console.log(i.item._id.valueOf(),i.item.name , getProductCheck.name ,i.item.brand , getProductCheck.brand,i.item.price , getProductCheck.price,i.item.description , getProductCheck.description)
+                    if(i.item.name != getProductCheck.name ||i.item.brand != getProductCheck.brand||i.item.price != getProductCheck.price){
+                        console.log(errorValues.length, 'errorValues');
+                        if(errorValues.length === 0){
+                            errorValues.push("Existing product/s in cart were changed by admin, please empty your cart or reload your page"); 
+                        }   
+                    }
+                }
+                
+                if(errorValues.length > 0){
+                    throw errorValues
+                }
+               
                 Object.values(cart.items).forEach((foundProduct)=>{
-                    // console.log("variations find",foundProduct.variation,foundProduct.qty,foundProduct.item.name);
-                    foundProduct.item.variations.forEach((foundVariation)=>{                   
+                    foundProduct.item.variations.forEach((foundVariation)=>{                  
                         if(foundProduct.variation === foundVariation.name){
                             if(foundProduct.qty > foundVariation.quantity){
-                                console.log(foundVariation,'oh yeah');
-                                errorValues.push(foundProduct.item.brand+" "+foundProduct.item.name+", "+"Size: "+foundProduct.variation+" ");
-                                // console.log("MATCHED ERROR" ,foundProduct.qty,foundVariation.quantity );   
+                                errorValues.push("Error In quantity of " + foundProduct.item.brand+" "+foundProduct.item.name+", "+"Size: "+foundProduct.variation+". ");
                             }
                         }
                     });
                 })
+<<<<<<< HEAD
                 console.log(errorValues.length,"error valuesss");
                 if(errorValues.length > 0){
                     throw errorValues
@@ -159,6 +195,24 @@ router.get("/checkout", isAuth, async function(req, res){
                 console.log(error,"catch")
                 const cart = new Cart(req.session.cart);
                 res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content, products: productDetailsSelected});
+=======
+
+                if(errorValues.length > 0){
+                    throw errorValues
+                }
+                res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user, content: content});
+
+            } catch (error) {
+                console.log(error,"catching")
+                const cart = new Cart(req.session.cart);
+                if(error.includes("Item/s in cart were removed suddenly, please reload your cart and page")){
+                    req.session.cart = "";
+                }
+                if(error.includes("Existing product/s in cart were changed by admin, please empty your cart or reload your page")){
+                    req.session.cart = "";
+                }
+                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});
+>>>>>>> main
             }
         }
     })

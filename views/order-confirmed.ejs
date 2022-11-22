@@ -10,34 +10,69 @@
     <div class="row mt-5">
         <div class="col-xl-6 col-lg-6">
             <p class="fw-bold fs-5">Step 1: Pay required minimum downpayment for pre-order items or pay full amount for on-hand items on either of the following accounts and take a screenshot and save it, this will serve as your proof of payment.</p>
-            <div class="me-auto mb-3">
-                <div>GCash</div>
-                <div>0998 8723 456</div>
-                <div>RV Bandoy</div>
-            </div>
-            <div class="me-auto mb-3">
-                <div>PayMaya</div>
-                <div>0998 8723 456</div>
-                <div>RV Bandoy</div>
-            </div>
-            <div class="me-auto mb-3">
-                <div>BDO</div>
-                <div>0998 8723 456</div>
-                <div>RV Bandoy</div>
-            </div>
-            <div class="me-auto mb-3">
-                <div>BDO Pay</div>
-                <div>0998 8723 456</div>
-                <div>RV Bandoy</div>
-            </div>
+            <% if(content == undefined || content == null) { %>
+                <div class="me-auto mb-3">
+                    <div>GCash</div>
+                    <div>0998 8723 456</div>
+                    <div>RV Bandoy</div>
+                </div>
+                <div class="me-auto mb-3">
+                    <div>PayMaya</div>
+                    <div>0998 8723 456</div>
+                    <div>RV Bandoy</div>
+                </div>
+                <div class="me-auto mb-3">
+                    <div>BDO</div>
+                    <div>0998 8723 456</div>
+                    <div>RV Bandoy</div>
+                </div>
+                <div class="me-auto mb-3">
+                    <div>BDO Pay</div>
+                    <div>0998 8723 456</div>
+                    <div>RV Bandoy</div>
+                </div>
+            <% } else { %>
+                <% if(content.payment.length == 0) { %>
+                    <div class="me-auto mb-3">
+                        <div>GCash</div>
+                        <div>0998 8723 456</div>
+                        <div>RV Bandoy</div>
+                    </div>
+                    <div class="me-auto mb-3">
+                        <div>PayMaya</div>
+                        <div>0998 8723 456</div>
+                        <div>RV Bandoy</div>
+                    </div>
+                    <div class="me-auto mb-3">
+                        <div>BDO</div>
+                        <div>0998 8723 456</div>
+                        <div>RV Bandoy</div>
+                    </div>
+                    <div class="me-auto mb-3">
+                        <div>BDO Pay</div>
+                        <div>0998 8723 456</div>
+                        <div>RV Bandoy</div>
+                    </div>
+                <% } else { %>
+                    <% content.payment.forEach(function(payment){ %>
+                        <div class="me-auto mb-3">
+                            <div><%= payment.paymentName %></div>
+                            <div><%= payment.bankNumber %></div>
+                            <div><%= payment.userName %></div>
+                            <img src="/images/content/payment/<%= payment.qrCodeImage %>" class="paymentImage" alt="">
+                        </div>
+                    <% }) %>
+                <% } %>
+            <% } %>
+            
             <p class="fw-bold fs-5">Step 2: Visit your profile.</p>
-            <img src="/images/directions/direction1.png" alt="">
+            <img src="/images/directions/direction1.png" class="w-100" alt="">
 
             <p class="fw-bold fs-5">Step 3: Select your order and click send proof of payment button.</p>
-            <img src="/images/directions/direction2.png" alt="">
+            <img src="/images/directions/direction2.png" class="w-100" alt="">
 
             <p class="fw-bold fs-5">Step 4: Upload your proof of payment.</p>
-            <img src="/images/directions/direction2.png" alt="">
+            <img src="/images/directions/direction2.png" class="w-100" alt="">
 
             <p class="fw-bold fs-5">Step 5: Wait within 24 hours for your order and payment to be confirmed.</p>
             <p class="fw-bold fs-5">Step 6: Have any inquiries?</p>

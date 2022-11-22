@@ -164,7 +164,7 @@
                             <td>₱<%= order.amountRemaining %></td>
                             <td>
                                 <a href="/admin/orders/view-order-<%= order._id %>"><i class="fa-solid fa-eye me-1"></i></a>
-                                <a class="btn btn-sm btn-light" href="#">Send Email</a>
+                                <a class="btn btn-sm btn-light" href="/admin/orders/send-ship-mail-<%= order._id %>">Send Email</a>
                             </td>
                         </tr>   
                         <% }) %>

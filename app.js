@@ -9,7 +9,10 @@ const MongoDBSession = require('connect-mongodb-session')(session);
 
 
 const app = express();
-const port = 3000 || process.env.PORT;
+let port = process.env.PORT;
+if(port == null || port == ""){
+    port = 3000;
+}
 
 
 //EXPORT MODELS
@@ -21,6 +24,7 @@ const Order = require("./models/orderModel");
 const Content = require("./models/contentModel");
 
 //MongoDB
+// const mongoUri = "mongodb+srv://admin-dapperdrops:admin123@cluster0.i5opsug.mongodb.net/dapperdropsDB";
 const mongoUri = "mongodb://localhost:27017/dapperdropsDB";
 
 main().catch(err => console.log(err));
@@ -99,6 +103,16 @@ app.get("/", async function(req, res){
 app.get("/about", async function(req, res){
     const content = await Content.findOne({ status: 'active' });
     res.render('about', { content: content });
+});
+
+app.get("/faqs", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('faqs', { content: content });
+});
+
+app.get("/tos", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('tos', { content: content });
 });
 
 app.listen(port, function(){

@@ -4,23 +4,23 @@
     <form action="/admin/products/add-product" method="post" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="inputBrandName" class="form-label">Brand Name:</label>
-          <input type="text" class="form-control" id="inputBrandName" name="brand">
+          <input type="text" class="form-control" id="inputBrandName" name="brand" required>
         </div>
         <div class="mb-3">
             <label for="inputName" class="form-label">Name:</label>
-            <input type="text" class="form-control" id="inputName" name="name">
+            <input type="text" class="form-control" id="inputName" name="name" required>
         </div>
         <div class="mb-3">
             <label for="inputPrice" class="form-label">Price:</label>
-            <input type="number" class="form-control" id="inputPrice" name="price">
+            <input type="number" class="form-control" id="inputPrice" name="price" required>
         </div>
         <div class="mb-3">
             <label for="inputDescription" class="form-label">Description:</label>
-            <input type="text" class="form-control" id="inputDescription" name="description">
+            <input type="text" class="form-control" id="inputDescription" name="description" required>
         </div>
         <div class="mb-3">
             <label for="image" class="form-label">Image:</label>
-            <input type="file" class="form-control" id="image" name="image">
+            <input type="file" class="form-control" id="image" name="image" required>
         </div>
 
         <div class="mb-3">
@@ -35,6 +35,7 @@
 
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
+      
 </div>
 
 <%- include('../innerPartials/admin/footer'); %>

@@ -15,8 +15,13 @@
                   <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
                     <!-- Image -->
                     <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
+<<<<<<< HEAD
                       <img src="/uploads/<%= products[i].image %>"
                         class="w-100" alt="Blue Jeans Jacket" />
+=======
+                      <img src="/uploads/<%= cart.item.image %>"
+                        class="w-100" alt="Image Error" />
+>>>>>>> main
                       <a href="#!">
                         <div class="mask" style="background-color: rgba(251, 251, 251, 0.2)"></div>
                       </a>
@@ -26,11 +31,20 @@
 
                   <div class="col-lg-5 col-md-6 mb-4 mb-lg-0">
                     <!-- Data -->
+<<<<<<< HEAD
                     <p><strong><%=products[i].name%></strong></p>
                     <p><%=products[i].brand%></p>
                     <p>Size: <%=usercart[i].variation%></p>
                     <a href="/cart/remove-item/<%= products[i]._id %>/<%=products[i].usercart%>" class="btn btn-danger btn me-1 mb-2"><i class="fas fa-trash"></i></a>
+=======
+                    <p><strong><%=cart.item.name%></strong></p>
+                    <p><%=cart.item.brand%></p>
+                    <p>Size: <%=cart.variation%></p>
+                    <form action="/cart/remove-item/<%= cart.item._id %>/<%=cart.variation%>" method="post">
+                      <button type="submit" class="btn btn-danger btn me-1 mb-2"><i class="fas fa-trash"></i></button>
+>>>>>>> main
                     <!-- Data -->
+                    </form>
                   </div>
 
                   <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
@@ -38,9 +52,15 @@
                     <div class="d-flex mb-4" style="max-width: 300px">
 
                       <form action="/cart/reduce-one" method="post">
+<<<<<<< HEAD
                         <input type="hidden" name="prodId" value="<%= products[i]._id %>">
                         <input type="hidden" name="variation" value="<%= usercart[i].variation %>">
                         <button class="btn btn-dark px-3 me-2"
+=======
+                        <input type="hidden" name="prodId" value="<%= cart.item._id %>">
+                        <input type="hidden" name="variation" value="<%=cart.variation%>">
+                        <button type="submit" class="btn btn-dark px-3 me-2"
+>>>>>>> main
                           onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
                           <i class="fas fa-minus"></i>
                         </button>
@@ -52,9 +72,15 @@
                       </div>
 
                       <form action="/cart/add-one" method="post">
+<<<<<<< HEAD
                         <input type="hidden" name="prodId" value="<%= products[i]._id %>">
                         <input type="hidden" name="variation" value="<%=products[i].variation%>">
                         <button class="btn btn-dark px-3 ms-2"
+=======
+                        <input type="hidden" name="prodId" value="<%= cart.item._id %>">
+                        <input type="hidden" name="variation" value="<%=cart.variation%>">
+                        <button type="submit" class="btn btn-dark px-3 ms-2"
+>>>>>>> main
                           onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
                           <i class="fas fa-plus"></i>
                         </button>
@@ -111,8 +137,15 @@
         <div class="col-md-12">
           <% if(isError){ %>
             <div class="alert alert-danger" role="alert">
+<<<<<<< HEAD
                 <p style="color: red;">Error In quantity of
 
+=======
+                <p style="color: red;">
+                  <% error.forEach(function(e){ %>
+                    <span> <%=e%></span>
+                  <% }) %>
+>>>>>>> main
                 </p>  
             </div>
         </div>
@@ -127,4 +160,4 @@
     </div>
   </div>
 </section>
-<%- include('partials/footer', { content: content }); %>
+<%- include('partials/footer'); %>

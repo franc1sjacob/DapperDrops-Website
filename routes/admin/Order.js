@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const nodemailer = require("nodemailer");
 
 const User = require("../../models/userModel");
 const Product = require("../../models/productModel");
@@ -85,53 +86,64 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                 variations.push(cart.variation);
             });
 
+            let errorCount = 0;
             
             for(let i = 0; i < itemsLength; i++){
                 let productObject = await Product.findOne({_id: itemId[i]});
-                let productObjectVariations = productObject.variations;
-
-                console.log('productObject',productObjectVariations);
-
-                //GET QUANTITY OF EACH SELECTED VARIATION
-                const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
-                originalQuantity.push(origQty.quantity);
-                minusedValues.push(originalQuantity[i] - quantity[i]);    
+                if(!productObject){
+                    errorCount++;
+                } else{
+                    let productObjectVariations = productObject.variations;
+                    if(!productObjectVariations){
+                        errorCount++;
+                    } else{
+                        //GET QUANTITY OF EACH SELECTED VARIATION
+                        const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
+                        originalQuantity.push(origQty.quantity);
+                        minusedValues.push(originalQuantity[i] - quantity[i]); 
+                    }
+                }  
             };  
-            
 
-            console.log(minusedValues);
-            let hasNegative = minusedValues.some(v => v < 0);
-            let status = "";
-            if(hasNegative){
-                res.redirect('/admin/orders');    
-            } else{
-                for(let i = 0; i < itemsLength; i++){
-                    const conditions = {
-                        _id: itemId[i],
-                        'variations.name': {$eq: variations[i]}
-                    };
-                    
-                    if(minusedValues[i] >= 6){
-                        status = "In-Stock";
-                    }
-                    else if(minusedValues[i] <= 5 && minusedValues[i] >=1){
-                        status = "Few-Stocks";
-                    }
-                    else{
-                        status = "Out-of-Stock";
-                    }
-
-                    const update = {
-                        $set:{
-                            'variations.$.quantity': minusedValues[i],
-                            'variations.$.status': status
-                        }
-                    };
-
-                    Product.findOneAndUpdate(conditions, update, function(err){});
-                };
-                Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, function(err, order){});
+            if(errorCount > 0){
+                console.log("Order must be declined as an item or variation in order was removed by admin.")
                 res.redirect('/admin/orders');
+            }
+            else{
+                console.log(minusedValues);
+                let hasNegative = minusedValues.some(v => v < 0);
+                let status = "";
+                if(hasNegative){
+                    res.redirect('/admin/orders');    
+                } else{
+                    for(let i = 0; i < itemsLength; i++){
+                        const conditions = {
+                            _id: itemId[i],
+                            'variations.name': {$eq: variations[i]}
+                        };
+                        
+                        if(minusedValues[i] >= 6){
+                            status = "In-Stock";
+                        }
+                        else if(minusedValues[i] <= 5 && minusedValues[i] >=1){
+                            status = "Few-Stocks";
+                        }
+                        else{
+                            status = "Out-of-Stock";
+                        }
+
+                        const update = {
+                            $set:{
+                                'variations.$.quantity': minusedValues[i],
+                                'variations.$.status': status
+                            }
+                        };
+
+                        Product.findOneAndUpdate(conditions, update, function(err){});
+                    };
+                    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, function(err, order){});
+                    res.redirect('/admin/orders');
+                }
             }
         }
     });
@@ -247,7 +259,7 @@ router.post("/complete-order", isAuth, isAdmin, function(req, res){
 router.post("/cancel-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
 
-    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Cancelled"}}, async function(err, order){
+    Order.findById(orderId, async function(err, order){
         if(err){
             console.log(err);
         } else {
@@ -255,6 +267,7 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
             const quantity = [];
             const itemId = [];
             const originalQuantity = [];
+            const addedValues = [];
 
             const itemsLength = Object.keys(order.cart.items).length;
             console.log(Object.keys(order.cart.items));
@@ -269,44 +282,56 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                 variations.push(cart.variation);
             });
 
+            let errorCount = 0;
             //GET QUANTITY OF EACH SELECTED VARIATION
             for(let i = 0; i < itemsLength; i++){
                 let productObject = await Product.findOne({_id: itemId[i]});
-                let productObjectVariations = productObject.variations;
-
-                const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
-                console.log(origQty);
-                originalQuantity.push(origQty.quantity);
-
-                let status = "";
-
-                if(originalQuantity[i] + quantity[i] >= 6){
-                    status = "In-Stock";
-                }else if(originalQuantity[i] + quantity[i] <= 5 && originalQuantity[i] + quantity[i] >=1){
-                    status = "Few-Stocks";
-                }else{
-                    status = "Out-of-Stock";
+                if(!productObject){
+                    errorCount++;
+                } else{
+                    let productObjectVariations = productObject.variations;
+                    if(!productObjectVariations){
+                        errorCount++;
+                    } else{
+                        const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
+                        console.log(origQty);
+                        originalQuantity.push(origQty.quantity);
+                        addedValues.push(originalQuantity[i] + quantity[i]); 
+                    }
                 }
+            };
 
-                const conditions = {
-                    _id: itemId[i],
-                    'variations.name': {$eq: variations[i]}
-                };
-
-                const update = {
-                    $set:{
-                        'variations.$.quantity': originalQuantity[i] + quantity[i],
-                        'variations.$.status': status
+            if(errorCount > 0){
+                console.log("Order must be declined as an item or variation in order was removed by admin.")
+                res.redirect('/admin/orders');
+            }
+            else{
+                let status = "";
+                for(let i = 0; i < itemsLength; i++){
+                    if(addedValues[i] >= 6){
+                        status = "In-Stock";
+                    }else if(addedValues[i] <= 5 && addedValues[i] >=1){
+                        status = "Few-Stocks";
+                    }else{
+                        status = "Out-of-Stock";
                     }
+    
+                    const conditions = {
+                        _id: itemId[i],
+                        'variations.name': {$eq: variations[i]}
+                    };
+    
+                    const update = {
+                        $set:{
+                            'variations.$.quantity': addedValues[i],
+                            'variations.$.status': status
+                        }
+                    };
+                    Product.findOneAndUpdate(conditions, update, function(err){});
                 };
-
-                Product.findOneAndUpdate(conditions, update, function(err){
-                    if(err){
-                        console.log(err);
-                    }
-                });
-            }; 
-            res.redirect('/admin/orders');
+                Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Cancelled"}}, function(err, order){});
+                res.redirect('/admin/orders');
+            }
         }
     });
 });
@@ -485,7 +510,7 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, isAdmin, function(r
     });
 });
 
-router.post('/shipping-:status', function(req, res){
+router.post('/shipping-:status', isAuth, isAdmin, function(req, res){
     const status = req.params.status;
     const { orderId } = req.body;
     if(status == "Pending" || status == "Processing" || status == "In-transit" || status == "Delivered"){
@@ -500,5 +525,76 @@ router.post('/shipping-:status', function(req, res){
         res.redirect('/admin/orders');
     }
 });
+
+router.get("/send-ship-mail-:orderId", isAuth, isAdmin, function(req, res){
+    const orderId = req.params.orderId;
+    console.log()
+    Order.findById(orderId, function(err, foundOrder){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.render('admin/send-ship-mail', {fullName: req.session.firstName + " " + req.session.lastName, order: foundOrder});
+        }
+    });
+});
+
+router.post("/send-mail-shipped-:orderId", isAuth, isAdmin, async function(req, res){
+    const orderId = req.params.orderId;
+    const{shippingCompany, trackNumber, shippingLink} = req.body;
+    Order.findById((orderId), function(err, foundOrder){
+        if(err){
+            console.log(err);
+        }
+        else{
+            User.findById(foundOrder.userId, function(err, foundUser){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    sendShippingMail(foundUser.firstName, foundUser.email, foundOrder._id, shippingCompany, trackNumber, shippingLink);
+                    console.log(foundUser.firstName + foundUser.email);
+                    res.redirect('/admin/orders');
+                }
+            });
+        }
+    });
+});
+
+const sendShippingMail = async function(name, email, orderID, company, track, shipLink){
+    try {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth:{
+                user: process.env.SECRETEMAIL,
+                pass: process.env.SECRETPASSWORD
+            },
+            tls:{
+                rejectUnauthorized: false
+            }
+        });
+        
+        const mailOptions= {
+            from: process.env.SECRETEMAIL,
+            to: email,
+            subject: "Tracking Order",
+            html:'<p>Hi ' + name + ', your order with the Order ID of ' + orderID + ' is now shipped through the company courier services of ' + company + ' please click at this link <a href="'+shipLink+'"> View Shipping Courier Services</a> and view details of your shipped order, by entering your received tracking number: ' + track + ' in the link.</p>'
+        }
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            }
+            else{
+                console.log("Email has been sent:- ", info.response);
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
 
 module.exports = router;

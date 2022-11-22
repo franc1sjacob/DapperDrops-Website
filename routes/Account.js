@@ -30,7 +30,16 @@ const storage = multer.diskStorage({
 });
   
 
-const upload = multer({storage: storage,}).single('paymentProof');
+const upload = multer({storage: storage,fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if(ext !== '.png' && ext !== '.jpg'  && ext !== '.jpeg' && ext !== '.jfif') {
+        return callback(new Error('Only images are allowed'))
+    }
+    callback(null, true)
+},
+limits:{
+    fileSize: 1024 * 1024
+}}).single('paymentProof');
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -95,7 +104,7 @@ router.post("/login", async function(req, res){
 
     //Checks if isMatch is true
     if(!isMatch){
-        return res.render('login', { message: "The password you’ve entered is incorrect. Forgot Password?"});
+        return res.render('login', { message: "The password you’ve entered is incorrect. Forgot Password?", content: content});
     } else if(isMatch && user.isVerified === 'true'){
         req.session.firstName = user.firstName;
         req.session.lastName = user.lastName;
@@ -109,7 +118,7 @@ router.post("/login", async function(req, res){
         }
     } else {
         console.log("User account is correct but not verified.");
-        return res.render('login', { message: "Please verify your account in your email."});
+        return res.render('login', { message: "Please verify your account in your email.", content: content});
     }
 });
 
@@ -129,6 +138,7 @@ router.get("/register", async function(req, res){
 });
 
 router.post("/register", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
     const { firstName, lastName, email, password } = req.body;
 
     let user = await User.findOne({ email });

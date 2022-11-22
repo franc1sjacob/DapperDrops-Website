@@ -156,6 +156,9 @@ router.get("/checkout", isAuth, async function(req, res){
                 if(error.includes("Existing product/s in cart were changed by admin, please empty your cart or reload your page")){
                     req.session.cart = "";
                 }
+                if(error.includes("Item was deleted from the admin please empty your cart or reload your page")){
+                    req.session.cart = "";
+                }
                 res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});
             }
         }

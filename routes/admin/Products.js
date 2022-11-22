@@ -193,19 +193,6 @@ router.post("/add-product", isAuth, isAdmin, upload, function(req, res){
             console.log(err);
         }
         
-        var status = "";
-            const inventory = new Inventory({
-                _id: productId,
-                sales: 0,
-                sold: 0,
-                productId: productId
-            })
-
-            inventory.save(function(err){
-                if(err){
-                    console.log(err);
-                }
-            })
         console.log("Product ID:");
         console.log(productId);
         req.session.productId = productId;

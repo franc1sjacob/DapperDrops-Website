@@ -5,15 +5,15 @@
     <form action="/admin/products/update-variation/<%= variation._id %>-<%= product._id %>" method="POST">
         <div class="mb-3">
             <label for="inputIdName" class="form-label">ID:</label>
-            <input type="text" class="form-control" id="inputBrandName" name="variationId" value="<%= variation._id %>">
+            <input type="text" class="form-control" id="inputBrandName" name="variationId" value="<%= variation._id %>" disabled>
         </div>
         <div class="mb-3">
             <label for="inputName" class="form-label">Size:</label>
-            <input type="text" class="form-control" id="inputName" name="variationName" value="<%= variation.name %>">
+            <input type="text" class="form-control" id="inputName" name="variationName" value="<%= variation.name %>" required>
         </div>
         <div class="mb-3">
             <label for="inputQuantity" class="form-label">Quantity:</label>
-            <input type="number" class="form-control" id="inputQuantity" name="variationQuantity" value="<%= variation.quantity %>">
+            <input type="number" class="form-control" id="inputQuantity" name="variationQuantity" value="<%= variation.quantity %>" min="1" required>
         </div>
         
 

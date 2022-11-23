@@ -4,13 +4,17 @@ body{
 .header {
     padding: 60px;
     text-align: center;
-    background: white;
+    background: whitesmoke;
     color: palevioletred;
     font-size: 30px;
   }
+p{
+    font-size: medium;
+    text-align: center;
+}
 
 .cust-landing-text{
-    font-size: 6vw;
+    font-size: 5vw;
     font-weight: bold;
 }
 

@@ -4,7 +4,7 @@
     <h1 class="fw-bold text-center mt-2 mb-3">Add to Featured</h1>
     <div class="row mb-3">
         <div class="col-lg-6">
-            <img src="/uploads/<%= product.image %>" class="w-100">
+            <img src="<%= product.image.url %>" class="img">
         </div>
         <div class="col-lg-6">
             <form action="/admin/products/<%= product._id %>/add-to-featured" method="POST">

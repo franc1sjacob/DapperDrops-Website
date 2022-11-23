@@ -401,10 +401,7 @@ router.post("/:productId", isAuth, isAdmin, upload, async function(req, res){
     ); 
     
 });
-router.get("/:productId/search", isAuth, isAdmin, function(req,res){
-    console.log(req.params.key);
-    resp.send("Search Done");
-})
+
 
 router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
@@ -458,6 +455,7 @@ router.get("/update-variation/:variationId-:productId", isAuth, isAdmin, upload,
     const variationId = req.params.variationId;
     const productId = req.params.productId;
     console.log(variationId);
+    
 
     Product.findById({_id: productId}, function(err, product){
         if(err){

@@ -30,7 +30,6 @@ module.exports = function Cart(oldCart) {
     };
 
     this.reduceByOne = function(id) {
-        console.log(this.items[id]);
         this.items[id].qty--;
         this.items[id].price -= this.items[id].item.price;
         this.totalQty--;
@@ -42,7 +41,6 @@ module.exports = function Cart(oldCart) {
     };
 
     this.addByOne = function(id) {
-        console.log(this.items[id]);
         this.items[id].qty++;
         this.items[id].price += this.items[id].item.price;
         this.totalQty++;

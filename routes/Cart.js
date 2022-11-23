@@ -42,7 +42,7 @@ router.post("/add-to-cart", async function(req, res){
       
         let product = await Product.findById(prodId);
         product.variations.forEach((foundVariation)=>{
-            console.log(foundVariation,"variations found")
+            // console.log(foundVariation,"variations found")
             if(foundVariation.name === selectVar && selectQty > foundVariation.quantity){
                 console.log("error found , throw now");
                 throw "Some items became available. Update the quantity and try again."
@@ -106,12 +106,13 @@ router.get("/checkout", isAuth, async function(req, res){
                 var errorValues = [];
                 let adminChanged = false;
                 let cartItemList = Object.values(cart.items);
+                console.log(cartItemList);
                 
                 for (let j = 0; j < cartItemList.length; j++) {
                     let i = cartItemList[j];           
                     const getProductCheck = await Product.findById({_id:i.item._id.valueOf()});
-                    console.log(getProductCheck, "getProductCheck");
-                    
+                    // console.log(getProductCheck, "getProductCheck");
+                    // console.log('meeowwwwwwwwwwww',i.item._id);
                     if(!getProductCheck){
                         if(errorValues.length === 0){
                             errorValues.push("Item/s in cart were removed suddenly, please reload your cart and page"); 
@@ -120,7 +121,7 @@ router.get("/checkout", isAuth, async function(req, res){
                     if(errorValues.length > 0){
                         throw errorValues
                     }
-                    console.log(i.item._id.valueOf(),i.item.name , getProductCheck.name ,i.item.brand , getProductCheck.brand,i.item.price , getProductCheck.price,i.item.description , getProductCheck.description)
+                    // console.log(i.item._id.valueOf(),i.item.name , getProductCheck.name ,i.item.brand , getProductCheck.brand,i.item.price , getProductCheck.price,i.item.description , getProductCheck.description)
                     if(i.item.name != getProductCheck.name ||i.item.brand != getProductCheck.brand||i.item.price != getProductCheck.price){
                         console.log(errorValues.length, 'errorValues');
                         if(errorValues.length === 0){

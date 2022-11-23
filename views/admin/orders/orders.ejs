@@ -138,7 +138,7 @@
                                                 <li><button class="dropdown-item">Delete</button></li>
                                             </form>
 
-                                        <% } else if(order.orderStatus === "Cancelled" || order.orderStatus === "Declined" || order.orderStatus === "Refunded"){%>   
+                                        <% } else if(order.orderStatus === "Cancelled" || order.orderStatus === "Declined" || order.orderStatus === "Refunded" || order.orderStatus == "Cancelled by Customer"){%>   
 
                                             <form action="/admin/orders/pending-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">

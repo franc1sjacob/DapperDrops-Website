@@ -15,7 +15,7 @@
             <form action="/cart/add-to-cart" method="post">
                 <div class="mb-3">
                     <label for="variation" class="form-label">Size: <span style="color:red" id="errorDisabledValue"></span></label>
-                    <select name="variation" onchange="handleQuantity();" id="category" class="form-control">
+                    <select name="variation" onchange="handleQuantity();" id="category" class="form-control" required>
                         <% item.variations.forEach(function(variation){ %>
                             <option id = "categoryValue" value="<%= variation.name %>"><%= variation.name %></option>
                         <% }) %>

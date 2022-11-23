@@ -15,13 +15,13 @@
                 <div class="card">
                     <div class="card-header d-flex">
                         <div class="ms-auto">
-                            <form action="/admin/content/delete-payment-details/<%= homeImage.image._id %>" method="POST">
+                            <form action="/admin/content/delete-homeimageImage/<%= homeImage._id %>" method="POST">
                                 <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
                             </form>
                         </div>
                     </div>
                     <div class="card-body">
-                        <img src="<%= homeImage.image.url %>" class="w-100">
+                        <img src="<%= homeImage.image.url %>" class="w-100" style="height: 300px; object-fit:cover;">
                     </div>
                 </div>
             </div>

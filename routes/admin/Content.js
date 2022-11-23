@@ -135,7 +135,6 @@ router.get('/add-homepageImage', isAuth, isAdmin, function(req, res){
     res.render('admin/content/add-homepageImage', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 router.post('/add-homepageImage', isAuth, isAdmin, upload.single('homeImage') ,async function(req, res){
-    const { paymentName, userName, bankNumber } = req.body;
     const result = await cloudinary.uploader.upload(req.file.path,{
         folder: "HomeImage",
     })
@@ -154,6 +153,16 @@ router.post('/add-homepageImage', isAuth, isAdmin, upload.single('homeImage') ,a
         }
     });
 });
+router.post('/delete-homeimageImage/:homeimageImageId', isAuth, isAdmin, function(req, res){
+    const { homeimageImageId } = req.params;
+    Content.findOneAndUpdate({ status: 'active' }, { $pull: { homeImage: { _id: homeimageImageId } } }, function(err, result){
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect('/admin/content/view-homepageImage');
+        }
+    });
+});
 router.get('/view-aboutusImage', isAuth, isAdmin, async (req, res) => {
     const content = await Content.findOne({ status: 'active' });
     res.render('admin/content/view-aboutusImage', { content: content, fullName: req.session.firstName + " " + req.session.lastName });
@@ -161,13 +170,6 @@ router.get('/view-aboutusImage', isAuth, isAdmin, async (req, res) => {
 router.get('/add-aboutusImage1', isAuth, isAdmin, function(req, res){
     res.render('admin/content/add-aboutusImage1', { fullName: req.session.firstName + " " + req.session.lastName });
 });
-router.get('/add-aboutusImage2', isAuth, isAdmin, function(req, res){
-    res.render('admin/content/add-aboutusImage2', { fullName: req.session.firstName + " " + req.session.lastName });
-});
-router.get('/add-aboutusImage3', isAuth, isAdmin, function(req, res){
-    res.render('admin/content/add-aboutusImage3', { fullName: req.session.firstName + " " + req.session.lastName });
-});
-
 router.post('/add-aboutusImage1', isAuth, isAdmin, upload.single('aboutUsImage1') ,async function(req, res){
     const result = await cloudinary.uploader.upload(req.file.path,{
         folder: "aboutUsImage",
@@ -187,37 +189,9 @@ router.post('/add-aboutusImage1', isAuth, isAdmin, upload.single('aboutUsImage1'
         }
     });
 });
-router.post('/add-aboutusImage2', isAuth, isAdmin, upload.single('aboutUsImage2') ,async function(req, res){
-    const result = await cloudinary.uploader.upload(req.file.path,{
-        folder: "aboutUsImage",
-    })
-    const aboutUsImage = {
-        image: {
-                public_id: result.public_id,
-                url: result.secure_url
-        },
-    };
-
-    Content.findOneAndUpdate({ status: 'active' }, { $push: { aboutUsImage: [aboutUsImage] } }, function(err, result){
-        if(err) {
-            console.log(err);
-        } else {
-            res.redirect('/admin/content/view-aboutusImage');
-        }
-    });
-});
-router.post('/add-aboutusImage3', isAuth, isAdmin, upload.single('aboutUsImage3') ,async function(req, res){
-    const result = await cloudinary.uploader.upload(req.file.path,{
-        folder: "aboutUsImage",
-    })
-    const aboutUsImage = {
-        image: {
-                public_id: result.public_id,
-                url: result.secure_url
-        },
-    };
-
-    Content.findOneAndUpdate({ status: 'active' }, { $push: { aboutUsImage: [aboutUsImage] } }, function(err, result){
+router.post('/delete-aboutusImage/:aboutusImageId', isAuth, isAdmin, function(req, res){
+    const { aboutusImageId } = req.params;
+    Content.findOneAndUpdate({ status: 'active' }, { $pull: { aboutUsImage: { _id: aboutusImageId } } }, function(err, result){
         if(err) {
             console.log(err);
         } else {

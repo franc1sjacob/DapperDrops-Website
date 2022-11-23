@@ -15,8 +15,12 @@
     </div>
 
         <div class="row">
-            <% if(orders.length == 0){ %>
-                <h4>Sorry you have no orders with a <span class="fw-bold text-uppercase"><%= status %></span> status..</h4>
+            <% if(orders == null || orders == undefined || orders.length == 0){ %>
+                <% if(status == null || status == undefined){ %>
+                    <h4>Your orders are empty.</h4>
+                <% } else { %>
+                    <h4>Sorry you have no orders with a <span class="fw-bold text-uppercase"><%= status %></span> status..</h4>
+                <% } %>
             <% } else { %>
                 <%orders.forEach(function(order){%>
                 <div class="col-lg-6 mb-4">

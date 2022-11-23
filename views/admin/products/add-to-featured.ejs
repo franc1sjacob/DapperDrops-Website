@@ -1,0 +1,26 @@
+<%- include('../../innerPartialsv2/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="fw-bold text-center mt-2 mb-3">Add to Featured</h1>
+    <div class="row mb-3">
+        <div class="col-lg-6">
+            <img src="/uploads/<%= product.image %>" class="w-100">
+        </div>
+        <div class="col-lg-6">
+            <form action="/admin/products/<%= product._id %>/add-to-featured" method="POST">
+                <div class="mb-3" id="row">
+                    <p>Product Brand: <span class="fw-bold"><%= product.brand %></span></p>
+                    <p>Product Name: <span class="fw-bold"><%= product.name %></span></p>
+                    <p>Product Price: <span class="fw-bold"><%= product.price %></span></p>
+                </div>
+                <div class="mb-3">
+                <button type="submit" class="btn btn-primary" name="button" value="submit">Add to Featured</button>
+                <a href="/admin/products" class="btn btn-secondary">Cancel</a></h6>
+                </div>
+            </form>
+        </div>
+    </div> 
+    
+</div>
+
+<%- include('../../innerPartialsv2/admin/footer'); %>

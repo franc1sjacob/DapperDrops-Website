@@ -139,6 +139,7 @@ router.get("/register", async function(req, res){
 
 router.post("/register", async function(req, res){
     const content = await Content.findOne({ status: 'active' });
+    const userId = new mongoose.Types.ObjectId();
     const { firstName, lastName, email, password } = req.body;
 
     let user = await User.findOne({ email });
@@ -152,12 +153,18 @@ router.post("/register", async function(req, res){
     const hashedPassword = await bcrypt.hash(password, 12);
 
     user = new User({
+        _id: userId,
         firstName,
         lastName,
         email,
         password: hashedPassword,
         accountType: 'user'
     });
+
+    wishlist = new Wishlist({
+        userId: userId
+    });
+    wishlist.save();
 
     await user.save(function (err){
         if(err){
@@ -210,10 +217,6 @@ router.get("/verify", function(req, res){
         if(err){
             console.log(err);
         } else {
-            wishlist = new Wishlist({
-                userId: req.query.id
-            });
-            wishlist.save();  
             res.redirect('/account/verified');
         }
     });
@@ -451,7 +454,7 @@ router.get('/view-orders', isAuth, async function(req, res){
                 cart = new Cart(order.cart);
                 order.items = cart.generateArray();
             });
-            res.render('profile/view-orders', { orders: orders, content: content });
+            res.render('profile/view-orders', { orders: orders, status: null, content: content });
         }
     });
 });

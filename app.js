@@ -22,6 +22,7 @@ const Cart = require("./models/cartModel");
 const Wishlist = require("./models/wishlistModel");
 const Order = require("./models/orderModel");
 const Content = require("./models/contentModel");
+const Featured = require("./models/featuredModel");
 
 //MongoDB
 // const mongoUri = "mongodb+srv://admin-dapperdrops:admin123@cluster0.i5opsug.mongodb.net/dapperdropsDB";
@@ -95,9 +96,18 @@ app.use("/admin/content/", adminContentRoute);
 
 //INDEX
 app.get("/", async function(req, res){
+    const featuredArr = [];
+
     const content = await Content.findOne({ status: 'active' });
-    const newArrivals = await Product.aggregate([]).sort({ dateCreated: -1}).limit(3);
-    res.render('index', { newArrivals: newArrivals, content: content });
+    const newArrivals = await Product.aggregate([]).sort({ dateCreated: -1}).limit(6);
+    const featured = await Featured.find({}).sort({ dateAdded: -1 }).limit(6);
+
+    for(let i = 0; i < featured.length; i++){
+        foundProduct = await Product.findById(featured[i].productId);
+        featuredArr.push(foundProduct);
+    }
+
+    res.render('index', { newArrivals: newArrivals, content: content, featured: featuredArr });
 });
 
 app.get("/about", async function(req, res){

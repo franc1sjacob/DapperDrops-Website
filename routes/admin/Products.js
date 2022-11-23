@@ -337,24 +337,25 @@ router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
 router.post("/:productId", isAuth, isAdmin, upload, async function(req, res){
     const productId = req.params.productId;
     let variation = req.body['variation'];
-    // let newImage ="";
+    let newImage ="";
     
 
-    // if(req.file){
-    //     newImage = req.file.filename;
-    //     try{
-    //         fs.unlinkSync('public/uploads/'+ req.body.productOldImage);
-    //     } catch(err){
-    //         console.log(err);
-    //     }
-    // }else {
-    //         newImage= req.body.productOldImage;
-    //     }
+    if(req.file){
+        const result = await cloudinary.uploader.upload(req.file.path,{
+            folder: "products",
+        })
+        newImage = result.url;
+        try{
+            // fs.unlinkSync('public/uploads/'+ req.body.productOldImage);
+        } catch(err){
+            console.log(err);
+        }
+    }else {
+            newImage= req.body.productOldImage;
+        }
 
 
-    const result = await cloudinary.uploader.upload(req.file.path,{
-        folder: "products",
-    })
+    
 
     let status = '';
     if(req.body.productQuantity >= 6){
@@ -375,8 +376,7 @@ router.post("/:productId", isAuth, isAdmin, upload, async function(req, res){
             price: req.body.productPrice,
             description: req.body.productDescription,
             image: {
-                public_id: result.public_id,
-                url: result.secure_url
+                url: newImage
             },
             category: req.body.category
         }}, function(err, results){

@@ -92,9 +92,14 @@ router.get("/item/:productId", async function(req, res){
     const productId = req.params.productId;
     const userId = req.session.userId;
 
-    Product.findOne({_id:productId}, function(err, item){
+    const item = await Product.findOne({_id:productId});
+    if(item == null){
+        res.render('error/productNotFound', { content: content });
+    } else {
         res.render('view-item', {item: item,  userId: userId,isError:false,error:"", content: content});
-    });
+    }
+
+
 });
 
 
@@ -106,12 +111,8 @@ router.post('/add-to-wishlist', isAuth, function(req, res){
 
         newProduct = {
             productId: prodId,
-            image: product.image.url,
-            name: product.name,
-            brand: product.brand,
-            category: product.category,
-            price: product.price
         }
+        
         const conditions = {
             userId: userId,
             'products.productId': { $ne: prodId }

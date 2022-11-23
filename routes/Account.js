@@ -12,6 +12,7 @@ const randomstring = require("randomstring");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Wishlist = require("../models/wishlistModel");
+const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const Content = require("../models/contentModel");
 
@@ -141,6 +142,7 @@ router.get("/register", async function(req, res){
 
 router.post("/register", async function(req, res){
     const content = await Content.findOne({ status: 'active' });
+    const userId = new mongoose.Types.ObjectId();
     const { firstName, lastName, email, password } = req.body;
 
     let user = await User.findOne({ email });
@@ -154,12 +156,18 @@ router.post("/register", async function(req, res){
     const hashedPassword = await bcrypt.hash(password, 12);
 
     user = new User({
+        _id: userId,
         firstName,
         lastName,
         email,
         password: hashedPassword,
         accountType: 'user'
     });
+
+    wishlist = new Wishlist({
+        userId: userId
+    });
+    wishlist.save();
 
     await user.save(function (err){
         if(err){
@@ -212,10 +220,6 @@ router.get("/verify", function(req, res){
         if(err){
             console.log(err);
         } else {
-            wishlist = new Wishlist({
-                userId: req.query.id
-            });
-            wishlist.save();  
             res.redirect('/account/verified');
         }
     });
@@ -416,15 +420,35 @@ router.post('/deleteAddress/:addressId', isAuth, function(req, res){
 
 
 router.get('/wishlist', isAuth, async function(req, res){
+    let product;
+    let items = [];
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
-    Wishlist.findOne({ userId: userId }, function(err, wishlist){
-        if(err){
-            console.log(err);
-        } else {
-            res.render('profile/wishlist', { wishlist: wishlist, content: content });
+    const wishlist = await Wishlist.findOne({ userId: userId })
+
+    if(wishlist != null){
+        for(let i = 0; i < wishlist.products.length; i++){
+            foundProduct = await Product.findById(wishlist.products[i].productId);
+            if(foundProduct == null) {
+                nullProduct = {
+                    _id: wishlist.products[i].productId,
+                    brand: "Unavailable",
+                    name: "Product Removed",
+                    price: 0,
+                    image: {
+                        url: "/images/icons/productRemovedImg.jpg"
+                    }
+                }
+                items.push(nullProduct);
+            } else {
+                items.push(foundProduct);
+            }
         }
-    });
+    } else {
+        res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content });
+    }
+    
+    
 });
 
 router.post('/delete-wishlist', isAuth, function(req, res){
@@ -453,7 +477,7 @@ router.get('/view-orders', isAuth, async function(req, res){
                 cart = new Cart(order.cart);
                 order.items = cart.generateArray();
             });
-            res.render('profile/view-orders', { orders: orders, content: content });
+            res.render('profile/view-orders', { orders: orders, status: null, content: content });
         }
     });
 });

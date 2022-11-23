@@ -114,7 +114,7 @@ router.get("/checkout", isAuth, async function(req, res){
                     // console.log('meeowwwwwwwwwwww',i.item._id);
                     if(!getProductCheck){
                         if(errorValues.length === 0){
-                            errorValues.push("Item was deleted from the admin please empty your cart or reload your page"); 
+                            errorValues.push("Item/s in cart were removed suddenly, please reload your cart and page"); 
                         }  
                     }
                     if(errorValues.length > 0){
@@ -124,7 +124,7 @@ router.get("/checkout", isAuth, async function(req, res){
                     if(i.item.name != getProductCheck.name ||i.item.brand != getProductCheck.brand||i.item.price != getProductCheck.price){
                         console.log(errorValues.length, 'errorValues');
                         if(errorValues.length === 0){
-                            errorValues.push("Existing product in cart was changed by admin, please empty your cart or reload your page"); 
+                            errorValues.push("Existing product/s in cart were changed by admin, please empty your cart or reload your page"); 
                         }   
                     }
                 }
@@ -155,9 +155,6 @@ router.get("/checkout", isAuth, async function(req, res){
                     req.session.cart = "";
                 }
                 if(error.includes("Existing product/s in cart were changed by admin, please empty your cart or reload your page")){
-                    req.session.cart = "";
-                }
-                if(error.includes("Item was deleted from the admin please empty your cart or reload your page")){
                     req.session.cart = "";
                 }
                 res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});

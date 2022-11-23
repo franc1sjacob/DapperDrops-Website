@@ -25,8 +25,8 @@ const Content = require("./models/contentModel");
 const Featured = require("./models/featuredModel");
 
 //MongoDB
-// const mongoUri = "mongodb+srv://admin-dapperdrops:admin123@cluster0.i5opsug.mongodb.net/dapperdropsDB";
-const mongoUri = "mongodb://localhost:27017/dapperdropsDB";
+const mongoUri = "mongodb+srv://admin-dapperdrops:admin123@cluster0.i5opsug.mongodb.net/dapperdropsDB";
+// const mongoUri = "mongodb://localhost:27017/dapperdropsDB";
 
 main().catch(err => console.log(err));
 

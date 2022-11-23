@@ -97,6 +97,7 @@ app.use("/admin/content/", adminContentRoute);
 //INDEX
 app.get("/", async function(req, res){
     const featuredArr = [];
+    let nullProduct = [];
 
     const content = await Content.findOne({ status: 'active' });
     const newArrivals = await Product.aggregate([]).sort({ dateCreated: -1}).limit(6);
@@ -104,8 +105,24 @@ app.get("/", async function(req, res){
 
     for(let i = 0; i < featured.length; i++){
         foundProduct = await Product.findById(featured[i].productId);
-        featuredArr.push(foundProduct);
+        if(foundProduct == null) {
+            nullProduct = {
+                _id: featured[i].productId, 
+                brand: "Unavailable",
+                name: "Product Removed",
+                price: 0,
+                image: {
+                    url: "/images/icons/productRemovedImg.jpg"
+                }
+            }
+            featuredArr.push(nullProduct);
+        } else {
+            featuredArr.push(foundProduct);
+        }
+        
     }
+
+    console.log(featuredArr);
 
     res.render('index', { newArrivals: newArrivals, content: content, featured: featuredArr });
 });

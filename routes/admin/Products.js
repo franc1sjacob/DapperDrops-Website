@@ -265,7 +265,8 @@ router.get("/:productId/add-to-featured", isAuth, isAdmin, function(req, res){
     console.log(productId);
     Product.findOne({ _id: productId }, function(err, product){
         res.render('admin/products/add-to-featured', {
-            fullName: req.session.firstName + " " + req.session.lastName, product:product
+            fullName: req.session.firstName + " " + req.session.lastName,
+            product: product
         });
     })
 });

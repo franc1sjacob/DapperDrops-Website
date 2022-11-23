@@ -12,6 +12,7 @@ const randomstring = require("randomstring");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Wishlist = require("../models/wishlistModel");
+const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const Content = require("../models/contentModel");
 
@@ -419,15 +420,35 @@ router.post('/deleteAddress/:addressId', isAuth, function(req, res){
 
 
 router.get('/wishlist', isAuth, async function(req, res){
+    let product;
+    let items = [];
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
-    Wishlist.findOne({ userId: userId }, function(err, wishlist){
-        if(err){
-            console.log(err);
-        } else {
-            res.render('profile/wishlist', { wishlist: wishlist, content: content });
+    const wishlist = await Wishlist.findOne({ userId: userId })
+
+    if(wishlist != null){
+        for(let i = 0; i < wishlist.products.length; i++){
+            foundProduct = await Product.findById(wishlist.products[i].productId);
+            if(foundProduct == null) {
+                nullProduct = {
+                    _id: wishlist.products[i].productId,
+                    brand: "Unavailable",
+                    name: "Product Removed",
+                    price: 0,
+                    image: {
+                        url: "/images/icons/productRemovedImg.jpg"
+                    }
+                }
+                items.push(nullProduct);
+            } else {
+                items.push(foundProduct);
+            }
         }
-    });
+    } else {
+        res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content });
+    }
+    
+    
 });
 
 router.post('/delete-wishlist', isAuth, function(req, res){

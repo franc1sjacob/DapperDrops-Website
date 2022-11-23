@@ -59,7 +59,7 @@
                             <div><%= payment.paymentName %></div>
                             <div><%= payment.bankNumber %></div>
                             <div><%= payment.userName %></div>
-                            <img src="/images/content/payment/<%= payment.qrCodeImage %>" class="paymentImage" alt="">
+                            <img src="<%= payment.qrCodeImage.url %>" class="paymentImage" alt="">
                         </div>
                     <% }) %>
                 <% } %>

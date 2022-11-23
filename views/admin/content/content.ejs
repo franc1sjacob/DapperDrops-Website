@@ -104,32 +104,6 @@
                 </div>
             </div>
 
-            
-            <div class="card mb-3">
-                <div class="card-header d-flex">
-                    <div class="fw-bold">Home: Image</div>
-                    <a class="btn btn-primary ms-auto" href="/admin/content/view-homepageImage"><i class="fa-solid fa-eye"></i></a>
-                </div>
-                <div class="card-body">
-                    <% content.homeImage.forEach(function(image){ %>
-                        <img src="<%= image.image.url %>" style="height: 100px; width: 100px;">
-                    <% }); %>
-                </div>
-            </div>
-    
-            <div class="card mb-3">
-                <div class="card-header d-flex">
-                    <div class="fw-bold">About Us: Images</div>
-                    <a class="btn btn-primary ms-auto" href="/admin/content/view-aboutusImage"><i class="fa-solid fa-eye"></i></a>
-                </div>
-                <div class="card-body">
-                    <% content.aboutUsImage.forEach(function(image){ %>
-                        <img src="<%= image.image.url %>" style="height: 100px; width: 100px;">
-                    <% }); %>
-
-                </div>
-            </div>
-    
             <div class="card mb-3">
                 <div class="card-header d-flex">
                     <div class="fw-bold">Footer: Text</div>
@@ -159,6 +133,32 @@
                     <%= content.footerContactNumber %>
                 </div>
             </div>
+              
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">Home: Image</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/view-homepageImage"><i class="fa-solid fa-eye"></i></a>
+                </div>
+                <div class="card-body">
+                    <% content.homeImage.forEach(function(image){ %>
+                        <img src="<%= image.image.url %>" style="height: 100px; width: 100px;">
+                    <% }); %>
+                </div>
+            </div>
+    
+            <div class="card mb-3">
+                <div class="card-header d-flex">
+                    <div class="fw-bold">About Us: Images</div>
+                    <a class="btn btn-primary ms-auto" href="/admin/content/view-aboutusImage"><i class="fa-solid fa-eye"></i></a>
+                </div>
+                <div class="card-body">
+                    <% content.aboutUsImage.forEach(function(image){ %>
+                        <img src="<%= image.image.url %>" style="height: 100px; width: 100px;">
+                    <% }); %>
+
+                </div>
+            </div>
+    
     
             <div class="card mb-3">
                 <div class="card-header d-flex">

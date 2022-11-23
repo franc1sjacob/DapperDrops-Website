@@ -8,7 +8,7 @@ body{
     color: palevioletred;
     font-size: 30px;
   }
-p{
+.banner{
     font-size: medium;
     text-align: center;
 }

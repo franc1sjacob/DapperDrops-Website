@@ -346,7 +346,7 @@ router.post("/:productId", isAuth, isAdmin, upload, async function(req, res){
         })
         newImage = result.url;
         try{
-            // fs.unlinkSync('public/uploads/'+ req.body.productOldImage);
+            //fs.unlinkSync('public/uploads/'+ req.body.productOldImage);
         } catch(err){
             console.log(err);
         }

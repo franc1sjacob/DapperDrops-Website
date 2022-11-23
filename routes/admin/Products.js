@@ -21,6 +21,7 @@ const isAdmin = function(req, res, next){
 }
 
 const Product = require("../../models/productModel");
+const Featured = require("../../models/featuredModel")
 
 var fs = require('fs');
 var path = require('path');
@@ -257,6 +258,25 @@ router.post("/add-variations", isAuth, isAdmin, function(req, res){
             
         }
     });
+});
+
+router.get("/:productId/add-to-featured", isAuth, isAdmin, function(req, res){
+    const productId = req.params.productId;
+    console.log(productId);
+    Product.findOne({ _id: productId }, function(err, product){
+        res.render('admin/products/add-to-featured', {
+            fullName: req.session.firstName + " " + req.session.lastName, product:product
+        });
+    })
+});
+
+router.post("/:productId/add-to-featured", isAuth, isAdmin, async function(req, res){
+    const productId = req.params.productId;
+
+    const featured = new Featured({ productId: productId })
+    featured.save()
+    res.redirect('/admin/products')
+
 });
 
 router.get("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){

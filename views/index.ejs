@@ -97,25 +97,31 @@
 </div>
 
 <div class="container mt-5">
-  <h1 class="cust-title-text">Featured Products</h1>
-  
+
+  <h1 class="cust-title-text">Featured</h1>
+
   <div class="row">
-    <%newArrivals.forEach(function(product){%>
-      <div class="col-lg-4 col-sm-6">
-        <a href="/products/item/<%= product._id %>" class="cust-prod-link">
-          <div class="card border-0 " style="width: 18rem;">
-            <img src="<%= product.image.url %>" class="card-img-top" style="width: 250px; height:250px;object-fit:cover;"  alt="...">
-            <div class="card-body">
-              <p class="card-text"> <%= product.brand %></p>
-              <p class="card-text cust-prod-text"> <%= product.name %> </p>
-              <p class="card-text cust-prod-text">₱ <%= product.price %> </p>
+    <% if(featured.length == 0 || featured == undefined || featured == null){ %>
+      <h4 class="mt-2 text-center">There are no featured products set yet.. </h4>
+    <% } else { %>
+      <%featured.forEach(function(product){%>
+        <div class="col-lg-4 col-sm-6">
+          <a href="/products/item/<%= product._id %>" class="cust-prod-link">
+            <div class="card border-0 " style="width: 18rem;">
+              <img src="<%= product.image.url %>" class="card-img-top" style="width: 250px; height:250px;object-fit:cover;"  alt="...">
+              <div class="card-body">
+                <p class="card-text"> <%= product.brand %></p>
+                <p class="card-text cust-prod-text"> <%= product.name %> </p>
+                <p class="card-text cust-prod-text">₱ <%= product.price %> </p>
+              </div>
             </div>
-          </div>
-        </a>  
-      </div>
-    <% }) %>
-      
+          </a>
+        </div>
+      <% }) %>
+    <% } %>
   </div>
-</div>
+  
+</div> 
+
 
 <%- include('partials/footer', { content: content }); %>

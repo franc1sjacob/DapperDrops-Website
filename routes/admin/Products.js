@@ -209,7 +209,6 @@ router.post("/add-product", isAuth, isAdmin, upload, async function(req, res){
             console.log(err);
         }
         
-        
         console.log("Product ID:");
         console.log(productId);
         req.session.productId = productId;

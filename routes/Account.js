@@ -106,7 +106,7 @@ router.post("/login", async function(req, res){
 
     //Checks if isMatch is true
     if(!isMatch){
-        return res.render('login', { message: "The password you’ve entered is incorrect. Forgot Password?"});
+        return res.render('login', { message: "The password you’ve entered is incorrect. Forgot Password?", content: content});
     } else if(isMatch && user.isVerified === 'true'){
         req.session.firstName = user.firstName;
         req.session.lastName = user.lastName;
@@ -120,7 +120,7 @@ router.post("/login", async function(req, res){
         }
     } else {
         console.log("User account is correct but not verified.");
-        return res.render('login', { message: "Please verify your account in your email."});
+        return res.render('login', { message: "Please verify your account in your email.", content: content});
     }
 });
 
@@ -604,6 +604,17 @@ router.post('/send-feedback-:orderId', isAuth, function(req, res){
         }
     });
 
+});
+
+router.post('/cancel-customer/:orderId', isAuth, function(req, res){
+    const orderId = req.params.orderId;
+    Order.findByIdAndUpdate({_id: orderId}, {$set : {orderStatus: "Cancelled by Customer"}}, function(err, order){
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect('/account/profile');
+        }
+    });
 });
 
 module.exports = router;

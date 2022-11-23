@@ -78,7 +78,8 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
-            
+            let orderedList = Object.values(order.items);
+
             //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
             order.items.forEach(function(cart){
                 itemId.push(cart.item._id);
@@ -87,8 +88,9 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
             });
 
             let errorCount = 0;
-            
             for(let i = 0; i < itemsLength; i++){
+                let j = orderedList[i]; 
+                
                 let productObject = await Product.findOne({_id: itemId[i]});
                 if(!productObject){
                     errorCount++;
@@ -99,23 +101,32 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                     } else{
                         //GET QUANTITY OF EACH SELECTED VARIATION
                         const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
-                        originalQuantity.push(origQty.quantity);
-                        minusedValues.push(originalQuantity[i] - quantity[i]); 
+                        if(!origQty){
+                            errorCount++;
+                        } else{
+                            originalQuantity.push(origQty.quantity);
+                            minusedValues.push(originalQuantity[i] - quantity[i]);
+                            // console.log(productObject.name, "kokooo", j.item.name);
+                            // console.log("AWITTT", itemId[i]);
+                            if(j.item.name != productObject.name ||j.item.brand != productObject.brand||j.item.price != productObject.price){
+                                errorCount++;
+                            }
+                        }
                     }
                 }  
             };  
 
             if(errorCount > 0){
-                console.log("Order must be declined as an item or variation in order was removed by admin.")
+                console.log("Order must be declined as an item or variation in order was removed or changed by admin.")
                 res.redirect('/admin/orders');
-            }
-            else{
+            } else{
                 console.log(minusedValues);
                 let hasNegative = minusedValues.some(v => v < 0);
                 let status = "";
                 if(hasNegative){
                     res.redirect('/admin/orders');    
                 } else{
+                    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, function(err, order){});
                     for(let i = 0; i < itemsLength; i++){
                         const conditions = {
                             _id: itemId[i],
@@ -141,7 +152,6 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 
                         Product.findOneAndUpdate(conditions, update, function(err){});
                     };
-                    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, function(err, order){});
                     res.redirect('/admin/orders');
                 }
             }
@@ -171,91 +181,6 @@ router.post("/decline-order", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.post("/complete-order", isAuth, isAdmin, function(req, res){
-    const {orderId} = req.body;
-    Order.findById(orderId, {$set: {orderStatus: "Completed"}}, async function(err, order){
-        if(err){
-            console.log(err);
-        } else {
-            //For Sales DB
-            let item;
-            let items = [];
-
-            //For updating product total quantity sold and total earnings.
-            const quantitySold = [];
-            const itemId = [];
-            const earnings = []
-            const originalTotalEarnings = [];
-            const originalTotalQuantitySold = [];
-
-            const itemsLength = Object.keys(order.cart.items).length;
-
-            cart = new Cart(order.cart);
-            order.items = cart.generateArray();
-
-            //Getting product detail inside of cart.
-            order.items.forEach(function(cart){
-                //To be inserted in sales db.
-                item = {
-                    itemBrand: cart.item.brand,
-                    itemName: cart.item.name,
-                    itemPrice: cart.item.price,
-                    itemVariation: cart.variation,
-                    itemQuantity: cart.qty,
-                    itemTotal: cart.price
-                }
-
-                items.push(item);
-                itemId.push(cart.item._id);
-                quantitySold.push(cart.qty);
-                earnings.push(cart.price);
-            });
-
-            //Updating the total sales and total quantity sold.
-            for(let i = 0; i < itemsLength; i++){
-
-                let productObject = await Product.findOne({_id: itemId[i]});
-                let totalEarnings = productObject.totalEarnings;
-                let totalQuantitySold = productObject.totalQuantitySold;
-
-                originalTotalQuantitySold.push(totalQuantitySold);
-                originalTotalEarnings.push(totalEarnings);
-    
-                const conditions = {
-                    _id: itemId[i],
-                };
-                const update = {
-                    $set: { totalEarnings : originalTotalEarnings[i] + earnings[i], totalQuantitySold : originalTotalQuantitySold[i] + quantitySold[i] }
-                };
-
-                Product.findOneAndUpdate(conditions, update, function(err){
-                    if(err){
-                        console.log(err);
-                    }
-                });
-            };  
-
-            //Creating new sale object to be inserted to sales database.
-            sale = new Sale({
-                orderId: orderId,
-                dateSold: order.dateCreated,
-                earnings: order.amountPaid,
-                items: items,
-            });
-
-            sale.save(function (err){
-                if(err){
-                    console.log(err);
-                } else {
-                    console.log("save success");
-                }
-            });
-        
-            res.redirect('/admin/orders');
-        }
-    });
-});
-
 router.post("/cancel-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
 
@@ -270,10 +195,10 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
             const addedValues = [];
 
             const itemsLength = Object.keys(order.cart.items).length;
-            console.log(Object.keys(order.cart.items));
 
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
+            let orderedList = Object.values(order.items);
             
             //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
             order.items.forEach(function(cart){
@@ -285,6 +210,8 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
             let errorCount = 0;
             //GET QUANTITY OF EACH SELECTED VARIATION
             for(let i = 0; i < itemsLength; i++){
+                let j = orderedList[i]; 
+
                 let productObject = await Product.findOne({_id: itemId[i]});
                 if(!productObject){
                     errorCount++;
@@ -294,19 +221,26 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                         errorCount++;
                     } else{
                         const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
-                        console.log(origQty);
-                        originalQuantity.push(origQty.quantity);
-                        addedValues.push(originalQuantity[i] + quantity[i]); 
+                        if(!origQty){
+                            errorCount++;
+                        } else{
+                            originalQuantity.push(origQty.quantity);
+                            addedValues.push(originalQuantity[i] + quantity[i]); 
+                            if(j.item.name != productObject.name ||j.item.brand != productObject.brand||j.item.price != productObject.price){
+                                errorCount++;
+                            }
+                        }
                     }
                 }
             };
 
             if(errorCount > 0){
-                console.log("Order must be declined as an item or variation in order was removed by admin.")
+                console.log("Order must be declined as an item or variation in order was removed or changed by admin.")
                 res.redirect('/admin/orders');
-            }
-            else{
+            } else{
                 let status = "";
+                Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Cancelled"}}, function(err, order){});
+                console.log(addedValues);
                 for(let i = 0; i < itemsLength; i++){
                     if(addedValues[i] >= 6){
                         status = "In-Stock";
@@ -329,7 +263,109 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                     };
                     Product.findOneAndUpdate(conditions, update, function(err){});
                 };
-                Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Cancelled"}}, function(err, order){});
+                res.redirect('/admin/orders');
+            }
+        }
+    });
+});
+
+router.post("/complete-order", isAuth, isAdmin, function(req, res){
+    const {orderId} = req.body;
+    Order.findById(orderId, async function(err, order){
+        if(err){
+            console.log(err);
+        } else {
+            //For Sales DB
+            let item;
+            let items = [];
+
+            //For updating product total quantity sold and total earnings.
+            const quantitySold = [];
+            const itemId = [];
+            const earnings = []
+
+            const itemsLength = Object.keys(order.cart.items).length;
+
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+            let orderedList = Object.values(order.items);
+
+            //Getting product detail inside of cart.
+            order.items.forEach(function(cart){
+                //To be inserted in sales db.
+                item = {
+                    itemBrand: cart.item.brand,
+                    itemName: cart.item.name,
+                    itemPrice: cart.item.price,
+                    itemVariation: cart.variation,
+                    itemQuantity: cart.qty,
+                    itemTotal: cart.price
+                }
+
+                items.push(item);
+                itemId.push(cart.item._id);
+                quantitySold.push(cart.qty);
+                earnings.push(cart.price);
+            });
+
+            let errorCount = 0;
+            //Updating the total sales and total quantity sold.
+            for(let i = 0; i < itemsLength; i++){
+                let j = orderedList[i]; 
+
+                let productObject = await Product.findOne({_id: itemId[i]});
+                if(!productObject){
+                    errorCount++;
+                } else{
+                    let productObjectVariations = productObject.variations;
+                    if(!productObjectVariations){
+                        errorCount++;
+                    } else{
+                        if(j.item.name != productObject.name ||j.item.brand != productObject.brand||j.item.price != productObject.price){
+                            errorCount++;
+                        } 
+                    }
+                }
+            };
+
+            if(errorCount > 0){
+                console.log("Order must be declined as an item or variation in order was removed or changed by admin.")
+                res.redirect('/admin/orders');
+            } else{
+                Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, async function(err, order){});
+                for(let i = 0; i < itemsLength; i++){
+                    const conditions = {
+                        _id: itemId[i],
+                    };
+                    const update = {
+                        $inc: { 
+                            totalEarnings: earnings[i], 
+                            totalQuantitySold: quantitySold[i] 
+                        }
+                    };
+
+                    Product.findOneAndUpdate(conditions, update, function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                    });
+                };  
+
+                //Creating new sale object to be inserted to sales database.
+                sale = new Sale({
+                    orderId: orderId,
+                    dateSold: order.dateCreated,
+                    earnings: order.amountPaid,
+                    items: items,
+                });
+
+                sale.save(function (err){
+                    if(err){
+                        console.log(err);
+                    } else {
+                        console.log("save success");
+                    }
+                });
                 res.redirect('/admin/orders');
             }
         }
@@ -339,7 +375,7 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
 router.post("/refund-order", isAuth, isAdmin, function(req, res){
     const{ orderId } = req.body;
 
-    Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Refunded"}}, async function(err, order){
+    Order.findById(orderId, async function(err, order){
         if(err){
             console.log(err);
         } else {
@@ -349,17 +385,17 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
             const variations = [];
             const quantity = [];
             const originalQuantity = [];
+            const addedValues = [];
 
             //For updating total quantity sold and total earnings.
             const quantitySold = [];
             const earnings = []
-            const originalTotalEarnings = [];
-            const originalTotalQuantitySold = [];
-
+        
             const itemsLength = Object.keys(order.cart.items).length;
 
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
+            let orderedList = Object.values(order.items);
             
             //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
             order.items.forEach(function(cart){
@@ -374,57 +410,76 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
                 earnings.push(cart.price);
             });
 
-            
+            let errorCount = 0;
             for(let i = 0; i < itemsLength; i++){
+                let j = orderedList[i]; 
+
                 let productObject = await Product.findOne({_id: itemId[i]});
-                let productObjectVariations = productObject.variations;
-
-                //Getting the original quantity per variation.
-                const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
-                originalQuantity.push(origQty.quantity);
-                
-                //Getting the original total earnings and total quantity sold.
-                let totalEarnings = productObject.totalEarnings;
-                let totalQuantitySold = productObject.totalQuantitySold;
-
-                originalTotalQuantitySold.push(totalQuantitySold);
-                originalTotalEarnings.push(totalEarnings);
-                
-                let status = "";
-
-                if(originalQuantity[i] + quantity[i] >= 6){
-                    status = "In-Stock";
-                }
-                else if(originalQuantity[i] + quantity[i] <= 5 && originalQuantity[i] + quantity[i] >=1){
-                    status = "Few-Stocks";
-                }
-                else{
-                    status = "Out-of-Stock";
-                }
-                
-                const conditions = {
-                    _id: itemId[i],
-                    'variations.name': {$eq: variations[i]}
-                };
-
-                const update = {
-                    $set:{
-                        'variations.$.quantity': originalQuantity[i] + quantity[i], 'variations.$.status': status, totalEarnings : originalTotalEarnings[i] - earnings[i], totalQuantitySold : originalTotalQuantitySold[i] - quantitySold[i]}
-                };
-
-                //Adds back the subtracted quantity, subtracts from total earnings and total quantity sold.
-                Product.findOneAndUpdate(conditions, update, function(err){
-                    if(err){
-                        console.log(err);
+                if(!productObject){
+                    errorCount++;
+                } else{
+                    let productObjectVariations = productObject.variations;
+                    if(!productObjectVariations){
+                        errorCount++;
+                    } else{
+                        const origQty = productObjectVariations.find(({ name }) => name == variations[i]);
+                        if(!origQty){
+                            errorCount++;
+                        } else{
+                            originalQuantity.push(origQty.quantity);
+                            addedValues.push(originalQuantity[i] + quantity[i]); 
+                            if(j.item.name != productObject.name ||j.item.brand != productObject.brand||j.item.price != productObject.price){
+                                errorCount++;
+                            } 
+                        }
                     }
-                });
-
-                //Deletes the sale document.
-                Sale.findOneAndDelete({ orderId: orderId }, function(err, sale){
-                    if(err){ console.log(err) }
-                }); 
-            };  
-            res.redirect('/admin/orders');
+                }
+            };
+            
+            if(errorCount > 0){
+                console.log("Order must be declined as an item or variation in order was removed or changed by admin.")
+                res.redirect('/admin/orders');
+            } else{
+                let status = "";
+                Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Refunded"}}, function(err, order){});
+                for(let i = 0; i < itemsLength; i++){
+                    if(addedValues[i] >= 6){
+                        status = "In-Stock";
+                    } else if(addedValues[i] <= 5 && addedValues[i] >=1){
+                        status = "Few-Stocks";
+                    } else{
+                        status = "Out-of-Stock";
+                    }
+                    
+                    const conditions = {
+                        _id: itemId[i],
+                        'variations.name': {$eq: variations[i]}
+                    };
+    
+                    const update = {
+                        $set:{
+                            'variations.$.quantity': addedValues[i], 'variations.$.status': status
+                        },
+                        $inc:{
+                            totalEarnings : -earnings[i], 
+                            totalQuantitySold : -quantitySold[i]
+                        }
+                    };
+    
+                    //Adds back the subtracted quantity, subtracts from total earnings and total quantity sold.
+                    Product.findOneAndUpdate(conditions, update, function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                    });
+    
+                    //Deletes the sale document.
+                    Sale.findOneAndDelete({ orderId: orderId }, function(err, sale){
+                        if(err){ console.log(err) }
+                    }); 
+                };
+                res.redirect('/admin/orders');
+            }
         }
     });
 });

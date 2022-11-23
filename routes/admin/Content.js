@@ -50,7 +50,7 @@ const storage = multer.diskStorage({
         } else if (file.fieldname == 'aboutUsImage1' || file.fieldname == 'aboutUsImage2' || file.fieldname == 'aboutUsImage3') {
             cb(null, 'public/images/content/aboutus');
         } else {
-            cb(null, 'public/images/content/payment');
+            cb(null, 'public/images/content/home');
         }
     },
     filename: (req, file, cb) => {

@@ -23,7 +23,8 @@
                 </form>
             </div>
         </div>
-        <div class="chartBox mb-5">
+        <div class="chartBox mb-5 text-center">
+            <img src="/images/icons/dottedLegend.jpg" class="w-50">
             <canvas id="myChart"></canvas>
         </div>
     </div>
@@ -91,7 +92,7 @@
                 ctx.save();
         //draw line
         ctx.strokeStyle = 'red';
-        ctx.setLineDash([20, 20]);
+        ctx.setLineDash([10, 30]);
         ctx.strokeRect(left, y.getPixelForValue(3), width, 0);
         ctx.restore();
         }
@@ -104,8 +105,8 @@
                 scales: { x, y } } = chart;
                 ctx.save();
         //draw line
-        ctx.strokeStyle = 'red';
-        ctx.setLineDash([20, 20]);
+        ctx.strokeStyle = 'orange';
+        ctx.setLineDash([10, 30]);
         ctx.strokeRect(left, y.getPixelForValue(6), width, 0);
         ctx.restore();
         }
@@ -118,8 +119,8 @@
                 scales: { x, y } } = chart;
                 ctx.save();
         //draw line
-        ctx.strokeStyle = 'red';
-        ctx.setLineDash([20, 20]);
+        ctx.strokeStyle = 'green';
+        ctx.setLineDash([10, 30]);
         ctx.strokeRect(left, y.getPixelForValue(12), width, 0);
         ctx.restore();
         }

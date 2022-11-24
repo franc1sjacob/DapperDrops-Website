@@ -8,7 +8,7 @@
     </div>
 
     <div class="row mt-5">
-        <div class="col-xl-6 col-lg-6">
+        <div class="col-xl-8 col-lg-8">
             <p class="fw-bold fs-5">Step 1: Pay required minimum downpayment for pre-order items or pay full amount for on-hand items on either of the following accounts and take a screenshot and save it, this will serve as your proof of payment.</p>
             <% if(content == undefined || content == null) { %>
                 <div class="me-auto mb-3">
@@ -65,22 +65,22 @@
                 <% } %>
             <% } %>
             
-            <p class="fw-bold fs-5">Step 2: Visit your profile.</p>
-            <img src="/images/directions/direction1.png" class="w-100" alt="">
+            <p class="fw-bold fs-5">Step 2: Visit your profile. Click the user icon in the top right corner of the screen.</p>
 
-            <p class="fw-bold fs-5">Step 3: Select your order and click send proof of payment button.</p>
+            <p class="fw-bold fs-5">Step 3: Click view orders history.</p>
+
+            <p class="fw-bold fs-5">Step 4: Click send proof of payment button.</p>
             <img src="/images/directions/direction2.png" class="w-100" alt="">
 
-            <p class="fw-bold fs-5">Step 4: Upload your proof of payment.</p>
-            <img src="/images/directions/direction2.png" class="w-100" alt="">
+            <p class="fw-bold fs-5">Step 5: Upload your proof of payment.</p>
 
-            <p class="fw-bold fs-5">Step 5: Wait within 24 hours for your order and payment to be confirmed.</p>
-            <p class="fw-bold fs-5">Step 6: Have any inquiries?</p>
+            <p class="fw-bold fs-5">Step 6: Wait within 24 hours for your order and payment to be confirmed.</p>
+            <p class="fw-bold fs-5">Step 7: Have any inquiries?</p>
             <p class="fs-6">Send us a message via SMS 0998 5541 546 or message us at our social media pages.</p>
 
         </div>
 
-        <div class="col-xl-6 col-lg-6">
+        <div class="col-xl-4 col-lg-4">
             <h3 class="fw-bold">Order Details</h3>
             <ol class="list-group">
                 <% order.items.forEach(function(cart){ %>
@@ -107,7 +107,7 @@
                     <div class="ms-2 me-auto">
                         <div class="text-muted">Payment Method: </div>
                     </div>
-                    <span class="text-muted"><%= order.proofPayment %></span>
+                    <span class="text-muted"><%= order.paymentMethod %></span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
@@ -116,9 +116,11 @@
                     <h4 class="fw-bold">₱<%= new Intl.NumberFormat().format(cart.totalPrice) %>.00</h4>
                 </li>
                 <li class="list-group-item justify-content-between align-items-start">
-                    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores delectus cum eos ab dolore temporibus similique atque labore eveniet quo dolor quia quod numquam officia earum, quis ipsam. Velit, facilis!</div>
-                    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores delectus cum eos ab dolore temporibus similique atque labore eveniet quo dolor quia quod numquam officia earum, quis ipsam. Velit, facilis!</div>
-                    <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores delectus cum eos ab dolore temporibus similique atque labore eveniet quo dolor quia quod numquam officia earum, quis ipsam. Velit, facilis!</div>
+                    <div>Thank you for ordering at Dapper Drops! </div><br>
+                    <div>Please be reminded that your order/s will only be processed once you have submitted your payment receipt.</div><br>
+                    <div>After payment, the order/s will be processed for shipping and may no longer be cancelled.</div><br>
+                    <div>Estimated time of arrival for pre-orders is ? months.</div><br>
+                    <div>For more information regarding our policies, please proceed to our Terms and Conditions and for clarifications, you may proceed to FAQs.</div>
                 </li>
             </ol>
         </div>

@@ -1,0 +1,26 @@
+<%- include('../../innerPartialsv2/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="text-center mt-2 mb-3">Subtract Quantity</h1> 
+    <form action="/admin/products/minus-quantity-variation/<%= variation._id %>-<%= product._id %>" method="POST">
+        <div class="mb-3">
+            <label for="inputIdName" class="form-label">ID:</label>
+            <input type="text" class="form-control" id="inputBrandName" name="variationId" value="<%= variation._id %>" disabled>
+        </div>
+        <div class="mb-3">
+            <label for="inputName" class="form-label">Size:</label>
+            <input type="text" class="form-control" id="inputName" name="variationName" value="<%= variation.name %>" disabled>
+        </div>
+        <div class="mb-3">
+            <label for="inputQuantity" class="form-label">Quantity:</label>
+            <input type="number" class="form-control" id="inputQuantity" name="variationQuantity" min="1" max="<%= variation.quantity %>" required>
+            <input type="hidden" class="form-control" id="inputQuantity" name="origVariationQuantity" value="<%= variation.quantity %>">
+        </div>
+        
+
+        <button type="submit" class="btn btn-primary mt-3">Subtract Quantity</button>
+        <a class="btn btn-secondary mt-3" href="/admin/products/<%= product._id %>/view">Cancel</a>
+      </form>
+</div>
+
+<%- include('../../innerPartials/admin/footer'); %>

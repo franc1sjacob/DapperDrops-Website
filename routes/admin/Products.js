@@ -226,7 +226,8 @@ router.post("/add-variations", isAuth, isAdmin, function(req, res){
     const variation = {
         name: name,
         quantity: quantity,
-        status: ""
+        status: "",
+        stockAcquired: quantity
     };
     if(variation.quantity >= 6){
         variation.status = "In-Stock";
@@ -286,7 +287,7 @@ router.get("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
     Product.findOne({ _id:productId }, function(err, product){
         res.render('admin/add-new-variation', {
             fullName: req.session.firstName + " " + req.session.lastName,
-             product:product
+            product:product
         });
     })
 });
@@ -307,7 +308,8 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
    const variation = {
     name: name,
     quantity: quantity,
-    status: status
+    status: status,
+    stockAcquired: quantity
 };
    console.log(variation);
     Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
@@ -474,9 +476,7 @@ router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
 router.get("/update-variation/:variationId-:productId", isAuth, isAdmin, upload, function(req, res){
     const variationId = req.params.variationId;
     const productId = req.params.productId;
-    console.log(variationId);
     
-
     Product.findById({_id: productId}, function(err, product){
         if(err){
             console.log(err);
@@ -493,18 +493,7 @@ router.get("/update-variation/:variationId-:productId", isAuth, isAdmin, upload,
 router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, function(req, res){
     const variationId = req.params.variationId;
     const productId = req.params.productId;
-    console.log(variationId);
-    let status="";
-    const {variationName, variationQuantity} = req.body;
-    if(variationQuantity >= 6){
-        status = "In-Stock";
-   }
-   else if(variationQuantity <= 5 && variationQuantity >=1){
-        status = "Few-Stocks";
-   }
-   else if(variationQuantity == 0){
-        status = "Out-of-Stock";
-   }
+    const { variationName } = req.body;
 
     const conditions = {
         _id: productId,
@@ -514,7 +503,70 @@ router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, functi
     const update = {
         $set:{
             'variations.$.name': variationName,
+        }
+    }
+
+	Product.findOneAndUpdate(conditions, update, function(err){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.redirect("/admin/products/"+productId+"/view");
+        }
+    });
+});
+
+
+//NEWWWWWWWWWWWWWWWWWWWWWWW ADD
+router.get("/add-quantity-variation/:variationId-:productId", isAuth, isAdmin, upload, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    console.log(variationId);
+    
+
+    Product.findById({_id: productId}, function(err, product){
+        if(err){
+            console.log(err);
+        }
+        else{
+            const variation = product.variations.find(obj => obj.id === variationId);
+            console.log(variation);
+            
+            res.render('admin/products/add-quantity-variation', {fullName: req.session.firstName + " " + req.session.lastName, product: product, variation: variation});
+        }
+    });     
+});
+
+router.post("/add-quantity-variation/:variationId-:productId", isAuth, isAdmin, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    const { variationQuantity, origVariationQuantity } = req.body;
+    console.log(variationId);
+    let status="";
+    
+    if(variationQuantity + origVariationQuantity >= 6){
+        status = "In-Stock";
+    }
+    else if(variationQuantity + origVariationQuantity <= 5 && variationQuantity + origVariationQuantity >=1){
+        status = "Few-Stocks";
+    }
+    else if(variationQuantity + origVariationQuantity == 0){
+        status = "Out-of-Stock";
+    }
+
+    const conditions = {
+        _id: productId,
+        'variations._id': {$eq: variationId}
+    };
+
+    const update = {
+        $inc: {
+            // 'variations.$.name': variationName,
             'variations.$.quantity': variationQuantity,
+            'variations.$.stockAcquired': variationQuantity,
+            // 'variations.$.status': status
+        },
+        $set: {
             'variations.$.status': status
         }
     }
@@ -528,6 +580,74 @@ router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, functi
         }
     });
 });
+//NEWWWWWWWWWWWWWWWWWWWWWWWWWW
+
+//NEWWWWWWWWWWWWWWWWWWWWW MINUS
+router.get("/minus-quantity-variation/:variationId-:productId", isAuth, isAdmin, upload, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    console.log(variationId);
+    
+
+    Product.findById({_id: productId}, function(err, product){
+        if(err){
+            console.log(err);
+        }
+        else{
+            const variation = product.variations.find(obj => obj.id === variationId);
+            console.log(variation);
+            
+            res.render('admin/products/minus-quantity-variation', {fullName: req.session.firstName + " " + req.session.lastName, product: product, variation: variation});
+        }
+    });     
+});
+
+router.post("/minus-quantity-variation/:variationId-:productId", isAuth, isAdmin, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    const { variationQuantity, origVariationQuantity } = req.body;
+    console.log(variationId);
+    let status="";
+    
+    if(origVariationQuantity - variationQuantity >= 6){
+        status = "In-Stock";
+    }
+    else if(origVariationQuantity - variationQuantity <= 5 && origVariationQuantity - variationQuantity >=1){
+        status = "Few-Stocks";
+    }
+    else if(origVariationQuantity - variationQuantity == 0){
+        status = "Out-of-Stock";
+    }
+
+    console.log(status)
+
+    const conditions = {
+        _id: productId,
+        'variations._id': {$eq: variationId}
+    };
+
+    const update = {
+        $inc: {
+            // 'variations.$.name': variationName,
+            'variations.$.quantity': -variationQuantity,
+            'variations.$.stockAcquired': -variationQuantity,
+            // 'variations.$.status': status
+        },
+        $set: {
+            'variations.$.status': status
+        }
+    }
+
+	Product.findOneAndUpdate(conditions, update, function(err){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.redirect("/admin/products/"+productId+"/view");
+        }
+    });
+});
+//NEWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 
 router.get("/delete-variation/:variationId-:productId", isAuth, isAdmin, function(req, res){
     const variationId = req.params.variationId;

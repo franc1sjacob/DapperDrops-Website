@@ -78,6 +78,7 @@ router.get("/", isAuth, isAdmin, async function(req, res){
 });
 
 router.get('/status-:orderStatus', async function(req, res){
+    const itemsArr = [];
     let orderStatus = req.params.orderStatus;
     const { stype, sdir } = req.query;
     let orders;
@@ -88,10 +89,17 @@ router.get('/status-:orderStatus', async function(req, res){
         res.redirect('/admin/orders/orders');
     }
 
-    res.render('admin/orders/orders-status',  {orders: orders, items: items, fullName: req.session.firstName + " " + req.session.lastName, orderStatus: orderStatus})
+    for(let i = 0; i < orders.length; i++){
+        cart = new Cart(orders[i].cart);
+        items = cart.generateArray();
+        itemsArr.push(items);
+    }
+
+    res.render('admin/orders/orders-status',  {orders: orders, items: itemsArr, fullName: req.session.firstName + " " + req.session.lastName, orderStatus: orderStatus})
 });
 
 router.get('/search-orders', async function(req, res){
+    const itemsArr = [];
     let query = req.query.query;
     const { stype, sdir } = req.query;
 
@@ -101,11 +109,18 @@ router.get('/search-orders', async function(req, res){
 
     orders = await Order.find({
         $or: [
-            { 'address.firstName' : { $regex: query, $options: "i" } }
+            { 'address.firstName' : { $regex: query, $options: "i" } },
+            { 'address.lastName' : { $regex: query, $options: "i" } }
         ]
     }).sort({ [stype]: sdir });
 
-    res.render('admin/orders/search-orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName, query: query});
+    for(let i = 0; i < orders.length; i++){
+        cart = new Cart(orders[i].cart);
+        items = cart.generateArray();
+        itemsArr.push(items);
+    }
+
+    res.render('admin/orders/search-orders', {orders: orders, items: itemsArr, fullName: req.session.firstName + " " + req.session.lastName, query: query});
 });
 
 router.post("/confirm-order", isAuth, isAdmin, function(req, res){

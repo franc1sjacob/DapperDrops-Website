@@ -46,9 +46,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Date</th>
-                            <th>Shipping Status</th>
+                            <th>Shipping</th>
                             <th>Order Status</th>
-                            <th>Payment Status</th>
+                            <th>Payment</th>
                             <th>Paid</th>
                             <th>Remaining</th>
                             <th>Ordered Items</th>
@@ -166,14 +166,14 @@
                             <td>₱<%= order.amountRemaining %></td>
                             <td>
                                 <% for(let j = 0; j < items[i].length; j++){ %>
-                                   <p class="fs-6"><%= items[i][j].item.name %> - <%= items[i][j].variation %> - x<%= items[i][j].qty %></p> 
+                                   <div style="font-size:12px"><%= items[i][j].item.name %> - <%= items[i][j].variation %> - x<%= items[i][j].qty %></div> 
                                 <% } %>
                                 
                                 <% i++ %>
                             </td>
                             <td>
-                                <a class="btn btn-sm btn-primary" href="/admin/orders/view-order-<%= order._id %>"><i class="fa-solid fa-eye"></i></a>
-                                <a class="btn btn-sm btn-primary" href="/admin/orders/send-ship-mail-<%= order._id %>"><i class="fa-solid fa-envelope"></i></a>
+                                <a class="btn btn-sm btn-dark mb-1" href="/admin/orders/view-order-<%= order._id %>"><i class="fa-solid fa-eye"></i></a>
+                                <a class="btn btn-sm btn-dark mb-1" href="/admin/orders/send-ship-mail-<%= order._id %>"><i class="fa-solid fa-envelope"></i></a>
                             </td>
                         </tr>   
                         <% }) %>

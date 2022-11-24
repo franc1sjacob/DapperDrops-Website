@@ -62,8 +62,27 @@
       </div>
       <div class="header col-lg-6 col-sm-10">
           <% if(content == null) { %>
+            <% if(userId) { %>
             <h1 class="cust-landing-text">DEFAULT TEXT</h1><br>
-            <p class="cust-landing-text">Click Register to start the dapper experience!</p>
+            <p class="banner">Start shopping now!</p>
+            <div class="dropdown">
+              <button class="btn btn-primary mt-3" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: black; border:black;">Shop <i class="fa-solid fa-caret-down"></i></button>
+              <ul class="dropdown-menu">                                
+                      <a class ="dropdown-item" href="/products/onhand" >On-Hand</a>
+                      <li><hr class="dropdown-divider"></li>
+                      <a class ="dropdown-item" href="/products/preorder" >Pre-Order</a>
+                      <li><hr class="dropdown-divider"></li>
+                      <a class ="dropdown-item" href="/products/apparel" >Apparel</a>
+                      <li><hr class="dropdown-divider"></li>
+                      <a class ="dropdown-item" href="/products/accessories" >Accessories</a>
+
+
+                  
+              </ul>
+          </div>
+          <% } else  { %>
+            <h1 class="cust-landing-text">DEFAULT TEXT</h1><br>
+            <p class="banner">Click Register to start the dapper experience!</p>
             <p class="banner">Already have an account? Start shopping now!</p>
             <div class="dropdown">
               <a class="btn btn-primary mt-3"  href="/account/register" style="background-color: black; border: black;">Register</a>
@@ -81,12 +100,13 @@
                   
               </ul>
           </div>
+           
+          <% } %>
           <% } else { %>
+            <% if(userId) { %>
             <h1 class="cust-landing-text"><%= content.homeText %></h1><br>
-            <p class="banner">Click Register to start the dapper experience!</p>
-            <p class="banner">Already have an account? Start shopping now!</p>
+            <p class="banner">Start shopping now!</p>
             <div class="dropdown">
-              <a class="btn btn-primary mt-3"  href="/account/register" style="background-color: black; border:black;">Register</a>
               <button class="btn btn-primary mt-3" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: black; border:black;">Shop <i class="fa-solid fa-caret-down"></i></button>
               <ul class="dropdown-menu">                                
                       <a class ="dropdown-item" href="/products/onhand" >On-Hand</a>
@@ -101,6 +121,28 @@
                   
               </ul>
           </div>
+          <% } else  { %>
+            <h1 class="cust-landing-text"><%= content.homeText %></h1><br>
+            <p class="banner">Click Register to start the dapper experience!</p>
+            <p class="banner">Already have an account? Start shopping now!</p>
+            <div class="dropdown">
+              <a class="btn btn-primary mt-3"  href="/account/register" style="background-color: black; border: black;">Register</a>
+              <button class="btn btn-primary mt-3" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: black; border:black;">Shop <i class="fa-solid fa-caret-down"></i></button>
+              <ul class="dropdown-menu">                                
+                      <a class ="dropdown-item" href="/products/onhand" >On-Hand</a>
+                      <li><hr class="dropdown-divider"></li>
+                      <a class ="dropdown-item" href="/products/preorder" >Pre-Order</a>
+                      <li><hr class="dropdown-divider"></li>
+                      <a class ="dropdown-item" href="/products/apparel" >Apparel</a>
+                      <li><hr class="dropdown-divider"></li>
+                      <a class ="dropdown-item" href="/products/accessories" >Accessories</a>
+
+
+                  
+              </ul>
+          </div>
+           
+          <% } %>
           <% } %>
 
       </div>

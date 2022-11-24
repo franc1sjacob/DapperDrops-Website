@@ -44,10 +44,12 @@
                             <% if(order.orderStatus == "Pending"){ %>
                                 <form class="d-grid mb-2" action="/account/view-order/<%= order._id %>">
                                     <button type="submit" class="btn btn-dark">View Order Details</button>
-                                </form> 
+                                </form>
+                                s<%= order.amountPaid === 0 %> 
                                 <div class="d-grid mb-2">
                                     <a href="/account/send-payment-proof/<%= order._id %>" class="btn btn-success">Send Proof of Payment</a>
                                 </div>
+                                
                                 <% if (order.amountPaid === 0){ %>    
                                     <form class="d-grid mb-2" action="/account/cancel-customer/<%= order._id %>" method="POST">
                                         <button type="submit" class="btn btn-danger" value="">Cancel Order</button>

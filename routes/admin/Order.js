@@ -25,10 +25,56 @@ const isAdmin = function(req, res, next){
     }
 }
 
+const sendStockMail = async function(email, productId, productName, productVariation, quantity, status){
+    try {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth:{
+                user: process.env.SECRETEMAIL,
+                pass: process.env.SECRETPASSWORD
+            },
+            tls:{
+                rejectUnauthorized: false
+            }
+        });
+        
+        const mailOptions= {
+            from: process.env.SECRETEMAIL,
+            to: email,
+            subject: "Product - " + status,
+            html:'<p>Hi admin, Product ID: ' + productId + ', Product Name: ' +  productName + ' - Size: ' + productVariation + ' is now ' + status + '. It has a remaining quantity of ' + quantity + '.</p>'
+        }
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            }
+            else{
+                console.log("Email stock information has been sent: ", info.response);
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
 router.get("/", isAuth, isAdmin, async function(req, res){
     const { stype, sdir } = req.query;
+    const itemsArr = [];
     const orders = await Order.find({}).sort({ [stype] : sdir });
-    res.render('admin/orders/orders', {orders: orders, fullName: req.session.firstName + " " + req.session.lastName});
+
+    for(let i = 0; i < orders.length; i++){
+        cart = new Cart(orders[i].cart);
+        items = cart.generateArray();
+        itemsArr.push(items);
+    }
+        
+
+    console.log(itemsArr);
+    res.render('admin/orders/orders', {orders: orders, items: itemsArr, fullName: req.session.firstName + " " + req.session.lastName});
 });
 
 router.get('/status-:orderStatus', async function(req, res){
@@ -42,7 +88,7 @@ router.get('/status-:orderStatus', async function(req, res){
         res.redirect('/admin/orders/orders');
     }
 
-    res.render('admin/orders/orders-status',  {orders: orders, fullName: req.session.firstName + " " + req.session.lastName, orderStatus: orderStatus})
+    res.render('admin/orders/orders-status',  {orders: orders, items: items, fullName: req.session.firstName + " " + req.session.lastName, orderStatus: orderStatus})
 });
 
 router.get('/search-orders', async function(req, res){
@@ -71,6 +117,7 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
             const variations = [];
             const quantity = [];
             const itemId = [];
+            const itemName = [];
             const originalQuantity = [];
             const minusedValues = [];
 
@@ -82,6 +129,7 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 
             //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
             order.items.forEach(function(cart){
+                itemName.push(cart.item.brand + " " + cart.item.name);
                 itemId.push(cart.item._id);
                 quantity.push(cart.qty);
                 variations.push(cart.variation);
@@ -138,9 +186,11 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                         }
                         else if(minusedValues[i] <= 5 && minusedValues[i] >=1){
                             status = "Few-Stocks";
+                            sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], minusedValues[i], status);
                         }
                         else{
                             status = "Out-of-Stock";
+                            sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], minusedValues[i], status);
                         }
 
                         const update = {
@@ -191,6 +241,7 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
             const variations = [];
             const quantity = [];
             const itemId = [];
+            const itemName = [];
             const originalQuantity = [];
             const addedValues = [];
 
@@ -202,6 +253,7 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
             
             //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
             order.items.forEach(function(cart){
+                itemName.push(cart.item.brand + " " + cart.item.name);
                 itemId.push(cart.item._id);
                 quantity.push(cart.qty);
                 variations.push(cart.variation);
@@ -246,8 +298,10 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                         status = "In-Stock";
                     }else if(addedValues[i] <= 5 && addedValues[i] >=1){
                         status = "Few-Stocks";
+                        sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], originalQuantity[i] - quantity[i], status);
                     }else{
                         status = "Out-of-Stock";
+                        sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], originalQuantity[i] - quantity[i], status);
                     }
     
                     const conditions = {
@@ -380,6 +434,7 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
             console.log(err);
         } else {
             const itemId = [];
+            const itemName = [];
 
             //For updating variation quantity
             const variations = [];
@@ -399,6 +454,7 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
             
             //Get product id and push it to itemId arr, get selected quantity per product and push it in quantity arr, get selected variation per product and push it in variations arr.
             order.items.forEach(function(cart){
+                itemName.push(cart.item.brand + " " + cart.item.name);
                 itemId.push(cart.item._id);
 
                 //Pushing the quantity and variation
@@ -447,8 +503,10 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
                         status = "In-Stock";
                     } else if(addedValues[i] <= 5 && addedValues[i] >=1){
                         status = "Few-Stocks";
+                        sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], addedValues[i], status);
                     } else{
                         status = "Out-of-Stock";
+                        sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], addedValues[i], status);
                     }
                     
                     const conditions = {

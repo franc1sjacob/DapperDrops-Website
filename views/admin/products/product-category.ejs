@@ -144,7 +144,7 @@
                                     <td><%= product.brand %> </td>
                                     <td><%= product.name %> </td>
                                     <td><%= product.price %> </td>
-                                    <td><%= product.description %> </td>
+                                    <td><%= product.description.slice(0, 50) %>... %> </td>
                                     <td><%= product.category %> </td>
                                     <td><img src="<%= product.image.url %>" class="tablesquare" width="50" height="50"></td>
                                     <td>

@@ -49,3 +49,118 @@ body{
     width: 50%;
 }
 
+.card-img-top {
+    /*height: 11vw;*/
+    object-fit: cover;
+    aspect-ratio: 1/1;
+}
+
+/* Extra Small devices (landscape phones, 576px and up) */
+@media (min-width: 200px) {
+    .card-text {
+        font-size: 13px;
+    }
+    .cust-prod-text{
+        font-size: 12px;
+    }
+    .card-img-top {
+        height: 150px;
+        width: 150px;
+    }
+}
+
+@media (min-width: 400px) {
+    .card-text {
+        font-size: 14px;
+    }
+    .cust-prod-text{
+        font-size: 13px;
+    }
+    .card-img-top {
+        height: 170px;
+        width: 170px;
+    }
+}
+
+@media (min-width: 500px) {
+    .card-text {
+        font-size: 15px;
+    }
+    .cust-prod-text{
+        font-size: 14px;
+    }
+    .card-img-top {
+        height: 190px;
+        width: 190px;
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+    .card-text {
+        font-size: 15px;
+    }
+    .cust-prod-text{
+        font-size: 14px;
+    }
+    .card-img-top {
+        height: 250px;
+        width: 250px;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .card-text {
+        font-size: 16px;
+    }
+    .cust-prod-text{
+        font-size: 15px;
+    }
+    .card-img-top {
+        height: 250px;
+        width: 250px;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .card-text {
+        font-size: 16px;
+    }
+    .cust-prod-text{
+        font-size: 15px;
+    }
+    .card-img-top {
+        height: 250px;
+        width: 250px;
+    }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 992px) {
+    .card-text {
+        font-size: 16px;
+    }
+    .cust-prod-text{
+        font-size: 15px;
+    }
+    .card-img-top {
+        height: 250px;
+        width: 250px;
+    }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 992px) {
+    .card-text {
+        font-size: 16px;
+    }
+    .cust-prod-text{
+        font-size: 15px;
+    }
+    .card-img-top {
+        height: 250px;
+        width: 250px;
+    }
+}

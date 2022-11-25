@@ -1,10 +1,11 @@
 <%- include('../innerPartialsv2/admin/header', {name: fullName}); %>
      <div class="container">
         <h1 class="text-center mt-2 mb-3">View Product</h1> 
+        <a href="/admin/products" class="text-body"><i class="fas fa-long-arrow-alt-left me-2"></i>Back to products</a></h6>
         <div class="card shadow p-3 bg-body rounded">
             <div class="row">
                 <div class="col-lg-4">
-                    <img src="/uploads/<%=  newListProducts.image %>" class="img"  alt="">
+                    <img src="<%=  newListProducts.image.url %>" class="img"  alt=""><br>
                 </div>
                 <div class="col-lg-4">
                     <h5>Brand: <%= newListProducts.brand %></h5>

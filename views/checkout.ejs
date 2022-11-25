@@ -147,7 +147,7 @@
                 <% usercart.forEach(function(cart){ %>
                 <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto">
-                        <img src="/uploads/<%= cart.item.image %>" style=" height: 75px;">
+                        <img src="<%= cart.item.image.url %>" style=" height: 75px;">
                     </div>
                     <div class="ms-2 me-auto">
                         <div class="text-secondary fw-bold"><%= cart.item.brand %></div>

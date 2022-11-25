@@ -5,7 +5,7 @@
     <form action="/admin/products/add-variations" method="POST">
         <div class="mb-3">
             <label for="productId" class="form-label">Product: ID</label>
-            <input type="text" class="form-control" name="productId" id="productId" value="<%= productId %>" >
+            <input type="text" class="form-control" name="productId" id="productId" value="<%= productId %>" disabled>
         </div>
         <div class="mb-3">
             <label for="name" class="form-label">Size:</label>
@@ -13,7 +13,7 @@
         </div>
         <div class="mb-3">
             <label for="quantity" class="form-label">Quantity</label>
-            <input type="number" class="form-control" name="quantity" id="quantity" required>
+            <input type="number" class="form-control" name="quantity" id="quantity" min="1" required >
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

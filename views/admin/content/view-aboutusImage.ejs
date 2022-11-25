@@ -1,0 +1,55 @@
+<%- include('../../innerPartials/admin/header', {name: fullName}); %>
+
+<div class="container">
+    <h1 class="fw-bold text-center mt-2 mb-3">View About Us Image</h1>
+    <% if(content.aboutUsImage.length == 0) { %>
+        <h3 class="fw-bold text-center">There are no home images yet</h3>
+        <a class="btn btn-outline-secondary mb-3" href="/admin/content"><i class="fa-solid fa-left-long"></i> Back</a>
+        <a class="btn btn-outline-success mb-3 float-end" href="add-aboutusImage1"><i class="fa-solid fa-plus"></i></a>
+    <% }  else if(content.aboutUsImage.length == 3) { %>
+        <a class="btn btn-outline-secondary mb-3" href="/admin/content"  ><i class="fa-solid fa-left-long"></i> Back</a>
+        <a class="btn btn-outline-success mb-3 float-end" disabled><i class="fa-solid fa-plus"></i></a>
+         <div class="row">
+            <%content.aboutUsImage.forEach(function(aboutUsImage){%>
+                <div class="col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex">
+                            <div class="ms-auto">
+                                <form action="/admin/content/delete-aboutusImage/<%= aboutUsImage._id %>" method="POST">
+                                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <img src="<%= aboutUsImage.image.url %>" class="w-100" style="height: 300px; object-fit:cover;">
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+            </div>
+    </div>
+    <% } else { %>
+        <a class="btn btn-outline-secondary mb-3" href="/admin/content"><i class="fa-solid fa-left-long"></i> Back</a>
+        <a class="btn btn-outline-success mb-3 float-end" href="add-aboutusImage1"><i class="fa-solid fa-plus"></i></a>
+        <div class="row">
+        <%content.aboutUsImage.forEach(function(aboutUsImage){%>
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex">
+                        <div class="ms-auto">
+                            <form action="/admin/content/delete-aboutusImage/<%= aboutUsImage._id %>" method="POST">
+                                <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <img src="<%= aboutUsImage.image.url %>" class="w-100" style="height: 300px; object-fit:cover;">
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('../../innerPartials/admin/footer'); %>

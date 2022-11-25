@@ -7,7 +7,14 @@ const contentSchema = new mongoose.Schema({
     },
     homeImage : [{
         image: {
-            type: String
+            public_id:{
+                type: String,
+               
+            },
+            url: {
+                    type: String,
+                  
+            }
         }
     }],
     homeText: {
@@ -28,7 +35,14 @@ const contentSchema = new mongoose.Schema({
     },
     aboutUsImage: [{
         image: {
-            type: String
+            public_id:{
+                type: String,
+                
+            },
+            url: {
+                    type: String,
+                    
+            }
         }
     }],
     footerText: {
@@ -44,7 +58,16 @@ const contentSchema = new mongoose.Schema({
         paymentName: String,
         userName: String,
         bankNumber: String,
-        qrCodeImage: String
+        qrCodeImage: {
+            public_id:{
+            type: String,
+            
+        },
+        url: {
+                type: String,
+                
+        }
+     }
     }],
     faqs: [{
         question: String,

@@ -26,7 +26,7 @@
                     <div class="card-body">
                         <p class="card-text">User Name: <%= payment.userName %></p>
                         <p class="card-text">Bank Number: <%= payment.bankNumber %></p>
-                        <img src="/images/content/payment/<%= payment.qrCodeImage %>" class="w-100">
+                        <img src="<%= payment.qrCodeImage.url %>" class="w-100">
                     </div>
                 </div>
             </div>

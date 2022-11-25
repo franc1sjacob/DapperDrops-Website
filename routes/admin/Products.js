@@ -21,6 +21,7 @@ const isAdmin = function(req, res, next){
 }
 
 const Product = require("../../models/productModel");
+const Featured = require("../../models/featuredModel")
 
 var fs = require('fs');
 var path = require('path');
@@ -50,6 +51,15 @@ const upload = multer({
         fileSize: 1024 * 1024
     }
 }).single('image');
+
+const cloudinary = require('cloudinary').v2;
+
+// cloudinary.config({ 
+//     cloud_name: 'dupbncewr', 
+//     api_key: '269958243189147', 
+//     api_secret: 'C5UUJnq3B9G0Sfi8poTWl1AgKCY' 
+//   });
+
 
 
 router.get("/", isAuth, isAdmin, async function (req, res) {  
@@ -174,9 +184,13 @@ router.get("/add-product", isAuth, isAdmin, function(req, res){
     res.render('admin/add-product', {fullName: req.session.firstName + " " + req.session.lastName});
 });
 
-router.post("/add-product", isAuth, isAdmin, upload, function(req, res){
+router.post("/add-product", isAuth, isAdmin, upload, async function(req, res){
     const productId = new mongoose.Types.ObjectId();
-    const { brand, name, price, description, category } = req.body;
+    const { brand, name, price, description, image, category } = req.body;
+
+    const result = await cloudinary.uploader.upload(req.file.path,{
+        folder: "products",
+    })
 
     const product = new Product({
         _id: productId,
@@ -184,7 +198,10 @@ router.post("/add-product", isAuth, isAdmin, upload, function(req, res){
         name: name,
         price: price,
         description: description,
-        image: req.file.filename,
+        image: {
+            public_id: result.public_id,
+            url: result.secure_url
+        },
         category: category
     });
     
@@ -243,6 +260,26 @@ router.post("/add-variations", isAuth, isAdmin, function(req, res){
     });
 });
 
+router.get("/:productId/add-to-featured", isAuth, isAdmin, function(req, res){
+    const productId = req.params.productId;
+    console.log(productId);
+    Product.findOne({ _id: productId }, function(err, product){
+        res.render('admin/products/add-to-featured', {
+            fullName: req.session.firstName + " " + req.session.lastName,
+            product: product
+        });
+    })
+});
+
+router.post("/:productId/add-to-featured", isAuth, isAdmin, async function(req, res){
+    const productId = req.params.productId;
+
+    const featured = new Featured({ productId: productId })
+    featured.save()
+    res.redirect('/admin/products')
+
+});
+
 router.get("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
     console.log(productId);
@@ -273,39 +310,15 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
     status: status
 };
    console.log(variation);
-   if(req.body.button == "submit"){
     Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
         variations: [variation],
     }}, function(err, product){
             if(err){
                 console.log(err);
-            } else {
-               if(product.category == "On-Hand"){
-            res.redirect('/admin/products/category-onhand')
-           }
-           else if(product.category == "Pre-Order"){
-            res.redirect('/admin/products/category-preorder')
-           }
-           else if(product.category == "Apparel"){
-            res.redirect('/admin/products/category-apparel')
-           }
-           else if(product.category == "Accessories"){
-            res.redirect('/admin/products/category-accessories')
-           }
+            } else {           
+               res.redirect("/admin/products/"+productId+"/view")
             }
         });
-   }
-   else if(req.body.button == "add"){
-    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
-        variations: [variation],
-    }}, function(err, product){
-            if(err){
-                console.log(err);
-            } else {
-                res.redirect("/admin/products/"+productId+"/add-new-variation")
-            }
-        });
-   }
    
    
 });
@@ -332,7 +345,7 @@ router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
             price: product.price,
             description: product.description,
             quantity: product.quantity,
-            image: product.image,
+            image: product.image.url,
             category: product.category,
             fullName: req.session.firstName + " " + req.session.lastName
         });
@@ -342,22 +355,29 @@ router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
 
 
 
-router.post("/:productId", isAuth, isAdmin, upload, function(req, res){
+router.post("/:productId", isAuth, isAdmin, upload, async function(req, res){
     const productId = req.params.productId;
     let variation = req.body['variation'];
     let newImage ="";
     
 
     if(req.file){
-        newImage = req.file.filename;
+        const result = await cloudinary.uploader.upload(req.file.path,{
+            folder: "products",
+        })
+        newImage = result.url;
         try{
-            fs.unlinkSync('public/uploads/'+ req.body.productOldImage);
+            //fs.unlinkSync('public/uploads/'+ req.body.productOldImage);
         } catch(err){
             console.log(err);
         }
     }else {
             newImage= req.body.productOldImage;
         }
+
+
+    
+
     let status = '';
     if(req.body.productQuantity >= 6){
         status = "In-Stock";
@@ -376,7 +396,9 @@ router.post("/:productId", isAuth, isAdmin, upload, function(req, res){
             name: req.body.productName,
             price: req.body.productPrice,
             description: req.body.productDescription,
-            image: newImage,
+            image: {
+                url: newImage
+            },
             category: req.body.category
         }}, function(err, results){
             if(!err){
@@ -399,10 +421,7 @@ router.post("/:productId", isAuth, isAdmin, upload, function(req, res){
     ); 
     
 });
-router.get("/:productId/search", isAuth, isAdmin, function(req,res){
-    console.log(req.params.key);
-    resp.send("Search Done");
-})
+
 
 router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
@@ -445,7 +464,7 @@ router.get("/:productId/edit", isAuth, isAdmin, function(req, res){
             price: product.price,
             description: product.description,
             quantity: product.quantity,
-            image: product.image,
+            image: product.image.url,
             category: product.category,
             fullName: req.session.firstName + " " + req.session.lastName
         });
@@ -456,6 +475,7 @@ router.get("/update-variation/:variationId-:productId", isAuth, isAdmin, upload,
     const variationId = req.params.variationId;
     const productId = req.params.productId;
     console.log(variationId);
+    
 
     Product.findById({_id: productId}, function(err, product){
         if(err){

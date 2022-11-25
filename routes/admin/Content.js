@@ -50,7 +50,7 @@ const storage = multer.diskStorage({
         } else if (file.fieldname == 'aboutUsImage1' || file.fieldname == 'aboutUsImage2' || file.fieldname == 'aboutUsImage3') {
             cb(null, 'public/images/content/aboutus');
         } else {
-            cb(null, 'public/images/content/payment');
+            cb(null, 'public/images/content/home');
         }
     },
     filename: (req, file, cb) => {
@@ -62,13 +62,29 @@ const storage = multer.diskStorage({
 
     }
 });
-  
-const uploadMultiple = multer({ storage: storage });
-const uploadSingle = multer({ storage: storage }).single('qrCodeImage');
+const upload = multer({storage: storage,fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if(ext !== '.png' && ext !== '.jpg'  && ext !== '.jpeg' && ext !== '.jfif') {
+        return callback(new Error('Only images are allowed'))
+    }
+    callback(null, true)
+},
+limits:{
+    fileSize: 1024 * 1024
+}})
 
+const uploadMultiple = multer({ storage: storage });
 const multipleUploadHome = uploadMultiple.fields([{ name: 'homeImage1' }, { name: 'homeImage2' }, { name: 'homeImage3' }])
 const multipleUploadAboutUs = uploadMultiple.fields([{ name: 'aboutUsImage1' }, { name: 'aboutUsImage2' }, { name: 'aboutUsImage3' }])
 const multipleUploadHomeAboutUs = uploadMultiple.fields([{ name: 'homeImage1' }, { name: 'homeImage2' }, { name: 'homeImage3' }, { name: 'aboutUsImage1' }, { name: 'aboutUsImage2' }, { name: 'aboutUsImage3' } ]);
+
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({ 
+    cloud_name: 'dupbncewr', 
+    api_key: '269958243189147', 
+    api_secret: 'C5UUJnq3B9G0Sfi8poTWl1AgKCY' 
+  });
 
 router.get('/', isAuth, isAdmin, async function(req, res){
     const content = await Content.findOne({ status: 'active' });
@@ -110,6 +126,78 @@ router.get('/edit-text-:field', isAuth, isAdmin, function(req, res){
         res.redirect('/admin/content')
     }
 
+});
+router.get('/view-homepageImage', isAuth, isAdmin, async (req, res) => {
+    const content = await Content.findOne({ status: 'active' });
+    res.render('admin/content/view-homepageImage', { content: content, fullName: req.session.firstName + " " + req.session.lastName });
+});
+router.get('/add-homepageImage', isAuth, isAdmin, function(req, res){
+    res.render('admin/content/add-homepageImage', { fullName: req.session.firstName + " " + req.session.lastName });
+});
+router.post('/add-homepageImage', isAuth, isAdmin, upload.single('homeImage') ,async function(req, res){
+    const result = await cloudinary.uploader.upload(req.file.path,{
+        folder: "HomeImage",
+    })
+    const homeImage = {
+        image: {
+                public_id: result.public_id,
+                url: result.secure_url
+        },
+    };
+
+    Content.findOneAndUpdate({ status: 'active' }, { $push: { homeImage: [homeImage] } }, function(err, result){
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect('/admin/content/view-homepageImage');
+        }
+    });
+});
+router.post('/delete-homeimageImage/:homeimageImageId', isAuth, isAdmin, function(req, res){
+    const { homeimageImageId } = req.params;
+    Content.findOneAndUpdate({ status: 'active' }, { $pull: { homeImage: { _id: homeimageImageId } } }, function(err, result){
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect('/admin/content/view-homepageImage');
+        }
+    });
+});
+router.get('/view-aboutusImage', isAuth, isAdmin, async (req, res) => {
+    const content = await Content.findOne({ status: 'active' });
+    res.render('admin/content/view-aboutusImage', { content: content, fullName: req.session.firstName + " " + req.session.lastName });
+});
+router.get('/add-aboutusImage1', isAuth, isAdmin, function(req, res){
+    res.render('admin/content/add-aboutusImage1', { fullName: req.session.firstName + " " + req.session.lastName });
+});
+router.post('/add-aboutusImage1', isAuth, isAdmin, upload.single('aboutUsImage1') ,async function(req, res){
+    const result = await cloudinary.uploader.upload(req.file.path,{
+        folder: "aboutUsImage",
+    })
+    const aboutUsImage = {
+        image: {
+                public_id: result.public_id,
+                url: result.secure_url
+        },
+    };
+
+    Content.findOneAndUpdate({ status: 'active' }, { $push: { aboutUsImage: [aboutUsImage] } }, function(err, result){
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect('/admin/content/view-aboutusImage');
+        }
+    });
+});
+router.post('/delete-aboutusImage/:aboutusImageId', isAuth, isAdmin, function(req, res){
+    const { aboutusImageId } = req.params;
+    Content.findOneAndUpdate({ status: 'active' }, { $pull: { aboutUsImage: { _id: aboutusImageId } } }, function(err, result){
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect('/admin/content/view-aboutusImage');
+        }
+    });
 });
 
 router.get('/view-faqs', isAuth, isAdmin, async (req, res) => {
@@ -161,15 +249,19 @@ router.get('/add-payment-details', isAuth, isAdmin, function(req, res){
     res.render('admin/content/add-payment-details', { fullName: req.session.firstName + " " + req.session.lastName });
 });
 
-router.post('/add-payment-details', isAuth, isAdmin, uploadSingle, function(req, res){
+router.post('/add-payment-details', isAuth, isAdmin, upload.single('qrCodeImage') ,async function(req, res){
     const { paymentName, userName, bankNumber } = req.body;
-    const qrCodeImage = req.file.filename;
-
+    const result = await cloudinary.uploader.upload(req.file.path,{
+        folder: "qrCode",
+    })
     const payment = {
         paymentName: paymentName,
         userName: userName, 
         bankNumber: bankNumber,
-        qrCodeImage: qrCodeImage
+        qrCodeImage: {
+                public_id: result.public_id,
+                url: result.secure_url
+        },
     };
 
     Content.findOneAndUpdate({ status: 'active' }, { $push: { payment: [payment] } }, function(err, result){
@@ -248,34 +340,34 @@ router.post('/edit-image-aboutUsImage', isAuth, isAdmin, multipleUploadAboutUs, 
     });
 });
 
-router.post('/add', isAuth, isAdmin, multipleUploadHomeAboutUs, async function(req, res){
+router.post('/add', isAuth, isAdmin,  function(req, res){
     const { homeText, aboutUsParagraph1, aboutUsParagraph2, aboutUsParagraph3, footerText, footerContactNumber, footerContactEmail } = req.body;
 
-    const images = req.files;
-    console.log(images)
-    const homeImageArr = [images.homeImage1[0].filename, images.homeImage2[0].filename, images.homeImage3[0].filename];
-    const aboutUsImageArr = [images.aboutUsImage1[0].filename, images.aboutUsImage2[0].filename, images.aboutUsImage3[0].filename];
+    // const images = req.files;
+    // console.log(images)
+    // const homeImageArr = [images.homeImage1[0].filename, images.homeImage2[0].filename, images.homeImage3[0].filename];
+    // const aboutUsImageArr = [images.aboutUsImage1[0].filename, images.aboutUsImage2[0].filename, images.aboutUsImage3[0].filename];
 
-    const homeImageObject = [
-        {image: homeImageArr[0] },
-        {image: homeImageArr[1] },
-        {image: homeImageArr[2] }
-    ];
+   
+    // const homeImageObject = [
+    //     {image: homeImageArr[0] },
+    //     {image: homeImageArr[1] },
+    //     {image: homeImageArr[2] }
+    // ];
 
-    const aboutUsImageObject = [
-        {image: aboutUsImageArr[0] },
-        {image: aboutUsImageArr[1] },
-        {image: aboutUsImageArr[2] }
-    ];
+    // const aboutUsImageObject = [
+    //     {image: aboutUsImageArr[0] },
+    //     {image: aboutUsImageArr[1] },
+    //     {image: aboutUsImageArr[2] }
+    // ];
+    
 
     const content = new Content({
         status: 'active',
         homeText: homeText,
-        homeImage: homeImageObject,
         aboutUsParagraph1: aboutUsParagraph1,
         aboutUsParagraph2: aboutUsParagraph2,
         aboutUsParagraph3: aboutUsParagraph3,
-        aboutUsImage: aboutUsImageObject,
         footerText: footerText,
         footerContactNumber: footerContactNumber,
         footerContactEmail: footerContactEmail

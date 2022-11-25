@@ -36,9 +36,16 @@ const orderSchema = new mongoose.Schema({
     },
 
     paymentsInfo: [{
-        paymentProof: {
+        paymentProof:  {
+            public_id:{
             type: String,
+            required: true
         },
+        url: {
+                type: String,
+                required: true
+        },
+    },
     
         paymentDescription: {
             type: String

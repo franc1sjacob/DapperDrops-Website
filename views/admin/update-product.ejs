@@ -9,24 +9,24 @@
         </div>
         <div class="mb-3">
           <label for="inputBrandName" class="form-label">Brand Name:</label>
-          <input type="text" class="form-control" id="inputBrandName" name="productBrand" value="<%= brand %>">
+          <input type="text" class="form-control" id="inputBrandName" name="productBrand" value="<%= brand %>" required>
         </div>
         <div class="mb-3">
             <label for="inputName" class="form-label">Name:</label>
-            <input type="text" class="form-control" id="inputName" name="productName" value="<%= name %>">
+            <input type="text" class="form-control" id="inputName" name="productName" value="<%= name %>" required>
         </div>
         <div class="mb-3">
             <label for="inputPrice" class="form-label">Price:</label>
-            <input type="number" class="form-control" id="inputPrice" name="productPrice" value="<%= price %>">
+            <input type="number" class="form-control" id="inputPrice" name="productPrice" value="<%= price %>" required>
         </div>
         <div class="mb-3">
             <label for="inputDescription" class="form-label">Description:</label>
-            <input type="text" class="form-control" id="inputDescription" name="productDescription" value="<%= description %>">
+            <input type="text" class="form-control" id="inputDescription" name="productDescription" value="<%= description %>" required>
         </div>
         <div class="mb-3">
             <label for="inputImage" class="form-label">Image:</label>
-            <input type="file" class="form-control" id="inputImage" name="image" value="<%= image %>">
-            <img src="/uploads/<%= image %>" width="100" class="img-thumbnail mt-1">
+            <input type="file" class="form-control" id="inputImage" name="image" value="<%= image %>" >
+            <img src="<%= image %>" width="100" class="img-thumbnail mt-1">
         </div>
         <input type="hidden" name="productOldImage" value="<%= image %>">
         <div class="mb-3">
@@ -39,7 +39,8 @@
               </select>
         </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        <a class="btn btn-secondary mt-3" href="/admin/products">Cancel</a>
       </form>
 </div>
 

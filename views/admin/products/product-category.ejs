@@ -146,24 +146,24 @@
                                     <td><%= product.price %> </td>
                                     <td><%= product.description %> </td>
                                     <td><%= product.category %> </td>
-                                    <td><img src="/uploads/<%= product.image %>" class="tablesquare" width="50" height="50"></td>
+                                    <td><img src="<%= product.image.url %>" class="tablesquare" width="50" height="50"></td>
                                     <td>
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">Actions <i class="fa-solid fa-caret-down"></i></button>
-                                            <ul class="dropdown-menu">                                
-                                                    <a class ="dropdown-item" href="/admin/products/<%= product._id %>/edit" >Update Product</a>
+                                            <ul class="dropdown-menu">
+                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/add-to-featured" >Add to Featured</a>
+                                                <li><hr class="dropdown-divider"></li>                              
+                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/edit" >Update Product</a>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/view" >View Product</a>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/delete" >Delete Product</a>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <a class ="dropdown-item" href="/admin/products/<%= product._id %>/add-new-variation" >Add Variation</a>
+                                                <!-- <form action="/admin/products/<%= product._id %>/add-new-variation" method="get">
+                                                    <li><button class="dropdown-item">Add Variation</button></li>
                                                     <li><hr class="dropdown-divider"></li>
-                                                    <a class ="dropdown-item" href="/admin/products/<%= product._id %>/view" >View Product</a>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <a class ="dropdown-item" href="/admin/products/<%= product._id %>/delete" >Delete Product</a>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <a class ="dropdown-item" href="/admin/products/<%= product._id %>/add-new-variation" >Add Variation</a>
-                                                    <!-- <form action="/admin/products/<%= product._id %>/add-new-variation" method="get">
-                                                        <li><button class="dropdown-item">Add Variation</button></li>
-                                                        <li><hr class="dropdown-divider"></li>
-                                                    </form> -->
-        
-                                                
+                                                </form> -->                   
                                             </ul>
                                         </div>
                                     </td>

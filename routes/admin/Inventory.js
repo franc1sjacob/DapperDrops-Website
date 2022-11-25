@@ -54,7 +54,7 @@ const upload = multer({
 
 
 
-router.get("/", isAuth, isAdmin, function (req, res) {   
+router.get("/", isAuth, isAdmin, async function (req, res) {   
     // Product.find({}, function (err, allInventory) {
     //     if (err) {
     //         console.log(err);
@@ -62,8 +62,7 @@ router.get("/", isAuth, isAdmin, function (req, res) {
     //         res.render('admin/inventory', { newListInventory: allInventory })
     //     }
     // });
-    Product.aggregate([{
-    //     $lookup: {
+      //     $lookup: {
     //         from: "inventories", // collection to join
     //         localField: "_id",//field from the input documents
     //         foreignField: "_id",//field from the documents of the "from" collection
@@ -78,26 +77,163 @@ router.get("/", isAuth, isAdmin, function (req, res) {
     //         sales:'$productDetails.sales', sold:'$productDetails.sold',status:'$productDetails.status'
     //     }
     //     },
-    //unwide and addfields removes array and adds it to the products collection
-    
-        $project:{
-            "category":"$category",
-            "brand": "$brand",
-            "name": "$name",
-            "totalEarnings": "$totalEarnings",
-            "totalQuantitySold": "$totalQuantitySold",
-            "itemsRemaining":{
-                $sum: "$variations.quantity"
+    //unwide and addfields removes array and adds it to the products collection.
+    let { stype, sdir, ftype, fvalue } = req.query;
+    if(!stype && !sdir && !ftype && !fvalue){
+        console.log('tangina')
+        products = await Product.aggregate([{
+            $project:{
+                "category":"$category",
+                "brand": "$brand",
+                "name": "$name",
+                "totalEarnings": "$totalEarnings",
+                "totalQuantitySold": "$totalQuantitySold",
+                "itemsRemaining":{
+                    $sum: "$variations.quantity"
+                }
             }
-        }
-    },
-    ],function (err, allInventory) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('admin/inventory', { newListInventory: allInventory, fullName: req.session.firstName + " " + req.session.lastName})
-        }
-    });
+        }]);
+    } else if (!stype && !sdir) {
+        console.log("ETOOOO 31232131")
+        products = await Product.aggregate([
+            { $match: {
+                [ftype]: fvalue
+            } },
+            { $project:{
+                "category":"$category",
+                "brand": "$brand",
+                "name": "$name",
+                "totalEarnings": "$totalEarnings",
+                "totalQuantitySold": "$totalQuantitySold",
+                "itemsRemaining":{
+                    $sum: "$variations.quantity"
+                }
+            } }
+        ]);
+
+        // products = await Product.find({ [ftype] : fvalue });
+    } else if (!ftype && !fvalue) {
+        console.log("ETOOOO 3")
+        products = await Product.aggregate([
+            { $project:{
+                "category":"$category",
+                "brand": "$brand",
+                "name": "$name",
+                "totalEarnings": "$totalEarnings",
+                "totalQuantitySold": "$totalQuantitySold",
+                "itemsRemaining":{
+                    $sum: "$variations.quantity"
+                }
+            } },
+            { $sort: {
+                [stype] : parseInt(sdir)
+            } }
+        ]);
+
+        console.log(products);
+        // products = await Product.find({}).sort({ [stype] : sdir });
+    } else {
+        console.log("ETOOOO 4")
+        products = await Product.aggregate([
+            { $match: {
+                [ftype]: fvalue
+            } },
+            { $project:{
+                "category":"$category",
+                "brand": "$brand",
+                "name": "$name",
+                "totalEarnings": "$totalEarnings",
+                "totalQuantitySold": "$totalQuantitySold",
+                "itemsRemaining":{
+                    $sum: "$variations.quantity"
+                }
+            } },
+            { $sort: {
+                [stype] : parseInt(sdir)
+            } }
+        ]);
+    }
+    
+    const brands = await Product.aggregate([
+        { $group: {
+            _id: {
+                brand: "$brand"
+            }
+        } }
+    ]).sort({ "_id.brand": 1 });
+    
+    res.render('admin/inventory', {
+        newListInventory: products,
+        brands: brands,
+        stype: stype,
+        sdir: sdir,
+        ftype: ftype,
+        fvalue: fvalue,
+        fullName: req.session.firstName + " " + req.session.lastName})
+
+});
+
+router.get('/search-inventory', async function(req, res){
+    let { stype, sdir } = req.query;
+    let query = req.query.query;
+    let searchedProducts, brands;
+
+    if(!query) {
+        query = "";
+    }
+
+    if(!stype || !sdir){
+        searchedProducts = await Product.aggregate([
+            { $match: 
+                { $or: [
+                    { name: { $regex: query, $options: 'i'} },
+                    { brand: { $regex: query, $options: 'i'} },
+                ] }
+            },
+            { $project: {
+                "category":"$category",
+                "brand": "$brand",
+                "name": "$name",
+                "totalEarnings": "$totalEarnings",
+                "totalQuantitySold": "$totalQuantitySold",
+                "itemsRemaining":{
+                    $sum: "$variations.quantity"
+                }
+            } }
+        ]);
+    } else {
+        searchedProducts = await Product.aggregate([
+            { $match: 
+                { $or: [
+                    { name: { $regex: query, $options: 'i'} },
+                    { brand: { $regex: query, $options: 'i'} },
+                ] }
+            },
+            { $project: {
+                "category":"$category",
+                "brand": "$brand",
+                "name": "$name",
+                "totalEarnings": "$totalEarnings",
+                "totalQuantitySold": "$totalQuantitySold",
+                "itemsRemaining":{
+                    $sum: "$variations.quantity"
+                }
+            } },
+            { $sort: {
+                [stype] : parseInt(sdir)
+            }}
+        ]);
+    }
+    
+
+    console.log(searchedProducts)
+
+    res.render('admin/search-inventory', {
+        newListInventory: searchedProducts,
+        stype: stype,
+        sdir: sdir,
+        query: query,
+        fullName: req.session.firstName + " " + req.session.lastName})
 });
 
 router.get("/:productId/view", isAuth, isAdmin, upload, function(req, res){
@@ -123,7 +259,7 @@ router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
         if(err){
             console.log(err);
         } else {
-                res.redirect('/admin/inventory')
+            res.redirect('/admin/inventory')
         }
     
     });
@@ -159,17 +295,6 @@ router.get("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
 });
 
 router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
-    const productId = req.params.productId;
-    console.log(productId);
-    Product.findOne({ _id:productId }, function(err, product){
-        res.render('admin/add-new-variation', {
-            fullName: req.session.firstName + " " + req.session.lastName,
-             product:product
-        });
-    })
-});
-
-router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
     const {productId, name, quantity} = req.body;
     let status="";
     console.log(req.body);
@@ -188,34 +313,17 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
     status: status
 };
    console.log(variation);
-   if(req.body.button == "submit"){
     Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
         variations: [variation],
     }}, function(err, product){
             if(err){
                 console.log(err);
-            } else {
-                res.redirect('/admin/inventory')
+            } else {           
+               res.redirect("/admin/inventory/"+productId+"/view")
             }
         });
-   }
-   else if(req.body.button == "add"){
-    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
-        variations: [variation],
-    }}, function(err, product){
-            if(err){
-                console.log(err);
-            } else {
-                res.redirect("/admin/inventory/"+productId+"/add-new-variation")
-            }
-        });
-   }
-
-
-    
    
-    
+   
 });
-
 
 module.exports = router;

@@ -11,7 +11,7 @@
             <% if(content.aboutUsImage.length == 0){ %>
               <img src="images/default/aboutus/image1.jpg" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
             <% } else { %>
-              <img src="images/content/aboutus/<%= content.aboutUsImage[0].image %>" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+              <img src="<%= content.aboutUsImage[0].image.url %>" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
             <% } %>
 
           <% } %>
@@ -38,7 +38,7 @@
           <% if(content.aboutUsImage.length == 0){ %>
             <img src="images/default/aboutus/image2.png" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
           <% } else { %>
-            <img src="images/content/aboutus/<%= content.aboutUsImage[1].image %>" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+            <img src="<%= content.aboutUsImage[1].image.url %>" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
           <% } %>
           
         <% } %>
@@ -49,9 +49,9 @@
           <% } else { %>
 
             <% if(content.aboutUsImage.length == 0){ %>
-              <img src="images/default/aboutus/image3.jpg" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+              <img src="images/default/aboutus/image3.png" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
             <% } else { %>
-              <img src="images/content/aboutus/<%= content.aboutUsImage[2].image %>" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
+              <img src="<%= content.aboutUsImage[2].image.url %>" class="mb-5 squareHomeAboutUs" style="width: 100%;" alt="">
             <% } %>
             
 

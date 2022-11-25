@@ -9,8 +9,9 @@
                 <canvas id="myChart"></canvas>
             </div>
         </div>
-        <div class="col-xl-6 col-lg-6">
+        <div class="col-xl-6 col-lg-6 text-center">
             <div class="chartBox">
+                <img src="/images/icons/dottedLegend.jpg" class="w-100">
                 <canvas id="myChart2"></canvas>
             </div>
         </div>
@@ -201,7 +202,7 @@ d3.csv(filename2).then(function(datapoints){
                 ctx.save();
         //draw line
         ctx.strokeStyle = 'red';
-        ctx.setLineDash([20, 20]);
+        ctx.setLineDash([20, 30]);
         ctx.strokeRect(left, y.getPixelForValue(3), width, 0);
         ctx.restore();
         }
@@ -214,8 +215,8 @@ d3.csv(filename2).then(function(datapoints){
                 scales: { x, y } } = chart;
                 ctx.save();
         //draw line
-        ctx.strokeStyle = 'red';
-        ctx.setLineDash([20, 20]);
+        ctx.strokeStyle = 'orange';
+        ctx.setLineDash([20, 30]);
         ctx.strokeRect(left, y.getPixelForValue(6), width, 0);
         ctx.restore();
         }
@@ -228,8 +229,8 @@ d3.csv(filename2).then(function(datapoints){
                 scales: { x, y } } = chart;
                 ctx.save();
         //draw line
-        ctx.strokeStyle = 'red';
-        ctx.setLineDash([20, 20]);
+        ctx.strokeStyle = 'green';
+        ctx.setLineDash([20, 30]);
         ctx.strokeRect(left, y.getPixelForValue(12), width, 0);
         ctx.restore();
         }

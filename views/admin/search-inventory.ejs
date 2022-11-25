@@ -19,6 +19,12 @@
                         <li><div class="dropdown-item">Sort by:</div></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
+                            <a class="dropdown-item" href="/admin/inventory?query=<%=query%>&stype=movementRate&sdir=-1">Movement Rate - High to Low</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/admin/inventory?query=<%=query%>&stype=movementRate&sdir=1">Movement Rate - Low to High</a>
+                        </li>
+                        <li>
                             <a class="dropdown-item" href="/admin/inventory?query=<%=query%>&stype=totalQuantitySold&sdir=-1">Items Sold - High to Low</a>
                         </li>
                         <li>
@@ -50,8 +56,10 @@
                             <th>Brand</th>
                             <th>Name</th>
                             <th>Net Sales</th>
+                            <th>Total Acquired</th>
                             <th>Items Sold</th>
                             <th>Items Remaining</th>
+                            <th>Movement Rate</th>
                             <th>Category</th>
                             <th>Action</th>
                         </tr>
@@ -60,8 +68,10 @@
                             <td><%= inventory.brand %></td>
                             <td><%= inventory.name %></td>
                             <td>₱<%=  new Intl.NumberFormat().format(inventory.totalEarnings) %>.00</td>
+                            <td><%=  inventory.totalAcquired %></td>
                             <td><%= inventory.totalQuantitySold %></td>
                             <td><%= inventory.itemsRemaining %></td>
+                            <td><%= inventory.movementRate.toFixed(2) %>%</td>
                             <td><%= inventory.category %></td>
                             <td>
                             <div class="dropdown">

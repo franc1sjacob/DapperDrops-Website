@@ -270,8 +270,12 @@ router.get('/inventory-stock-level', isAuth, isAdmin, async function(req ,res){
                 brand: "$brand",
                 name: "$name",
                 quantityRemaining: { $sum:"$variations.quantity" }
-        }}}
+            }
+        }},
+        { $sort: { '_id.quantityRemaining': 1 } }
     ]);
+
+    console.log(result);
 
     result.forEach(function(product){
         data.push({

@@ -112,21 +112,50 @@
                         </div>
                         <h3 class="fw-bold">Payment Method</h3>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="paymentMethod" id="gcash" value="GCash" required>
-                            <label class="form-check-label" for="gcash">GCash</label>
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="eWalletBankTransfer" value="E-Wallet or Bank Transfer" required>
+                            <label class="form-check-label" for="eWalletBankTransfer">E-Wallet or Bank Transfer <span class="text-danger text-decoration-underline" style="cursor: pointer;"><a data-bs-toggle="modal" data-bs-target="#exampleModal">View our available mode of payments</a></span> </label>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="paymentMethod" id="bdo" value="BDO">
-                            <label class="form-check-label" for="bdo">BDO</label>
+                        
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">E-Wallet or Bank Transfer</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <% if(content == undefined || content == null || content.payment.length == 0){ %>
+                                        <p class="fw-bold">GCash</p>
+                                        <p>RV Bandoy</p>
+                                        <p>091234567</p>
+                                        <br>
+                                        <p class="fw-bold">Maya</p>
+                                        <p>RV Bandoy</p>
+                                        <p>091234567</p>
+                                        <br>
+                                        <p class="fw-bold">BDO</p>
+                                        <p>RV Bandoy</p>
+                                        <p>091234567</p>
+                                        Payment details will also be displayed in the confirm checkout page.
+                                    <% } else { %>
+                                        <% for(let i = 0; i < content.payment.length; i++){ %>
+                                            <p class="fw-bold"><%= content.payment[i].paymentName %></p>
+                                            <p><%= content.payment[i].userName %></p>
+                                            <p><%= content.payment[i].bankNumber %></p>
+                                            <br>
+                                        <% } %>
+                                        Payment details will also be displayed in the confirm checkout page.
+                                    <% } %>
+                                    
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                            </div>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="paymentMethod" id="bdopay" value="BDO Pay">
-                            <label class="form-check-label" for="bdopay">BDO Pay</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="paymentMethod" id="maya" value="Maya">
-                            <label class="form-check-label" for="maya">Maya</label>
-                        </div>
+
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD">
                             <label class="form-check-label" for="cod">Cash on Delivery (10% Downpayment Required)</label>

@@ -98,6 +98,7 @@ app.use("/admin/content/", adminContentRoute);
 app.get("/", async function(req, res){
     const featuredArr = [];
     let nullProduct = [];
+    const userId = req.session.userId;
 
     const content = await Content.findOne({ status: 'active' });
     const newArrivals = await Product.aggregate([]).sort({ dateCreated: -1}).limit(6);
@@ -124,7 +125,7 @@ app.get("/", async function(req, res){
 
     console.log(featuredArr);
 
-    res.render('index', { newArrivals: newArrivals, content: content, featured: featuredArr });
+    res.render('index', { newArrivals: newArrivals, content: content, featured: featuredArr, userId: userId });
 });
 
 app.get("/about", async function(req, res){

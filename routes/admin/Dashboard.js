@@ -189,7 +189,9 @@ router.get("/", isAuth, isAdmin, async function(req, res){
                 brand: "$brand",
                 name: "$name",
                 quantityRemaining: { $sum:"$variations.quantity" }
-        }}}
+            }
+        }},
+        { $sort: { '_id.quantityRemaining': 1 }}
     ]);
 
     result2.forEach(function(product){

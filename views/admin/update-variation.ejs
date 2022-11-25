@@ -1,23 +1,18 @@
 <%- include('../innerPartialsv2/admin/header', {name: fullName}); %>
 
 <div class="container">
-    <h1 class="text-center mt-2 mb-3">Update Product</h1> 
+    <h1 class="text-center mt-2 mb-3">Update Variation</h1> 
     <form action="/admin/products/update-variation/<%= variation._id %>-<%= product._id %>" method="POST">
         <div class="mb-3">
             <label for="inputIdName" class="form-label">ID:</label>
             <input type="text" class="form-control" id="inputBrandName" name="variationId" value="<%= variation._id %>" disabled>
         </div>
         <div class="mb-3">
-            <label for="inputName" class="form-label">Size:</label>
+            <label for="inputName" class="form-label">Size Name:</label>
             <input type="text" class="form-control" id="inputName" name="variationName" value="<%= variation.name %>" required>
         </div>
-        <div class="mb-3">
-            <label for="inputQuantity" class="form-label">Quantity:</label>
-            <input type="number" class="form-control" id="inputQuantity" name="variationQuantity" value="<%= variation.quantity %>" min="1" required>
-        </div>
-        
 
-        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        <button type="submit" class="btn btn-primary mt-3">Update</button>
         <a class="btn btn-secondary mt-3" href="/admin/products/<%= product._id %>/view">Cancel</a>
       </form>
 </div>

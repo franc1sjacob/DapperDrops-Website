@@ -80,7 +80,6 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
     //unwide and addfields removes array and adds it to the products collection.
     let { stype, sdir, ftype, fvalue } = req.query;
     if(!stype && !sdir && !ftype && !fvalue){
-        console.log('tangina')
         products = await Product.aggregate([{
             $project:{
                 "category":"$category",
@@ -90,11 +89,16 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
                 "totalQuantitySold": "$totalQuantitySold",
                 "itemsRemaining":{
                     $sum: "$variations.quantity"
+                },
+                "totalAcquired": {
+                    $sum: "$variations.stockAcquired"
+                },
+                "movementRate": {
+                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
                 }
             }
         }]);
     } else if (!stype && !sdir) {
-        console.log("ETOOOO 31232131")
         products = await Product.aggregate([
             { $match: {
                 [ftype]: fvalue
@@ -107,6 +111,12 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
                 "totalQuantitySold": "$totalQuantitySold",
                 "itemsRemaining":{
                     $sum: "$variations.quantity"
+                },
+                "totalAcquired": {
+                    $sum: "$variations.stockAcquired"
+                },
+                "movementRate": {
+                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
                 }
             } }
         ]);
@@ -123,6 +133,12 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
                 "totalQuantitySold": "$totalQuantitySold",
                 "itemsRemaining":{
                     $sum: "$variations.quantity"
+                },
+                "totalAcquired": {
+                    $sum: "$variations.stockAcquired"
+                },
+                "movementRate": {
+                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
                 }
             } },
             { $sort: {
@@ -146,6 +162,12 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
                 "totalQuantitySold": "$totalQuantitySold",
                 "itemsRemaining":{
                     $sum: "$variations.quantity"
+                },
+                "totalAcquired": {
+                    $sum: "$variations.stockAcquired"
+                },
+                "movementRate": {
+                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
                 }
             } },
             { $sort: {
@@ -198,6 +220,12 @@ router.get('/search-inventory', async function(req, res){
                 "totalQuantitySold": "$totalQuantitySold",
                 "itemsRemaining":{
                     $sum: "$variations.quantity"
+                },
+                "totalAcquired": {
+                    $sum: "$variations.stockAcquired"
+                },
+                "movementRate": {
+                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
                 }
             } }
         ]);
@@ -217,6 +245,12 @@ router.get('/search-inventory', async function(req, res){
                 "totalQuantitySold": "$totalQuantitySold",
                 "itemsRemaining":{
                     $sum: "$variations.quantity"
+                },
+                "totalAcquired": {
+                    $sum: "$variations.stockAcquired"
+                },
+                "movementRate": {
+                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
                 }
             } },
             { $sort: {

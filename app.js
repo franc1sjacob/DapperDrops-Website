@@ -143,6 +143,11 @@ app.get("/tos", async function(req, res){
     res.render('tos', { content: content });
 });
 
+app.get("*", async function(req, res){
+    const content = await Content.findOne({ status: 'active' });
+    res.render('error/404', { content: content });
+});
+
 app.listen(port, function(){
     console.log("Server started on port " + port);
 });

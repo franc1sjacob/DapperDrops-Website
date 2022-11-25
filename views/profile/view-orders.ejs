@@ -44,7 +44,7 @@
                                 <div class="d-grid mb-2">
                                     <a href="/account/send-payment-proof/<%= order._id %>" class="btn btn-success">Send Proof of Payment</a>
                                 </div>
-                                <% if (order.amountPaid === 0){ %>    
+                                <% if(order.amountPaid === 0){ %>    
                                     <form class="d-grid mb-2" action="/account/cancel-customer/<%= order._id %>" method="POST">
                                         <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
                                     </form>
@@ -60,9 +60,6 @@
                                 <div class="d-grid mb-2">
                                     <a href="/account/send-payment-proof/<%= order._id %>" class="btn btn-success">Send Proof of Payment</a>
                                 </div>
-                                <form class="d-grid mb-2" action="" method="POST">
-                                    <button type="submit" class="btn btn-danger" value="">Cancel Order</button>
-                                </form>
                             <% } else if(order.orderStatus == "Completed") { %>
                                 <form class="d-grid mb-2" action="/account/view-order/<%= order._id %>">
                                     <button type="submit" class="btn btn-dark">View Order Details</button>

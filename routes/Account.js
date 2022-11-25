@@ -198,7 +198,7 @@ const sendVerifyMail = async function(name, email, user_id){
             from: process.env.SECRETEMAIL,
             to: email,
             subject: "For Verification",
-            html:'<p>Hi ' + name + ', please click here to <a href="https://dapperdrops.herokuapp.com//account/verify?id='+user_id+'"> Verify </a> your mail</p>'
+            html:'<p>Hi ' + name + ', please click here to <a href="https://dapperdrops.herokuapp.com/account/verify?id='+user_id+'"> Verify </a> your mail</p>'
         }
 
         transporter.sendMail(mailOptions, function(error, info){

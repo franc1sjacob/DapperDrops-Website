@@ -93,9 +93,16 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
                 "totalAcquired": {
                     $sum: "$variations.stockAcquired"
                 },
-                "movementRate": {
-                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
-                }
+                "movementRate":  {
+                    $multiply: [ 
+                        { $cond: 
+                            [
+                                { $ne: ["$totalQuantitySold", 0] },
+                                { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] },
+                                0
+                            ] 
+                        }, 100 ]
+                    }
             }
         }]);
     } else if (!stype && !sdir) {
@@ -137,9 +144,16 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
                 "totalAcquired": {
                     $sum: "$variations.stockAcquired"
                 },
-                "movementRate": {
-                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
-                }
+                "movementRate":  {
+                    $multiply: [ 
+                        { $cond: 
+                            [
+                                { $ne: ["$totalQuantitySold", 0] },
+                                { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] },
+                                0
+                            ] 
+                        }, 100 ]
+                    }
             } },
             { $sort: {
                 [stype] : parseInt(sdir)
@@ -166,9 +180,16 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
                 "totalAcquired": {
                     $sum: "$variations.stockAcquired"
                 },
-                "movementRate": {
-                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
-                }
+                "movementRate":  {
+                    $multiply: [ 
+                        { $cond: 
+                            [
+                                { $ne: ["$totalQuantitySold", 0] },
+                                { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] },
+                                0
+                            ] 
+                        }, 100 ]
+                    }
             } },
             { $sort: {
                 [stype] : parseInt(sdir)
@@ -224,9 +245,16 @@ router.get('/search-inventory', async function(req, res){
                 "totalAcquired": {
                     $sum: "$variations.stockAcquired"
                 },
-                "movementRate": {
-                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
-                }
+                "movementRate":  {
+                    $multiply: [ 
+                        { $cond: 
+                            [
+                                { $ne: ["$totalQuantitySold", 0] },
+                                { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] },
+                                0
+                            ] 
+                        }, 100 ]
+                    }
             } }
         ]);
     } else {
@@ -250,8 +278,15 @@ router.get('/search-inventory', async function(req, res){
                     $sum: "$variations.stockAcquired"
                 },
                 "movementRate": {
-                    $multiply: [ { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] }, 100 ]
-                }
+                    $multiply: [ 
+                        { $cond: 
+                            [
+                                { $ne: ["$totalQuantitySold", 0] },
+                                { $divide: [ "$totalQuantitySold", { $sum: "$variations.stockAcquired" } ] },
+                                0
+                            ] 
+                        }, 100 ]
+                    }
             } },
             { $sort: {
                 [stype] : parseInt(sdir)

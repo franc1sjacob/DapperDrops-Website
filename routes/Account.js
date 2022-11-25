@@ -444,6 +444,7 @@ router.get('/wishlist', isAuth, async function(req, res){
                 items.push(foundProduct);
             }
         }
+        res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content });
     } else {
         res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content });
     }

@@ -57,17 +57,24 @@
             </li>
           </ul>
 
+          
           <ul class="navbar-nav">
             <form action="/products/search" method="GET" class="nav-item input-group me-3">
-                <input type="text" name="query" onkeyup="success()" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
-                <button class="btn btn-outline-secondary" type="submit" id="button-addon1" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+              <input type="text" name="query" onkeyup="success()" class="form-control d-none d-lg-block" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
+              <button class="btn btn-outline-secondary d-none d-lg-block" type="submit" id="button-addon1" disabled><i class="fa-solid fa-magnifying-glass d-none d-lg-block"></i></button>
             </form>
             <li class="nav-item">
+              <a class="nav-link d-lg-none d-lg-block" href="/cart/view-cart">View Cart</a>
               <a class="nav-link d-none d-lg-block" href="/cart/view-cart"><i class="fa-solid fa-cart-shopping"></i></a>
             </li>
             <li class="nav-item">
+              <a class="nav-link d-lg-none d-lg-block" href="/account/login">Account</i></a>
               <a class="nav-link d-none d-lg-block" href="/account/login"><i class="fa-solid fa-user"></i></a>
             </li>
+            <form action="/products/search" method="GET" class="nav-item input-group d-lg-none me-3">
+              <input type="text" name="query" onkeyup="success()" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
+              <button class="btn btn-outline-secondary" type="submit" id="button-addon1" disabled><i class="fa-solid fa-magnifying-glass d-none d-lg-block"></i></button>
+            </form>
           </ul>
         </div>
       </div>

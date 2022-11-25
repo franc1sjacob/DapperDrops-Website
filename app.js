@@ -123,8 +123,6 @@ app.get("/", async function(req, res){
         
     }
 
-    console.log(featuredArr);
-
     res.render('index', { newArrivals: newArrivals, content: content, featured: featuredArr, userId: userId });
 });
 

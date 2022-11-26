@@ -20,62 +20,57 @@
 
 <!-- ---------------NAVBAR START--------------- -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
-  <div class="container-fluid">
-    <!-- Brand logo hidden on large screens -->
-    <a class="navbar-brand d-lg-none" href="/">
-      <img src="../images/icons/logo.png" class="img-logo" alt="">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <div class="container-fluid container">
+      <!-- Brand logo hidden on large screens -->
+      <a class="navbar-brand me-auto" href="/">
+        <img src="../images/icons/logo.png" class="img-logo" alt="">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <!-- <div class="container"> -->
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <!-- Brand logo hidden on smaller screens -->
-        <a class="navbar-brand d-none d-lg-block me-auto" href="/">
-          <img src="../images/icons/logo.png" class="img-logo" alt="">
-        </a>
 
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Shoes
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/products/onhand">On-hand</a></li>
-              <li><a class="dropdown-item" href="/products/preorder">Pre-order</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/products/apparel">Apparel</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/products/accessories">Accessories</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/about">About Us</a>
-          </li>
-        </ul>
+      <div class="container">
 
-        
-        <ul class="navbar-nav">
-          <form action="/products/search" method="GET" class="nav-item input-group me-3">
-            <input type="text" name="query" onkeyup="success()" class="form-control d-none d-lg-block" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
-            <button class="btn btn-outline-secondary d-none d-lg-block" type="submit" id="button-addon1" disabled><i class="fa-solid fa-magnifying-glass d-none d-lg-block"></i></button>
-          </form>
-          <li class="nav-item">
-            <a class="nav-link d-lg-none d-lg-block" href="/cart/view-cart">View Cart</a>
-            <a class="nav-link d-none d-lg-block" href="/cart/view-cart"><i class="fa-solid fa-cart-shopping"></i></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link d-lg-none d-lg-block" href="/account/login">Account</i></a>
-            <a class="nav-link d-none d-lg-block" href="/account/login"><i class="fa-solid fa-user"></i></a>
-          </li>
-          <form action="/products/search" method="GET" class="nav-item input-group d-lg-none me-3 pb-1">
-            <input type="text" name="query" onkeyup="success()" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
-            <button class="btn btn-outline-secondary" type="submit" id="button-addon1" disabled><i class="fa-solid fa-magnifying-glass d-lg-none d-lg-block"></i></button>
-          </form>
-        </ul>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <!-- Brand logo hidden on smaller screens -->
+
+          
+
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Shoes
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/products/onhand">On-hand</a></li>
+                <li><a class="dropdown-item" href="/products/preorder">Pre-order</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/products/apparel">Apparel</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/products/accessories">Accessories</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/about">About Us</a>
+            </li>
+          </ul>
+
+          <ul class="navbar-nav ms-auto">
+            <form action="/products/search" method="GET" class="nav-item input-group me-3">
+                <input type="text" name="query" onkeyup="success()" class="form-control" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
+                <button class="btn btn-outline-secondary" type="submit" id="button-addon1" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+            <li class="nav-item">
+              <a class="nav-link d-none d-lg-block" href="/cart/view-cart"><i class="fa-solid fa-cart-shopping"></i></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-none d-lg-block" href="/account/login"><i class="fa-solid fa-user"></i></a>
+            </li>
+          </ul>
+        </div>
       </div>
     <!-- </div> -->
   </div>

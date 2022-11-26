@@ -101,8 +101,8 @@ app.get("/", async function(req, res){
     const userId = req.session.userId;
 
     const content = await Content.findOne({ status: 'active' });
-    const newArrivals = await Product.aggregate([]).sort({ dateCreated: -1}).limit(6);
-    const featured = await Featured.find({}).sort({ dateAdded: -1 }).limit(6);
+    const newArrivals = await Product.aggregate([]).sort({ dateCreated: -1}).limit(8);
+    const featured = await Featured.find({}).sort({ dateAdded: -1 }).limit(8);
 
     for(let i = 0; i < featured.length; i++){
         foundProduct = await Product.findById(featured[i].productId);

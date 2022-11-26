@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+
+var hbs = require('nodemailer-express-handlebars');
+var path = require('path');
 const nodemailer = require("nodemailer");
 
 const User = require("../../models/userModel");
@@ -39,12 +42,36 @@ const sendStockMail = async function(email, productId, productName, productVaria
                 rejectUnauthorized: false
             }
         });
+
+        const handlebarOptions = {
+            viewEngine: {
+                extName: ".handlebars",
+                partialsDir: path.resolve('./views'),
+                defaultLayout: false
+            },
+            viewPath: path.resolve('./views'),
+            extName: ".handlebars"
+        }
+
+        transporter.use('compile', hbs(handlebarOptions));
         
         const mailOptions= {
+            from: {
+                name: 'DapperDrops',
+                address: process.env.SECRETEMAIL
+            },
             from: process.env.SECRETEMAIL,
             to: email,
             subject: "Product - " + status,
-            html:'<p>Hi admin, Product ID: ' + productId + ', Product Name: ' +  productName + ' - Size: ' + productVariation + ' is now ' + status + '. It has a remaining quantity of ' + quantity + '.</p>'
+            template: 'email-templates/stock-notification',
+            context: {
+                status: status,
+                productId: productId,
+                productName: productName,
+                productVariation: productVariation,
+                quantity: quantity
+            }
+            // html:'<p>Hi admin, Product ID: ' + productId + ', Product Name: ' +  productName + ' - Size: ' + productVariation + ' is now ' + status + '. It has a remaining quantity of ' + quantity + '.</p>'
         }
 
         transporter.sendMail(mailOptions, function(error, info){
@@ -703,13 +730,38 @@ const sendShippingMail = async function(name, email, orderID, company, track, sh
                 rejectUnauthorized: false
             }
         });
+
+        const handlebarOptions = {
+            viewEngine: {
+                extName: ".handlebars",
+                partialsDir: path.resolve('./views'),
+                defaultLayout: false
+            },
+            viewPath: path.resolve('./views'),
+            extName: ".handlebars"
+        }
+    
+        transporter.use('compile', hbs(handlebarOptions));
         
         const mailOptions= {
-            from: process.env.SECRETEMAIL,
+            from: {
+                name: 'DapperDrops',
+                address: process.env.SECRETEMAIL
+            },
             to: email,
-            subject: "Tracking Order",
-            html:'<p>Hi ' + name + ', your order with the Order ID of ' + orderID + ' is now shipped through the company courier services of ' + company + ' please click at this link <a href="'+shipLink+'"> View Shipping Courier Services</a> and view details of your shipped order, by entering your received tracking number: ' + track + ' in the link.</p>'
+            subject: "Shipping Information",
+            template: 'email-templates/shipping',
+            context: {
+                name: name,
+                orderId: orderID,
+                company: company,
+                track: track,
+                shipLink: shipLink
+            }
+            // html:'<p>Hi ' + name + ', your order with the Order ID of ' + orderID + ' is now shipped through the company courier services of ' + company + ' please click at this link <a href="'+shipLink+'"> View Shipping Courier Services</a> and view details of your shipped order, by entering your received tracking number: ' + track + ' in the link.</p>'
         }
+
+        transporter.use('compile', hbs(handlebarOptions));
 
         transporter.sendMail(mailOptions, function(error, info){
             if(error){

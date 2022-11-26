@@ -63,8 +63,12 @@ router.get("/:category", async function(req, res){
     if(!ftype || !fvalue){
         products = await Product.find({ category: category }).sort({ [stype]: sdir });
     } else if (!stype || !sdir) {
+        products = await Product.find({ category: category, [ftype]: fvalue });
+    } else {
         products = await Product.find({ category: category, [ftype]: fvalue }).sort({ [stype]: sdir });
     }
+
+    console.log(products);
 
     const brands = await Product.aggregate([
         { $group: {
@@ -73,6 +77,8 @@ router.get("/:category", async function(req, res){
             }
         } }
     ]).sort({ "_id.brand": 1 });
+
+    console.log(brands)
 
     res.render("view-products", {
         products: products,

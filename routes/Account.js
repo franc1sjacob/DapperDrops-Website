@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+var hbs = require('nodemailer-express-handlebars');
 
 const mongoose = require('mongoose');
 
@@ -193,12 +194,32 @@ const sendVerifyMail = async function(name, email, user_id){
                 rejectUnauthorized: false
             }
         });
+
+        const handlebarOptions = {
+            viewEngine: {
+                extName: ".handlebars",
+                partialsDir: path.resolve('./views'),
+                defaultLayout: false
+            },
+            viewPath: path.resolve('./views'),
+            extName: ".handlebars"
+        }
+
+        transporter.use('compile', hbs(handlebarOptions));
         
         const mailOptions= {
-            from: process.env.SECRETEMAIL,
+            from: {
+                name: 'DapperDrops',
+                address: process.env.SECRETEMAIL
+            },
             to: email,
-            subject: "For Verification",
-            html:'<p>Hi ' + name + ', please click here to <a href="https://dapperdrops.herokuapp.com/account/verify?id='+user_id+'"> Verify </a> your mail</p>'
+            subject: "Account Verification",
+            template: 'email-templates/register',
+            context: {
+                name: name,
+                id: user_id
+            }
+            // html:'<p>Hi ' + name + ', please click here to <a href="https://dapperdrops.herokuapp.com/account/verify?id='+user_id+'"> Verify </a> your mail</p>'
         }
 
         transporter.sendMail(mailOptions, function(error, info){
@@ -256,15 +277,16 @@ router.post("/forgot", async function(req, res){
 
 const sendResetPasswordMail = async function(name, email, token){
     try {
+
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 465,
             secure: true,
-            auth:{
+            auth: {
                 user: process.env.SECRETEMAIL,
                 pass: process.env.SECRETPASSWORD
             },
-            tls:{
+            tls: {
                 rejectUnauthorized: false
             }
         });
@@ -273,14 +295,33 @@ const sendResetPasswordMail = async function(name, email, token){
         //     viewEngine: 'express-handlebars',
         //     viewPath: './views/'
         // }));
+
+        const handlebarOptions = {
+            viewEngine: {
+                extName: ".handlebars",
+                partialsDir: path.resolve('./views'),
+                defaultLayout: false
+            },
+            viewPath: path.resolve('./views'),
+            extName: ".handlebars"
+        }
         
         const mailOptions = {
-            from: process.env.SECRETEMAIL,
+            from: {
+                name: 'DapperDrops',
+                address: process.env.SECRETEMAIL
+            },
             to: email,
-            subject: "Password Reset Request for DapperDrops",
-            html:'<p>Hi '+name+', please click here to <a href="http://localhost:3000/account/forget-password?token='+token+'"> reset </a> your password.</p>'
-            // template: 'forgotpass'
+            subject: "Password Reset",
+            template: 'email-templates/forgot-password',
+            context: {
+                name: name,
+                token: token
+            }
+            // html:'<p>Hi '+name+', please click here to <a href="http://localhost:3000/account/forget-password?token='+token+'"> reset </a> your password.</p>'
         }
+
+        transporter.use('compile', hbs(handlebarOptions));
 
         transporter.sendMail(mailOptions, function(error, info){
             if(error){

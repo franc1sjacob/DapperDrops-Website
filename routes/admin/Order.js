@@ -201,11 +201,11 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                         }
                         else if(minusedValues[i] <= 5 && minusedValues[i] >=1){
                             status = "Few-Stocks";
-                            sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], minusedValues[i], status);
+                            sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], minusedValues[i], status);
                         }
                         else{
                             status = "Out-of-Stock";
-                            sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], minusedValues[i], status);
+                            sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], minusedValues[i], status);
                         }
 
                         const update = {
@@ -313,10 +313,10 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                         status = "In-Stock";
                     }else if(addedValues[i] <= 5 && addedValues[i] >=1){
                         status = "Few-Stocks";
-                        sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], originalQuantity[i] - quantity[i], status);
+                        sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], originalQuantity[i] - quantity[i], status);
                     }else{
                         status = "Out-of-Stock";
-                        sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], originalQuantity[i] - quantity[i], status);
+                        sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], originalQuantity[i] - quantity[i], status);
                     }
     
                     const conditions = {
@@ -518,10 +518,10 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
                         status = "In-Stock";
                     } else if(addedValues[i] <= 5 && addedValues[i] >=1){
                         status = "Few-Stocks";
-                        sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], addedValues[i], status);
+                        sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], addedValues[i], status);
                     } else{
                         status = "Out-of-Stock";
-                        sendStockMail('francistaino16@gmail.com', itemId[i], itemName[i], variations[i], addedValues[i], status);
+                        sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], addedValues[i], status);
                     }
                     
                     const conditions = {

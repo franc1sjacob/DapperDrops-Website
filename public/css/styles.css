@@ -111,9 +111,9 @@ body{
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
-    nav{
+    /* nav{
         padding: 0% 7% !important;
-    }
+    } */
     .card-text {
         font-size: 16px;
     }
@@ -128,9 +128,9 @@ body{
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-    nav{
+    /* nav{
         padding: 0% 7% !important;
-    }
+    } */
     .card-text {
         font-size: 16px;
     }

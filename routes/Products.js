@@ -14,6 +14,7 @@ const isAuth = function(req, res, next){
 }
 
 router.get('/search', async function(req, res) {
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     let searchQuery = req.query.query;
 
@@ -37,11 +38,13 @@ router.get('/search', async function(req, res) {
         query: searchQuery,
         stype: stype,
         sdir: sdir,
-        content: content
+        content: content,
+        isAdmin: isAdmin
     });
 });
 
 router.get("/:category", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     let products;
     let category = req.params.category;
@@ -88,21 +91,23 @@ router.get("/:category", async function(req, res){
         ftype: ftype,
         fvalue: fvalue,
         category: category,
-        content: content
+        content: content,
+        isAdmin: isAdmin
     });
 });
 
 
 router.get("/item/:productId", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const productId = req.params.productId;
     const userId = req.session.userId;
 
     const item = await Product.findOne({_id:productId});
     if(item == null){
-        res.render('error/productNotFound', { content: content });
+        res.render('error/productNotFound', { content: content, isAdmin: isAdmin });
     } else {
-        res.render('view-item', {item: item,  userId: userId,isError:false,error:"", content: content});
+        res.render('view-item', {item: item,  userId: userId,isError:false,error:"", content: content, isAdmin: isAdmin });
     }
 
 

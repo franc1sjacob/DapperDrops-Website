@@ -25,8 +25,8 @@ const Content = require("./models/contentModel");
 const Featured = require("./models/featuredModel");
 
 //MongoDB
-const mongoUri = "mongodb+srv://admin-dapperdrops:admin123@cluster0.i5opsug.mongodb.net/dapperdropsDB";
-// const mongoUri = "mongodb://localhost:27017/dapperdropsDB";
+// const mongoUri = "mongodb+srv://admin-dapperdrops:admin123@cluster0.i5opsug.mongodb.net/dapperdropsDB";
+const mongoUri = "mongodb://localhost:27017/dapperdropsDB";
 
 main().catch(err => console.log(err));
 
@@ -96,6 +96,7 @@ app.use("/admin/content/", adminContentRoute);
 
 //INDEX
 app.get("/", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const featuredArr = [];
     let nullProduct = [];
     const userId = req.session.userId;
@@ -123,27 +124,31 @@ app.get("/", async function(req, res){
         
     }
 
-    res.render('index', { newArrivals: newArrivals, content: content, featured: featuredArr, userId: userId });
+    res.render('index', { newArrivals: newArrivals, content: content, featured: featuredArr, userId: userId, isAdmin: isAdmin });
 });
 
 app.get("/about", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    res.render('about', { content: content });
+    res.render('about', { content: content, isAdmin: isAdmin });
 });
 
 app.get("/faqs", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    res.render('faqs', { content: content });
+    res.render('faqs', { content: content, isAdmin: isAdmin });
 });
 
 app.get("/tos", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    res.render('tos', { content: content });
+    res.render('tos', { content: content, isAdmin: isAdmin });
 });
 
 app.get("*", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    res.render('error/404', { content: content });
+    res.render('error/404', { content: content, isAdmin: isAdmin });
 });
 
 app.listen(port, function(){

@@ -6,7 +6,11 @@
 
             <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
                 <h5 class="text-uppercase mb-4 fw-bold text-light">DapperDrops</h5>
-                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Harum non error aspernatur? Culpa quia accusamus commodi nemo.</p>
+                <% if(content == null || content == undefined){ %>
+                    <p>DEFAULT TEXT</p>
+                <% } else { %>
+                    <p><%= content.footerText %></p>
+                <% } %>
             </div>
 
             <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
@@ -28,10 +32,10 @@
             <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
                 <h5 class="text-uppercase mb-4 fw-bold text-light">Useful links</h5>
                 <p>
-                    <a href="#" class="text-white" style="text-decoration: none;">Terms of Service</a>
+                    <a href="/tos" class="text-white" style="text-decoration: none;">Terms of Service</a>
                 </p>
                 <p>
-                    <a href="#" class="text-white" style="text-decoration: none;">FAQs</a>
+                    <a href="/faqs" class="text-white" style="text-decoration: none;">FAQs</a>
                 </p>
                 <p>
                     <a href="#" class="text-white" style="text-decoration: none;">Returns</a>
@@ -40,12 +44,22 @@
 
             <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
                 <h5 class="text-uppercase mb-4 fw-bold text-light">Contact</h5>
-                <p>
-                    <i class="fas fa-envelope me-2"></i>dapperdrops@gmail.com
-                </p>
-                <p>
-                    <i class="fas fa-phone me-2"></i>+63 987 6543 210
-                </p>
+                <% if(content == null || content == undefined){ %>
+                    <p>
+                        <i class="fas fa-envelope me-2"></i>email@email.com
+                    </p>
+                    <p> 
+                        <i class="fas fa-phone me-2"></i>09984567987
+                    </p>
+                <% } else { %>
+                    <p>
+                        <i class="fas fa-envelope me-2"></i><%= content.footerContactEmail %>
+                    </p>
+                    <p> 
+                        <i class="fas fa-phone me-2"></i><%= content.footerContactNumber %>
+                    </p>
+                <% } %>
+
             </div>
         
         </div>  

@@ -14,18 +14,19 @@ const isAuth = async function(req, res, next){
     if(req.session.isAuth){
         next();
     } else {
-        res.render('login', { message: "Please login to your account to access this page.", content: content });
+        res.render('login', { message: "Please login to your account to access this page.", content: content, isAdmin: isAdmin });
     }
 }
 
 router.get("/view-cart", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     if(!req.session.cart || req.session.cart.totalPrice === 0){
-        res.render('view-cart', {usercart: null, content: content});
+        res.render('view-cart', {usercart: null, content: content, isAdmin: isAdmin});
     } else {
         const cart = new Cart(req.session.cart);
         // res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty});
-        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:false,error:"", content: content});
+        res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty, isError:false, error:"", content: content, isAdmin: isAdmin });
     }
 });
 
@@ -55,7 +56,7 @@ router.post("/add-to-cart", async function(req, res){
 
     } catch (error) {
         let product = await Product.findById(prodId)
-        res.render('view-item', {item: product, userId: userId,isError:true,error:error, content: content}); 
+        res.render('view-item', {item: product, userId: userId,isError:true,error:error, content: content, isAdmin: isAdmin}); 
     }
     
 });
@@ -91,6 +92,7 @@ router.post("/remove-item/:id/:variation", function(req, res){
 }); 
 
 router.get("/checkout", isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     if(!req.session.cart){
@@ -147,7 +149,7 @@ router.get("/checkout", isAuth, async function(req, res){
                 if(errorValues.length > 0){
                     throw errorValues
                 }
-                res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user, content: content});
+                res.render('checkout', {usercart: cart.generateArray(), cart: cart, user: user, content: content, isAdmin: isAdmin});
 
             } catch (error) {
                 console.log(error,"catching")
@@ -158,7 +160,7 @@ router.get("/checkout", isAuth, async function(req, res){
                 if(error.includes("Existing product/s in cart were changed by admin, please empty your cart or reload your page")){
                     req.session.cart = "";
                 }
-                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty,isError:true,error:error, content: content});
+                res.render('view-cart', {usercart: cart.generateArray(), totalPrice: cart.totalPrice, totalQty: cart.totalQty, isError: true, error: error, content: content, isAdmin: isAdmin });
             }
         }
     })
@@ -201,7 +203,7 @@ router.post("/place-order", isAuth, async function(req, res){
         });
     } else {
         User.findById({ _id: userId }, function(err, user){
-            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: "Please read and accept the terms and conditions to proceed with your order.", content: content});
+            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: "Please read and accept the terms and conditions to proceed with your order.", content: content, isAdmin: isAdmin });
         });
     }
 });
@@ -269,6 +271,7 @@ router.post('/add-default-address', isAuth, function(req, res){
 });
 
 router.get('/checkout-confirmation', isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     if(!req.session.cart){
@@ -280,12 +283,13 @@ router.get('/checkout-confirmation', isAuth, async function(req, res){
         } else {
             const cart = new Cart(req.session.cart);
            
-            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: null, content: content});
+            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: null, content: content, isAdmin: isAdmin});
         }
     })
 });
 
 router.get('/order-confirmed/:orderId', async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const orderId = req.params.orderId
     if(orderId == undefined){
@@ -297,7 +301,7 @@ router.get('/order-confirmed/:orderId', async function(req, res){
         } else {
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
-            res.render('order-confirmed', { order: order, content: content });
+            res.render('order-confirmed', { order: order, content: content, isAdmin: isAdmin });
         }
     });
 });

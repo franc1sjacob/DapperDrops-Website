@@ -63,17 +63,19 @@ const isAdmin = function(req, res, next){
 }
 
 router.get("/login", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     //Checks whether user is logged in or not.
     if(req.session.isAuth === true){
         res.redirect("/account/profile");
     } else {
-        res.render('login', { content: content });
+        res.render('login', { content: content, isAdmin: isAdmin });
     }
 
 });
 
 router.get("/profile", isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     userId = req.session.userId;
     User.findById(userId, function(err, user){
@@ -85,7 +87,7 @@ router.get("/profile", isAuth, async function(req, res){
                     cart = new Cart(order.cart);
                     order.items = cart.generateArray();
                 });
-                res.render('profile/profile', { orders: orders, user: user, content: content });
+                res.render('profile/profile', { orders: orders, user: user, content: content, isAdmin: isAdmin });
             }
         });
         // res.render('profile', { user: user });
@@ -94,13 +96,14 @@ router.get("/profile", isAuth, async function(req, res){
 
 
 router.post("/login", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
 
     if(!user){
-        return res.render('login', { message: "The email you entered isn’t connected to an account.", content: content});
+        return res.render('login', { message: "The email you entered isn’t connected to an account.", content: content, isAdmin: isAdmin});
     }
 
     //Returns true if password matches.
@@ -108,7 +111,7 @@ router.post("/login", async function(req, res){
 
     //Checks if isMatch is true
     if(!isMatch){
-        return res.render('login', { message: "The password you’ve entered is incorrect. Forgot Password?", content: content});
+        return res.render('login', { message: "The password you’ve entered is incorrect. Forgot Password?", content: content, isAdmin: isAdmin});
     } else if(isMatch && user.isVerified === 'true'){
         req.session.firstName = user.firstName;
         req.session.lastName = user.lastName;
@@ -122,7 +125,7 @@ router.post("/login", async function(req, res){
         }
     } else {
         console.log("User account is correct but not verified.");
-        return res.render('login', { message: "Please verify your account in your email.", content: content});
+        return res.render('login', { message: "Please verify your account in your email.", content: content, isAdmin: isAdmin});
     }
 });
 
@@ -137,11 +140,17 @@ router.post('/logout', isAuth, function(req, res){
 });
 
 router.get("/register", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    res.render('register', { content: content });
+    if(req.session.isAuth === true){
+        res.redirect("/account/profile");
+    } else {
+        res.render('register', { content: content, isAdmin: isAdmin });
+    }
 });
 
 router.post("/register", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const userId = new mongoose.Types.ObjectId();
     const { firstName, lastName, email, password } = req.body;
@@ -150,7 +159,7 @@ router.post("/register", async function(req, res){
 
     //Check if email exists
     if(user){
-        return res.render('register', { message: "The email you've entered is already registered.", content: content});
+        return res.render('register', { message: "The email you've entered is already registered.", content: content, isAdmin: isAdmin});
     }
 
     //Hash password
@@ -175,7 +184,7 @@ router.post("/register", async function(req, res){
             console.log(err);
         } else {
             sendVerifyMail(firstName, email, user._id);
-            res.render('register', {message: "Your registration has been successful. Please check your email and verify your account.", content: content});
+            res.render('register', {message: "Your registration has been successful. Please check your email and verify your account.", content: content, isAdmin: isAdmin});
         }
     });
 });
@@ -247,13 +256,15 @@ router.get("/verify", function(req, res){
 });
 
 router.get('/verified', async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    res.render('email-verified', { content: content });
+    res.render('email-verified', { content: content, isAdmin: isAdmin });
 })
 
 router.get("/forgot", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    res.render('forgot', { content: content });
+    res.render('forgot', { content: content, isAdmin: isAdmin });
 });
 
 router.post("/forgot", async function(req, res){
@@ -262,15 +273,15 @@ router.post("/forgot", async function(req, res){
     User.findOne({email: email}, function(err, user){
         if(user){
             if(user.isVerified === "false"){
-                res.render('forgot', {message: "Please check your email and verify your account.", content: content});
+                res.render('forgot', {message: "Please check your email and verify your account.", content: content, isAdmin: isAdmin});
             } else{
                 const randomString = randomstring.generate();
                 User.updateOne({email: email}, {$set: {token: randomString}}, function(err, user){});
                 sendResetPasswordMail(user.firstName, user.email, randomString);
-                res.render('forgot', {message: "Please check your email for the reset link of forgotten password.", content: content});
+                res.render('forgot', {message: "Please check your email for the reset link of forgotten password.", content: content, isAdmin: isAdmin});
             }
         } else {
-            res.render('forgot', {message: "The email you entered isn’t connected to an account.", content: content});
+            res.render('forgot', {message: "The email you entered isn’t connected to an account.", content: content, isAdmin: isAdmin});
         }
     });
 });
@@ -336,13 +347,14 @@ const sendResetPasswordMail = async function(name, email, token){
 }
 
 router.get("/forget-password", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const forgotToken = req.query.token;
     User.findOne({token: forgotToken}, function(err, foundToken){
         if(foundToken){
-            res.render('forget-password', {userId: foundToken._id, content: content});
+            res.render('forget-password', {userId: foundToken._id, content: content, isAdmin: isAdmin});
         } else {
-            res.render('404', {message: "Token is invalid", content: content});
+            res.render('404', {message: "Token is invalid", content: content, isAdmin: isAdmin});
         }
     });
 });
@@ -357,16 +369,17 @@ router.post("/forget-password", async function(req, res){
         if(err){
             console.log(err);
         } else {
-            res.render('login', { message: "Your password is now reset, you can now login with your new password.", content: content });
+            res.render('login', { message: "Your password is now reset, you can now login with your new password.", content: content, isAdmin: isAdmin });
         }
     });
 });
 
 router.get('/address', isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     User.findById(userId, function(err, user){
-        res.render('profile/address', { user: user, content: content});
+        res.render('profile/address', { user: user, content: content, isAdmin: isAdmin});
     });
 });
 
@@ -461,6 +474,7 @@ router.post('/deleteAddress/:addressId', isAuth, function(req, res){
 
 
 router.get('/wishlist', isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     let product;
     let items = [];
     const content = await Content.findOne({ status: 'active' });
@@ -485,9 +499,9 @@ router.get('/wishlist', isAuth, async function(req, res){
                 items.push(foundProduct);
             }
         }
-        res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content });
+        res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content, isAdmin: isAdmin });
     } else {
-        res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content });
+        res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content, isAdmin: isAdmin });
     }
     
     
@@ -509,6 +523,7 @@ router.post('/delete-wishlist', isAuth, function(req, res){
 });
 
 router.get('/view-orders', isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     Order.find({ userId: userId }, function(err, orders){
@@ -519,12 +534,13 @@ router.get('/view-orders', isAuth, async function(req, res){
                 cart = new Cart(order.cart);
                 order.items = cart.generateArray();
             });
-            res.render('profile/view-orders', { orders: orders, status: null, content: content });
+            res.render('profile/view-orders', { orders: orders, status: null, content: content, isAdmin: isAdmin });
         }
     });
 });
 
 router.get('/view-orders-:status', isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     const orderStatus = req.params.status;
@@ -537,7 +553,7 @@ router.get('/view-orders-:status', isAuth, async function(req, res){
                     cart = new Cart(order.cart);
                     order.items = cart.generateArray();
                 });
-                res.render('profile/view-orders', { orders: orders, status: orderStatus, content: content });
+                res.render('profile/view-orders', { orders: orders, status: orderStatus, content: content, isAdmin: isAdmin });
             }
         });
     } else {
@@ -546,6 +562,7 @@ router.get('/view-orders-:status', isAuth, async function(req, res){
 });
 
 router.get('/view-order/:orderId', isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const orderId = req.params.orderId;
     Order.findById({ _id: orderId }, function(err, order){
@@ -554,15 +571,16 @@ router.get('/view-order/:orderId', isAuth, async function(req, res){
         } else {
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
-            res.render('profile/view-order', { order: order, content: content });
+            res.render('profile/view-order', { order: order, content: content, isAdmin: isAdmin });
         }
     });
 });
 
 
 router.get('/change-password', isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    res.render('profile/change-password', { errorMessage: null, successMessage: null, content: content });
+    res.render('profile/change-password', { errorMessage: null, successMessage: null, content: content, isAdmin: isAdmin });
 });
 
 router.post('/change-password', isAuth, async function(req, res){
@@ -575,10 +593,10 @@ router.post('/change-password', isAuth, async function(req, res){
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if(newPassword != confirmPassword){
-        return res.render('profile/change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null, content: content});
+        return res.render('profile/change-password', { errorMessage: "Your new password does not match your confirm password.", successMessage: null, content: content, isAdmin: isAdmin});
         
     } else if(!isMatch){
-        return res.render('profile/change-password', { errorMessage: "The old password you entered is incorrect.", successMessage: null, content: content});
+        return res.render('profile/change-password', { errorMessage: "The old password you entered is incorrect.", successMessage: null, content: content, isAdmin: isAdmin});
 
     } else {
         const newHashedPassword = await bcrypt.hash(newPassword, 12);
@@ -587,13 +605,14 @@ router.post('/change-password', isAuth, async function(req, res){
             if(err){
                 console.log(err);
             } else {
-                res.render('profile/change-password', { successMessage: "Your password has successfully been changed!", errorMessage: null, content: content});
+                res.render('profile/change-password', { successMessage: "Your password has successfully been changed!", errorMessage: null, content: content, isAdmin: isAdmin});
             }
         });
     }
 });
 
 router.get("/send-payment-proof/:orderId", isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const orderId = req.params.orderId;
     Order.findById(orderId, function(err, foundOrder){
@@ -601,7 +620,7 @@ router.get("/send-payment-proof/:orderId", isAuth, async function(req, res){
             console.log(err);
         }
         else{
-            res.render('profile/send-payment-proof', {order: foundOrder, content: content});
+            res.render('profile/send-payment-proof', {order: foundOrder, content: content, isAdmin: isAdmin});
         }
     });
 });
@@ -632,6 +651,7 @@ router.post("/send-payment-proof/:orderId", isAuth, upload, async function(req, 
 });
 
 router.get("/view-payment-info-:orderId-:paymentId", isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const orderId = req.params.orderId;
     const paymentId = req.params.paymentId;
@@ -642,18 +662,19 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, async function(req,
         }
         else{
             const chosenPayment = foundOrder.paymentsInfo.find(obj => obj.id === paymentId);
-            res.render('profile/view-payment-info', {order: foundOrder, chosenPayment: chosenPayment, content: content});
+            res.render('profile/view-payment-info', {order: foundOrder, chosenPayment: chosenPayment, content: content, isAdmin: isAdmin});
         }
     });
 });
 
 router.get('/send-feedback-:orderId-:status', isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const { orderId, status } = req.params;
     if(status != "Completed"){
         res.redirect('/account/view-orders');
     } else {
-        res.render('profile/send-feedback', { orderId: orderId, content: content });
+        res.render('profile/send-feedback', { orderId: orderId, content: content, isAdmin: isAdmin });
     }
 
 });

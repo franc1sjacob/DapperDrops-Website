@@ -63,6 +63,14 @@
               <input type="text" name="query" onkeyup="success()" class="form-control d-none d-lg-block" placeholder="Search" aria-label="Example text with button addon" aria-describedby="button-addon1" id="query">
               <button class="btn btn-outline-secondary d-none d-lg-block" type="submit" id="button-addon1" disabled><i class="fa-solid fa-magnifying-glass d-none d-lg-block"></i></button>
             </form>
+
+            <% if(isAdmin == true){ %>
+              <li class="nav-item">
+                <a class="nav-link d-lg-none d-lg-block" href="/admin/dashboard">Admin</a>
+                <a class="nav-link d-none d-lg-block" href="/admin/dashboard"><i class="fa-sharp fa-solid fa-user-secret"></i></a>
+              </li>
+            <% } %>
+
             <li class="nav-item">
               <a class="nav-link d-lg-none d-lg-block" href="/cart/view-cart">View Cart</a>
               <a class="nav-link d-none d-lg-block" href="/cart/view-cart"><i class="fa-solid fa-cart-shopping"></i></a>

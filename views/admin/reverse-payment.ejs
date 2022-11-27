@@ -3,6 +3,12 @@
     <form action="/admin/orders/reverse-payment-<%= order._id %>" method="post">
         <h1 class="fw-bold text-center mt-2 mb-3">Reverse Payment</h1>
         
+        <% if(typeof error !== "undefined"){ %>
+            <div class="alert alert-danger d-flex justify-content-center" role="alert">
+                <p><%= error %></p>
+            </div>
+        <% } %>
+
         <div class="mb-3">
             <label for="amountReturned" class="form-label">Amount to Return:</label>
             <input type="hidden" name="oldBalance" value="<%= order.amountPaid %>">

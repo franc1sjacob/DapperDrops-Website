@@ -634,7 +634,7 @@ router.get("/reverse-payment-:orderId", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.post("/add-payment-:orderId", isAuth, isAdmin, function(req, res){
+router.post("/add-payment-:orderId", isAuth, isAdmin, async function(req, res){
     const orderId = req.params.orderId;
     const {oldBalance, amountPaid, amountRemaining} = req.body;
     let paymentStatus;
@@ -650,7 +650,10 @@ router.post("/add-payment-:orderId", isAuth, isAdmin, function(req, res){
 
     //Checks if amount paid exceeds amount remaining.
     if (parseInt(amountPaid) > parseInt(amountRemaining)) {
-        res.redirect('/admin/orders/add-payment-' + orderId);
+        let order = await Order.findById({_id: orderId});
+        cart = new Cart(order.cart);
+        order.items = cart.generateArray();
+        res.render('admin/add-payment', {error: "Oops... the entered amount exceeds the amount due!", order: order, fullName: req.session.firstName + " " + req.session.lastName});
     } else {
         Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(oldBalance) + parseInt(amountPaid), amountRemaining: parseInt(balanceRemaining), paymentStatus: paymentStatus }}, function(err, order){
             if(err){
@@ -663,7 +666,7 @@ router.post("/add-payment-:orderId", isAuth, isAdmin, function(req, res){
 });
 
 
-router.post("/reverse-payment-:orderId", isAuth, isAdmin, function(req, res){
+router.post("/reverse-payment-:orderId", isAuth, isAdmin, async function(req, res){
     const orderId = req.params.orderId;
     const {oldBalance, amountReturned, amountRemaining, amountPaid} = req.body;
     let paymentStatus;
@@ -671,8 +674,6 @@ router.post("/reverse-payment-:orderId", isAuth, isAdmin, function(req, res){
     let balanceRemaining = parseInt(amountRemaining)+parseInt(amountReturned);
 
     let updatedPayment = parseInt(oldBalance) - parseInt(amountReturned);
-
-    console.log(amountPaid);
     
     //Checks payment status.
     if(parseInt(updatedPayment) === 0){
@@ -686,7 +687,10 @@ router.post("/reverse-payment-:orderId", isAuth, isAdmin, function(req, res){
 
     //Checks if amount returned exceeds amount remaining.
     if (parseInt(updatedPayment) < 0) {
-        res.redirect('/admin/orders/reverse-payment-' + orderId);
+        let order = await Order.findById({_id: orderId});
+        cart = new Cart(order.cart);
+        order.items = cart.generateArray();
+        res.render('admin/reverse-payment', {error: "Oops... the entered amount exceeds the amount due!", order:order, fullName: req.session.firstName + " " + req.session.lastName});
     } else {
         Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(updatedPayment), amountRemaining: parseInt(balanceRemaining), paymentStatus: paymentStatus }}, function(err, order){
             if(err){

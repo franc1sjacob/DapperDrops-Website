@@ -2,6 +2,12 @@
 <div class="container">
     <form action="/admin/orders/add-payment-<%= order._id %>" method="post">
         <h1 class="fw-bold text-center mt-2 mb-3">Add Payment</h1>
+       
+        <% if(typeof error !== "undefined"){ %>
+            <div class="alert alert-danger d-flex justify-content-center" role="alert">
+                <p><%= error %></p>
+            </div>
+        <% } %>
         
         <div class="mb-3">
             <label for="amountPaid" class="form-label">Amount Paid:</label>

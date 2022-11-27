@@ -87,8 +87,8 @@
                                     <td><%= product.brand %> </td>
                                     <td><%= product.name %> </td>
                                     <td><%= product.price %> </td>
-                                    <td><% if(product.description.length >= 50) { %>
-                                        <%= product.description.slice(0, 50) %>...
+                                    <td><% if(product.description.length >= 20) { %>
+                                        <%= product.description.slice(0, 20) %>...
                                     <% } else { %>
                                         <%= product.description %>
                                     <% } %>

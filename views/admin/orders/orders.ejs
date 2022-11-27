@@ -43,7 +43,6 @@
             <div class="card-body">
                 <div class="table table-responsive">
                     <table class="table table-sm">
-                        <%console.log(orders.length)%>
                         <% if(orders === undefined || orders.length === 0){ %>
                             <h4 class="text-center">Sorry there are no products with the filter you've specified... </h4>
                         <% } else { %>
@@ -163,7 +162,8 @@
                                   </div>
                             </td>
                             <td>
-                                <a href="/admin/orders/update-payment-<%= order._id %>"><i class="fa-solid fa-pen-to-square me-2"></i></a>
+                                <a href="/admin/orders/add-payment-<%= order._id %>"><i class="fa-solid fa-plus me-1"></i></a>
+                                <a href="/admin/orders/reverse-payment-<%= order._id %>"><i class="fa-solid fa-minus me-1"></i></a>
                                 <%= order.paymentStatus %>
                             </td>
                             <td>₱<%= order.amountPaid %></td>

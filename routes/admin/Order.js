@@ -665,20 +665,24 @@ router.post("/add-payment-:orderId", isAuth, isAdmin, function(req, res){
 
 router.post("/reverse-payment-:orderId", isAuth, isAdmin, function(req, res){
     const orderId = req.params.orderId;
-    const {oldBalance, amountReturned, amountRemaining} = req.body;
+    const {oldBalance, amountReturned, amountRemaining, amountPaid} = req.body;
     let paymentStatus;
 
     let balanceRemaining = parseInt(amountRemaining)+parseInt(amountReturned);
 
+    let updatedPayment = parseInt(oldBalance) - parseInt(amountReturned);
+
+    console.log(amountPaid);
     
     //Checks payment status.
-    if(balanceRemaining > 0){
+    if(parseInt(updatedPayment) === 0){
+        paymentStatus = "Pending";
+    }
+    else if(balanceRemaining > 0){
         paymentStatus = "Partially Paid";
-    } else if (balanceRemaining == 0) {
+    } else if (balanceRemaining === 0) {
         paymentStatus = "Fully Paid";
     }
-
-    let updatedPayment = parseInt(oldBalance) - parseInt(amountReturned);
 
     //Checks if amount returned exceeds amount remaining.
     if (parseInt(updatedPayment) < 0) {

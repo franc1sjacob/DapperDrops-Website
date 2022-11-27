@@ -627,7 +627,7 @@ router.post("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
     const {oldBalance, amountPaid, amountRemaining} = req.body;
     let paymentStatus;
 
-    let balanceRemaining = amountRemaining-amountPaid;
+    let balanceRemaining = parseInt(amountRemaining)-parseInt(amountPaid);
 
     //Checks payment status.
     if(balanceRemaining > 0){
@@ -637,10 +637,10 @@ router.post("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
     }
 
     //Checks if amount paid exceeds amount remaining.
-    if (amountPaid > amountRemaining) {
+    if (parseInt(amountPaid) > parseInt(amountRemaining)) {
         res.redirect('/admin/orders/update-payment-' + orderId);
     } else {
-        Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(oldBalance) + parseInt(amountPaid), amountRemaining: balanceRemaining, paymentStatus: paymentStatus }}, function(err, order){
+        Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(oldBalance) + parseInt(amountPaid), amountRemaining: parseInt(balanceRemaining), paymentStatus: paymentStatus }}, function(err, order){
             if(err){
                 console.log(err);
             } else {

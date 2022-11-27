@@ -183,6 +183,7 @@ router.get("/", isAuth, isAdmin, async function(req, res){
     //Chart #2
     let data2 = [];
     const result2 = await Product.aggregate([
+        { $match: { category: { $ne: 'Pre-Order' } } },
         { $group: { 
             _id: {
                 productId: "$_id",

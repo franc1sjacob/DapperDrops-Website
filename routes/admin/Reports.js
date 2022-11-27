@@ -264,6 +264,7 @@ router.get('/inventory-performance-quantity-sortByBrand', isAuth, isAdmin, async
 router.get('/inventory-stock-level', isAuth, isAdmin, async function(req ,res){
     let data = [];
     const result = await Product.aggregate([
+        { $match: { category: { $ne: 'Pre-Order' } } },
         { $group: { 
             _id: {
                 productId: "$_id",

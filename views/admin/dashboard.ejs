@@ -157,7 +157,7 @@ const myChart = new Chart(document.getElementById('myChart'),config
 let filename2 = '../../charts/inventory-stock-level.csv';
 
 d3.csv(filename2).then(function(datapoints){
-    const name = [];
+        const name = [];
         const quantityRemaining = [];
 
         datapoints.forEach(data => {
@@ -243,6 +243,9 @@ d3.csv(filename2).then(function(datapoints){
         scales: {
             y: {
                 beginAtZero: true
+            },
+            x: {
+                display: false
             }
         }
     },

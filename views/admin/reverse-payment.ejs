@@ -1,12 +1,12 @@
 <%- include('../innerPartials/admin/header', {name: fullName}); %>
 <div class="container">
-    <form action="/admin/orders/update-payment-<%= order._id %>" method="post">
-        <h1 class="fw-bold text-center mt-2 mb-3">Update Payment</h1>
+    <form action="/admin/orders/reverse-payment-<%= order._id %>" method="post">
+        <h1 class="fw-bold text-center mt-2 mb-3">Reverse Payment</h1>
         
         <div class="mb-3">
-            <label for="amountPaid" class="form-label">Amount Paid:</label>
+            <label for="amountReturned" class="form-label">Amount Returned:</label>
             <input type="hidden" name="oldBalance" value="<%= order.amountPaid %>">
-            <input type="number" class="form-control" id="amountPaid" name="amountPaid" min="0" required>
+            <input type="number" class="form-control" id="amountReturned" name="amountReturned" min="0" required>
         </div>
 
         <div class="mb-3">

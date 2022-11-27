@@ -10,6 +10,7 @@ const Product = require("../../models/productModel");
 const Cart = require("../../models/cartModel");
 const Order = require("../../models/orderModel");
 const Sale = require("../../models/salesModel");
+const { parseConnectionUrl } = require('nodemailer/lib/shared');
 
 const isAuth = function(req, res, next){
     if(req.session.isAuth){
@@ -98,9 +99,6 @@ router.get("/", isAuth, isAdmin, async function(req, res){
         items = cart.generateArray();
         itemsArr.push(items);
     }
-        
-
-    console.log(itemsArr);
     res.render('admin/orders/orders', {orders: orders, items: itemsArr, fullName: req.session.firstName + " " + req.session.lastName});
 });
 
@@ -608,7 +606,7 @@ router.get("/view-order-:orderId", isAuth, isAdmin, function(req, res){
     });
 });
 
-router.get("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
+router.get("/add-payment-:orderId", isAuth, isAdmin, function(req, res){
     const orderId = req.params.orderId;
     
     Order.findById({ _id: orderId }, function(err, order){
@@ -617,12 +615,26 @@ router.get("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
         } else {
             cart = new Cart(order.cart);
             order.items = cart.generateArray();
-            res.render('admin/update-payment', { order: order , fullName: req.session.firstName + " " + req.session.lastName });
+            res.render('admin/add-payment', { order: order , fullName: req.session.firstName + " " + req.session.lastName });
         }
     });
 });
 
-router.post("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
+router.get("/reverse-payment-:orderId", isAuth, isAdmin, function(req, res){
+    const orderId = req.params.orderId;
+    
+    Order.findById({ _id: orderId }, function(err, order){
+        if(err){
+            console.log(err);
+        } else {
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+            res.render('admin/reverse-payment', { order: order , fullName: req.session.firstName + " " + req.session.lastName });
+        }
+    });
+});
+
+router.post("/add-payment-:orderId", isAuth, isAdmin, function(req, res){
     const orderId = req.params.orderId;
     const {oldBalance, amountPaid, amountRemaining} = req.body;
     let paymentStatus;
@@ -638,9 +650,39 @@ router.post("/update-payment-:orderId", isAuth, isAdmin, function(req, res){
 
     //Checks if amount paid exceeds amount remaining.
     if (parseInt(amountPaid) > parseInt(amountRemaining)) {
-        res.redirect('/admin/orders/update-payment-' + orderId);
+        res.redirect('/admin/orders/add-payment-' + orderId);
     } else {
         Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(oldBalance) + parseInt(amountPaid), amountRemaining: parseInt(balanceRemaining), paymentStatus: paymentStatus }}, function(err, order){
+            if(err){
+                console.log(err);
+            } else {
+                res.redirect('/admin/orders');
+            }
+        });
+    }
+});
+
+
+router.post("/reverse-payment-:orderId", isAuth, isAdmin, function(req, res){
+    const orderId = req.params.orderId;
+    const {oldBalance, amountReturned, amountRemaining} = req.body;
+    let paymentStatus;
+
+    let balanceRemaining = parseInt(amountRemaining)+parseInt(amountReturned);
+
+    
+    //Checks payment status.
+    if(balanceRemaining > 0){
+        paymentStatus = "Partially Paid";
+    } else if (balanceRemaining == 0) {
+        paymentStatus = "Fully Paid";
+    }
+
+    //Checks if amount returned exceeds amount remaining.
+    if (parseInt(amountReturned) > parseInt(amountRemaining) || parseInt(updatedPayment) < 0) {
+        res.redirect('/admin/orders/reverse-payment-' + orderId);
+    } else {
+        Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(updatedPayment), amountRemaining: parseInt(balanceRemaining), paymentStatus: paymentStatus }}, function(err, order){
             if(err){
                 console.log(err);
             } else {

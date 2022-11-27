@@ -678,6 +678,8 @@ router.post("/reverse-payment-:orderId", isAuth, isAdmin, function(req, res){
         paymentStatus = "Fully Paid";
     }
 
+    let updatedPayment = parseInt(oldBalance) - parseInt(amountReturned);
+
     //Checks if amount returned exceeds amount remaining.
     if (parseInt(amountReturned) > parseInt(amountRemaining) || parseInt(updatedPayment) < 0) {
         res.redirect('/admin/orders/reverse-payment-' + orderId);

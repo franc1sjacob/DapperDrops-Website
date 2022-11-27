@@ -681,7 +681,7 @@ router.post("/reverse-payment-:orderId", isAuth, isAdmin, function(req, res){
     let updatedPayment = parseInt(oldBalance) - parseInt(amountReturned);
 
     //Checks if amount returned exceeds amount remaining.
-    if (parseInt(amountReturned) > parseInt(amountRemaining) || parseInt(updatedPayment) < 0) {
+    if (parseInt(updatedPayment) < 0) {
         res.redirect('/admin/orders/reverse-payment-' + orderId);
     } else {
         Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(updatedPayment), amountRemaining: parseInt(balanceRemaining), paymentStatus: paymentStatus }}, function(err, order){

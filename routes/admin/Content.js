@@ -234,7 +234,6 @@ router.post('/delete-faq/:faqId', isAuth, isAdmin, function(req, res){
         if(err) {
             console.log(err);
         } else {
-            var image = result.payment.find(item => item._id == paymentId);
             res.redirect('/admin/content/view-faqs');
         }
     });

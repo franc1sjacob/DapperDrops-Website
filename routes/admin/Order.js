@@ -338,10 +338,10 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                         status = "In-Stock";
                     }else if(addedValues[i] <= 5 && addedValues[i] >=1){
                         status = "Few-Stocks";
-                        sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], originalQuantity[i] - quantity[i], status);
+                        sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], addedValues[i], status);
                     }else{
                         status = "Out-of-Stock";
-                        sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], originalQuantity[i] - quantity[i], status);
+                        sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], addedValues[i], status);
                     }
     
                     const conditions = {

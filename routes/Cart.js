@@ -10,6 +10,7 @@ const Content = require("../models/contentModel");
 const { ObjectID } = require('bson');
 
 const isAuth = async function(req, res, next){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     if(req.session.isAuth){
         next();

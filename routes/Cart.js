@@ -31,6 +31,7 @@ router.get("/view-cart", async function(req, res){
 });
 
 router.post("/add-to-cart", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     const { prodId, variation, quantity} = req.body;
@@ -62,6 +63,7 @@ router.post("/add-to-cart", async function(req, res){
 });
 
 router.post("/reduce-one", function(req, res){
+    const isAdmin = req.session.isAdmin;
     const { prodId, variation } = req.body;
     const cart = new Cart(req.session.cart ? req.session.cart : {});
 
@@ -71,6 +73,7 @@ router.post("/reduce-one", function(req, res){
 }); 
 
 router.post("/add-one", function(req, res){
+    const isAdmin = req.session.isAdmin;
     const { prodId, variation } = req.body;
     const cart = new Cart(req.session.cart ? req.session.cart : {});
 
@@ -81,6 +84,7 @@ router.post("/add-one", function(req, res){
 
 
 router.post("/remove-item/:id/:variation", function(req, res){
+    const isAdmin = req.session.isAdmin;
     const prodId = req.params.id;
     const variation = req.params.variation;
     const cart = new Cart(req.session.cart ? req.session.cart : {});
@@ -167,6 +171,7 @@ router.get("/checkout", isAuth, async function(req, res){
 });
 
 router.post("/place-order", isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const orderId = new mongoose.Types.ObjectId();
     const { paymentMethod, termsCheckbox } = req.body;
@@ -209,6 +214,7 @@ router.post("/place-order", isAuth, async function(req, res){
 });
 
 router.post('/add-new-address', isAuth, function(req, res){
+    const isAdmin = req.session.isAdmin;
     const userId = req.session.userId;
     const addressId = new mongoose.Types.ObjectId();
     const { firstName, lastName, addressLine, region, city, postalCode, barangay, phoneNumber, email, paymentMethod } = req.body;
@@ -244,6 +250,7 @@ router.post('/add-new-address', isAuth, function(req, res){
 });
 
 router.post('/add-default-address', isAuth, function(req, res){
+    const isAdmin = req.session.isAdmin;
     const userId = req.session.userId;
     const addressId = new mongoose.Types.ObjectId();
     const { firstName, lastName, addressLine, region, city, postalCode, barangay, phoneNumber, email, paymentMethod } = req.body;

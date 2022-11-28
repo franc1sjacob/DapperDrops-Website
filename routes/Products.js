@@ -115,6 +115,7 @@ router.get("/item/:productId", async function(req, res){
 
 
 router.post('/add-to-wishlist', isAuth, function(req, res){
+    const isAdmin = req.session.isAdmin;
     userId = req.session.userId;
     const { prodId } = req.body;
 

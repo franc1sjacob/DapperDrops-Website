@@ -246,6 +246,7 @@ const sendVerifyMail = async function(name, email, user_id){
 }
 
 router.get("/verify", function(req, res){
+    const isAdmin = req.session.isAdmin;
     User.findByIdAndUpdate({ _id: req.query.id}, { $set:{ isVerified: true } }, function(err, user){
         if(err){
             console.log(err);
@@ -268,6 +269,7 @@ router.get("/forgot", async function(req, res){
 });
 
 router.post("/forgot", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const { email } = req.body;
     User.findOne({email: email}, function(err, user){
@@ -360,6 +362,7 @@ router.get("/forget-password", async function(req, res){
 });
 
 router.post("/forget-password", async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const { password, userId } = req.body;
 
@@ -384,6 +387,7 @@ router.get('/address', isAuth, async function(req, res){
 });
 
 router.post('/address', isAuth, function(req, res){
+    const isAdmin = req.session.isAdmin;
     const userId = req.session.userId;
     const addressId = new mongoose.Types.ObjectId();
     const { firstName, lastName, addressLine, region, city, postalCode, barangay, phoneNumber, email } = req.body;
@@ -420,6 +424,7 @@ router.post('/address', isAuth, function(req, res){
 });
 
 router.post('/setDefaultAddress/:addressId&:firstName&:lastName&:addressLine&:region&:city&:postalCode&:barangay&:phoneNumber&:email', isAuth, function(req, res){
+    const isAdmin = req.session.isAdmin;
     const { addressId, firstName, lastName, addressLine, region, city, postalCode, barangay, phoneNumber, email } = req.params;
     const newDefaultAddress = {
         _id: addressId,
@@ -444,6 +449,7 @@ router.post('/setDefaultAddress/:addressId&:firstName&:lastName&:addressLine&:re
 })
 
 router.post('/deleteAddress/:addressId', isAuth, function(req, res){
+    const isAdmin = req.session.isAdmin;
     const userId = req.session.userId;
     const addressId = req.params.addressId;
 
@@ -508,6 +514,7 @@ router.get('/wishlist', isAuth, async function(req, res){
 });
 
 router.post('/delete-wishlist', isAuth, function(req, res){
+    const isAdmin = req.session.isAdmin;
     const userId = req.session.userId;
     const wishlistId = req.body.wishlistId
     Wishlist.findOneAndUpdate({ userId: userId },
@@ -584,6 +591,7 @@ router.get('/change-password', isAuth, async function(req, res){
 });
 
 router.post('/change-password', isAuth, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     const { oldPassword, newPassword, confirmPassword } = req.body;
@@ -626,6 +634,7 @@ router.get("/send-payment-proof/:orderId", isAuth, async function(req, res){
 });
 
 router.post("/send-payment-proof/:orderId", isAuth, upload, async function(req, res){
+    const isAdmin = req.session.isAdmin;
     const {description} = req.body;
     const orderId = req.params.orderId;
     const result = await cloudinary.uploader.upload(req.file.path,{
@@ -680,6 +689,7 @@ router.get('/send-feedback-:orderId-:status', isAuth, async function(req, res){
 });
 
 router.post('/send-feedback-:orderId', isAuth, function(req, res){
+    const isAdmin = req.session.isAdmin;
     const orderId = req.params.orderId;
     const { feedbackMessage, feedbackRate } = req.body;
     Order.findByIdAndUpdate({_id: orderId}, { $set: { feedbackMessage: feedbackMessage, feedbackRate: feedbackRate }}, function(err, order){
@@ -694,6 +704,7 @@ router.post('/send-feedback-:orderId', isAuth, function(req, res){
 });
 
 router.post('/cancel-customer/:orderId', isAuth, function(req, res){
+    const isAdmin = req.session.isAdmin;
     const orderId = req.params.orderId;
     Order.findByIdAndUpdate({_id: orderId}, {$set : {orderStatus: "Cancelled by Customer"}}, function(err, order){
         if(err) {

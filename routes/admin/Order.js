@@ -108,7 +108,7 @@ router.get('/status-:orderStatus', async function(req, res){
     const { stype, sdir } = req.query;
     let orders;
 
-    if(orderStatus == "Pending" || orderStatus == "Confirmed" || orderStatus == "Completed" || orderStatus == "Declined" || orderStatus == "Refunded" || orderStatus == "Cancelled") {
+    if(orderStatus == "Pending" || orderStatus == "Confirmed" || orderStatus == "Completed" || orderStatus == "Declined" || orderStatus == "Refunded" || orderStatus == "Cancelled" || orderStatus == "Cancelled by Customer") {
         orders = await Order.find({ orderStatus: orderStatus }).sort({ [stype] : sdir });
     } else {
         res.redirect('/admin/orders/orders');

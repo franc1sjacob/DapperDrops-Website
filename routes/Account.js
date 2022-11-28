@@ -326,7 +326,7 @@ const sendResetPasswordMail = async function(name, email, token){
             },
             to: email,
             subject: "Password Reset",
-            template: 'email-templates/forgot-password',
+            template: 'email-templates/forgotpassword',
             context: {
                 name: name,
                 token: token

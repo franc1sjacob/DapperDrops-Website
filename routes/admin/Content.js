@@ -279,7 +279,7 @@ router.post('/delete-payment-details/:paymentId', isAuth, isAdmin, function(req,
             console.log(err);
         } else {
             var image = result.payment.find(item => item._id == paymentId);
-            fs.unlinkSync('public/images/content/payment/' + image.qrCodeImage)
+            fs.unlinkSync('public/images/content/payment/' + image.qrCodeImage.url)
             res.redirect('/admin/content/view-payment-details');
         }
     });

@@ -15,9 +15,9 @@
                 <% brands.forEach(function(brand){ %>
                   <li>
                     <% if(!stype || !sdir) { %>
-                      <a class="dropdown-item" href="/products/onhand?ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
+                      <a class="dropdown-item" href="/products/<%=c%>?ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
                     <% } else { %>
-                      <a class="dropdown-item" href="/products/onhand?stype=<%= stype %>&sdir=<%= sdir %>&ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
+                      <a class="dropdown-item" href="/products/<%=c%>?stype=<%= stype %>&sdir=<%= sdir %>&ftype=brand&fvalue=<%= brand._id.brand %>"><%= brand._id.brand %></a>
                     <% } %>
                   </li>
                 <% }); %>
@@ -33,7 +33,7 @@
                   <li>
                     <a class="dropdown-item" href="/products/<%=c%>?stype=totalQuantitySold&sdir=-1">Best Sellers</a>
                   </li>
-                  <li>c
+                  <li>
                     <a class="dropdown-item" href="/products/<%=c%>?stype=name&sdir=1">A - Z</a>
                   </li>
                   <li>

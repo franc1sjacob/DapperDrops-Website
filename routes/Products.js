@@ -46,7 +46,7 @@ router.get('/search', async function(req, res) {
 router.get("/:category", async function(req, res){
     const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    let products, c;
+    let products, c, brands;
     let category = req.params.category;
 
     if(category == 'onhand'){
@@ -77,7 +77,8 @@ router.get("/:category", async function(req, res){
 
     console.log('category!', category);
 
-    const brands = await Product.aggregate([
+    brands = await Product.aggregate([
+        { $match: { category: category } },
         { $group: {
             _id: {
                 brand: "$brand"

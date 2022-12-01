@@ -31,47 +31,47 @@
               <ul class="dropdown-menu">
                 <% if(!ftype || !fvalue){ %>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?stype=totalQuantitySold&sdir=-1">Best Sellers</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?stype=totalQuantitySold&sdir=-1">Best Sellers</a>
+                  </li>
+                  <li>c
+                    <a class="dropdown-item" href="/products/<%=c%>?stype=name&sdir=1">A - Z</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?stype=name&sdir=1">A - Z</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?stype=name&sdir=1">Z - A</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?stype=name&sdir=1">Z - A</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?stype=price&sdir=1">Price Low to High</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?stype=price&sdir=1">Price Low to High</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?stype=price&sdir=-1">Price High to Low</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?stype=price&sdir=-1">Price High to Low</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?stype=price&sdir=1">Oldest</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?stype=price&sdir=1">Oldest</a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="/products/onhand?stype=price&sdir=-1">Newest</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?stype=price&sdir=-1">Newest</a>
                   </li>
                 <% } else { %>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=totalQuantitySold&sdir=1">Best Sellers</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=totalQuantitySold&sdir=1">Best Sellers</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=1">A - Z</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=1">A - Z</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=-1">Z - A</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=name&sdir=-1">Z - A</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=1">Price Low to High</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=1">Price Low to High</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=-1">Price High to Low</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=price&sdir=-1">Price High to Low</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=1">Oldest</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=1">Oldest</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="/products/onhand?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=-1">Newest</a>
+                    <a class="dropdown-item" href="/products/<%=c%>?ftype=<%= ftype %>&fvalue=<%= fvalue %>&stype=dateCreated&sdir=-1">Newest</a>
                 <% } %>
               </ul>
             </div>

@@ -46,17 +46,21 @@ router.get('/search', async function(req, res) {
 router.get("/:category", async function(req, res){
     const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
-    let products;
+    let products, c;
     let category = req.params.category;
 
     if(category == 'onhand'){
         category = 'On-Hand';
+        c = 'onhand';
     } else if (category == 'preorder') {
         category = 'Pre-Order';
+        c = 'preorder';
     } else if (category == 'accessories') {
         category = 'Accessories';
+        c = 'accessories';
     } else if (category == 'apparel') {
         category ='Apparel';
+        c = 'apparel';
     } else {
         res.redirect('/')
     }
@@ -71,7 +75,7 @@ router.get("/:category", async function(req, res){
         products = await Product.find({ category: category, [ftype]: fvalue }).sort({ [stype]: sdir });
     }
 
-    console.log(products);
+    console.log('category!', category);
 
     const brands = await Product.aggregate([
         { $group: {
@@ -81,8 +85,6 @@ router.get("/:category", async function(req, res){
         } }
     ]).sort({ "_id.brand": 1 });
 
-    console.log(brands)
-
     res.render("view-products", {
         products: products,
         brands: brands,
@@ -91,6 +93,7 @@ router.get("/:category", async function(req, res){
         ftype: ftype,
         fvalue: fvalue,
         category: category,
+        c: c,
         content: content,
         isAdmin: isAdmin
     });

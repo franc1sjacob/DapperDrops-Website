@@ -59,6 +59,12 @@ app.use(session({
     store: store
 }));
 
+app.use((req, res, next) => {
+    res.locals.message = req.session.message;
+    delete req.session.message;
+    next();
+});
+
 //EXPORT ROUTES
 const productRoute = require("./routes/Products");
 app.use("/products", productRoute);

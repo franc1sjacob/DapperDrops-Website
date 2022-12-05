@@ -326,8 +326,12 @@ router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
             }
         }
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'})
         } else {
+            req.session.message = {
+                type:'success',
+                message:'Product deleted successfully!'
+            }      
             res.redirect('/admin/inventory')
         }
     
@@ -385,9 +389,13 @@ router.post("/:productId/add-new-variation-inventory", isAuth, isAdmin, function
     Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
         variations: [variation],
     }}, function(err, product){
-            if(err){
-                console.log(err);
-            } else {           
+        if(err){
+            res.json({message: err.message, type: 'danger'})
+        } else {           
+            req.session.message = {
+                type:'success',
+                message:'Product variation added successfully!'
+            }             
                res.redirect("/admin/inventory/"+productId+"/inventoryview")
             }
         });
@@ -413,9 +421,13 @@ router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, functi
 
 	Product.findOneAndUpdate(conditions, update, function(err){
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'});
         }
         else{
+            req.session.message = {
+                type:'success',
+                message:'Product variation updated successfully!'
+            }    
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
         }
     });
@@ -475,9 +487,13 @@ router.post("/add-quantity-variation-inventory/:variationId-:productId", isAuth,
 
 	Product.findOneAndUpdate(conditions, update, function(err){
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'});
         }
         else{
+            req.session.message = {
+                type:'success',
+                message:'Product quantity added successfully!'
+            }    
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
         }
     });
@@ -542,9 +558,13 @@ router.post("/minus-quantity-variation-inventory/:variationId-:productId", isAut
 
 	Product.findOneAndUpdate(conditions, update, function(err){
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'});
         }
         else{
+            req.session.message = {
+                type:'success',
+                message:'Product quantity subtracted successfully!'
+            }    
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
         }
     });
@@ -574,9 +594,13 @@ router.get("/delete-variation/:variationId-:productId", isAuth, isAdmin, functio
 
 	Product.updateOne(conditions, remove, function(err){
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'});
         }
         else{
+            req.session.message = {
+                type:'success',
+                message:'Product variation deleted successfully!'
+            }      
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
         }
     });

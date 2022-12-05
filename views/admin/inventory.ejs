@@ -1,6 +1,12 @@
 <%- include('../partials/admin/header', {name: fullName}); %>
 <div class="container">
     <h1 class="fw-bold text-center mt-2 mb-3">Inventory</h1> 
+    <% if(message) { %>
+        <div class="alert alert-dismissable fade show alert-<%= message.type %>" role="alert">
+            <strong><%= message.message %></strong>
+            <button class="btn-close float-end" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% } %> 
     <nav class="navbar p-0 mb-3">
         <div class="btn-group ms-auto">
             <div class="ms-1">
@@ -126,7 +132,7 @@
                                     <li><hr class="dropdown-divider"></li>
                                     <a class ="dropdown-item" href="/admin/inventory/<%= inventory._id %>/delete" >Delete Product</a>
                                     <li><hr class="dropdown-divider"></li>
-                                    <a class ="dropdown-item" href="/admin/inventory/<%= inventory._id %>/add-new-variation" >Add Variation</a>                        
+                                    <a class ="dropdown-item" href="/admin/inventory/<%= inventory._id %>/add-new-variation-inventory" >Add Variation</a>                        
                             </ul>
                             </td>
                         </ul>

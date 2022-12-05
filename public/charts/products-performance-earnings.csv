@@ -1,2 +1,6 @@
 "productId","brand","name","price","category","totalEarnings","totalQuantitySold"
-"637e21940e802f34f61675e3","Nike","Air Jordan 1 Chicago",9895,"On-Hand",0,0
+"638dfb9b18fbae5399700e75","Nike","test",211,"On-Hand",0,0
+"638dfbda18fbae5399700e8d","Adidas","Shirt",3000,"Apparel",0,0
+"638dfbff18fbae5399700e95","Puma","accessory",1000,"Accessories",0,0
+"638dfc8218fbae5399700f03","Nike","Kyrie",6900,"Pre-Order",0,0
+"638d959198d62b6dec708654","Nike","Lebron James",4500,"On-Hand",27000,6

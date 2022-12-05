@@ -305,11 +305,11 @@ router.get('/search-inventory', async function(req, res){
         fullName: req.session.firstName + " " + req.session.lastName})
 });
 
-router.get("/:productId/view", isAuth, isAdmin, upload, function(req, res){
+router.get("/:productId/inventoryview", isAuth, isAdmin, upload, function(req, res){
     const productId = req.params.productId;
 
     Product.findOne({ _id:productId }, function(err, allProducts){
-        res.render('admin/view-product', { newListProducts:allProducts,
+        res.render('admin/view-inventoryProducts', { newListProducts:allProducts,
             fullName: req.session.firstName + " " + req.session.lastName
         });
     })
@@ -347,23 +347,23 @@ router.get("/update-variation/:variationId-:productId", isAuth, isAdmin, upload,
             const variation = product.variations.find(obj => obj.id === variationId);
             console.log(variation);
             
-            res.render('admin/update-variation', {fullName: req.session.firstName + " " + req.session.lastName, product: product, variation: variation});
+            res.render('admin/update-variation-inventory', {fullName: req.session.firstName + " " + req.session.lastName, product: product, variation: variation});
         }
     });     
 });
 
-router.get("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
+router.get("/:productId/add-new-variation-inventory", isAuth, isAdmin, function(req, res){
     const productId = req.params.productId;
     console.log(productId);
     Product.findOne({ _id:productId }, function(err, product){
-        res.render('admin/add-new-variation', {
+        res.render('admin/add-new-variation-inventory', {
             fullName: req.session.firstName + " " + req.session.lastName,
              product:product
         });
     })
 });
 
-router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
+router.post("/:productId/add-new-variation-inventory", isAuth, isAdmin, function(req, res){
     const {productId, name, quantity} = req.body;
     let status="";
     console.log(req.body);
@@ -388,11 +388,197 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
             if(err){
                 console.log(err);
             } else {           
-               res.redirect("/admin/inventory/"+productId+"/view")
+               res.redirect("/admin/inventory/"+productId+"/inventoryview")
             }
         });
    
    
 });
 
+router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    const { variationName } = req.body;
+
+    const conditions = {
+        _id: productId,
+        'variations._id': {$eq: variationId}
+    };
+
+    const update = {
+        $set:{
+            'variations.$.name': variationName,
+        }
+    }
+
+	Product.findOneAndUpdate(conditions, update, function(err){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.redirect("/admin/inventory/"+productId+"/inventoryview");
+        }
+    });
+});
+router.get("/add-quantity-variation-inventory/:variationId-:productId", isAuth, isAdmin, upload, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    console.log(variationId);
+    
+
+    Product.findById({_id: productId}, function(err, product){
+        if(err){
+            console.log(err);
+        }
+        else{
+            const variation = product.variations.find(obj => obj.id === variationId);
+            console.log(variation);
+            
+            res.render('admin/add-quantity-variation-inventory', {fullName: req.session.firstName + " " + req.session.lastName, product: product, variation: variation});
+        }
+    });     
+});
+
+router.post("/add-quantity-variation-inventory/:variationId-:productId", isAuth, isAdmin, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    const { variationQuantity, origVariationQuantity } = req.body;
+    console.log(variationId);
+    let status="";
+    
+    if(variationQuantity + origVariationQuantity >= 6){
+        status = "In-Stock";
+    }
+    else if(variationQuantity + origVariationQuantity <= 5 && variationQuantity + origVariationQuantity >=1){
+        status = "Few-Stocks";
+    }
+    else if(variationQuantity + origVariationQuantity == 0){
+        status = "Out-of-Stock";
+    }
+
+    const conditions = {
+        _id: productId,
+        'variations._id': {$eq: variationId}
+    };
+
+    const update = {
+        $inc: {
+            // 'variations.$.name': variationName,
+            'variations.$.quantity': variationQuantity,
+            'variations.$.stockAcquired': variationQuantity,
+            // 'variations.$.status': status
+        },
+        $set: {
+            'variations.$.status': status
+        }
+    }
+
+	Product.findOneAndUpdate(conditions, update, function(err){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.redirect("/admin/inventory/"+productId+"/inventoryview");
+        }
+    });
+});
+//NEWWWWWWWWWWWWWWWWWWWWWWWWWW
+
+//NEWWWWWWWWWWWWWWWWWWWWW MINUS
+router.get("/minus-quantity-variation-inventory/:variationId-:productId", isAuth, isAdmin, upload, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    console.log(variationId);
+    
+
+    Product.findById({_id: productId}, function(err, product){
+        if(err){
+            console.log(err);
+        }
+        else{
+            const variation = product.variations.find(obj => obj.id === variationId);
+            console.log(variation);
+            
+            res.render('admin/minus-quantity-variation-inventory', {fullName: req.session.firstName + " " + req.session.lastName, product: product, variation: variation});
+        }
+    });     
+});
+
+router.post("/minus-quantity-variation-inventory/:variationId-:productId", isAuth, isAdmin, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    const { variationQuantity, origVariationQuantity } = req.body;
+    console.log(variationId);
+    let status="";
+    
+    if(origVariationQuantity - variationQuantity >= 6){
+        status = "In-Stock";
+    }
+    else if(origVariationQuantity - variationQuantity <= 5 && origVariationQuantity - variationQuantity >=1){
+        status = "Few-Stocks";
+    }
+    else if(origVariationQuantity - variationQuantity == 0){
+        status = "Out-of-Stock";
+    }
+
+    console.log(status)
+
+    const conditions = {
+        _id: productId,
+        'variations._id': {$eq: variationId}
+    };
+
+    const update = {
+        $inc: {
+            // 'variations.$.name': variationName,
+            'variations.$.quantity': -variationQuantity,
+            'variations.$.stockAcquired': -variationQuantity,
+            // 'variations.$.status': status
+        },
+        $set: {
+            'variations.$.status': status
+        }
+    }
+
+	Product.findOneAndUpdate(conditions, update, function(err){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.redirect("/admin/inventory/"+productId+"/inventoryview");
+        }
+    });
+});
+//NEWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+
+router.get("/delete-variation/:variationId-:productId", isAuth, isAdmin, function(req, res){
+    const variationId = req.params.variationId;
+    const productId = req.params.productId;
+    console.log(variationId);
+    let status="";
+    const {variationName, variationQuantity} = req.body;
+
+    const conditions = {
+        _id: productId,
+        // 'variations._id': {$eq: variationId}
+    };
+
+    const remove = {
+        $pull: { 
+            variations: {
+                _id: { $in: variationId}
+            } 
+            
+          }
+    }
+
+	Product.updateOne(conditions, remove, function(err){
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.redirect("/admin/inventory/"+productId+"/inventoryview");
+        }
+    });
+});
 module.exports = router;

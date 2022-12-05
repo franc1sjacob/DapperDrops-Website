@@ -1,0 +1,53 @@
+<%- include('../innerPartialsv2/admin/header', {name: fullName}); %>
+     <div class="container">
+        <h1 class="text-center mt-2 mb-3">View Product</h1> 
+        <a href="/admin/inventory" class="text-body"><i class="fas fa-long-arrow-alt-left me-2 mb-3"></i>Back to inventory</a></h6>
+        <div class="card shadow p-3 bg-body rounded">
+            <div class="row">
+                <div class="col-lg-6">
+                    <img src="<%=  newListProducts.image.url %>" class="rounded w-100 mb-3"  alt=""><br>
+                </div>
+                <div class="col-lg-6">
+                    <p><span class="fw-bold">Brand: </span><%= newListProducts.brand %></p>
+                    <p><span class="fw-bold">Name: </span> <%= newListProducts.name %></p>
+                    <p><span class="fw-bold">Price: </span> ₱<%=  new Intl.NumberFormat().format(newListProducts.price) %>.00</p>
+                    <p><span class="fw-bold">Category: </span> <%= newListProducts.category%></p>
+                    <p><span class="fw-bold">Description: </span> <%= newListProducts.description %></p>
+                    <div class="table table-responsive">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Size</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            <%newListProducts.variations.forEach(function(variation){%>
+                                <tr>
+                                    <td><%= variation.name %></td>
+                                    <td><%= variation.quantity %></td>
+                                    <td>
+                                        <% if(variation.status == 'In-Stock'){ %>
+                                            <span class="badge rounded-pill text-bg-success"><%= variation.status %></span>
+                                        <% } else if (variation.status == 'Few-Stocks') { %>
+                                            <span class="badge rounded-pill text-bg-warning"><%= variation.status %></span>
+                                        <% } else if (variation.status == 'Out-of-Stock') { %>
+                                            <span class="badge rounded-pill text-bg-danger"><%= variation.status %></span>
+                                        <% } else { %>
+                                            <span class="badge rounded-pill text-bg-danger">ERROR</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-success" href="/admin/inventory/add-quantity-variation-inventory/<%= variation._id%>-<%= newListProducts._id%>"><i class="fa-solid fa-plus"></i></a>
+                                        <a class="btn btn-sm btn-secondary" href="/admin/inventory/minus-quantity-variation-inventory/<%= variation._id%>-<%= newListProducts._id%>"><i class="fa-solid fa-minus"></i></a>     
+                                        <a class="btn btn-sm btn-primary" href="/admin/inventory/update-variation/<%= variation._id%>-<%= newListProducts._id%>"><i class="fa-solid fa-pen-to-square"></i></a> 
+                                        <a class="btn btn-sm btn-danger" href="/admin/inventory/delete-variation/<%= variation._id%>-<%= newListProducts._id%>" ><i class="fa-solid fa-trash-can"></i></a>
+                                    </td>
+                                </tr>
+                            <%})%>
+                        </table>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+<%- include('../innerPartialsv2/admin/footer'); %>

@@ -205,14 +205,20 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
             };  
 
             if(errorCount > 0){
-                console.log("Order must be declined as an item or variation in order was removed or changed by admin.")
-                res.redirect('/admin/orders');
+                req.session.message = {
+                    type: "danger",
+                    message: "Order for Order ID: " + orderId + ", must be declined as an item or variation in order was removed or changed by admin."
+                };
+                res.redirect('/admin/orders'); 
             } else{
-                console.log(minusedValues);
                 let hasNegative = minusedValues.some(v => v < 0);
                 let status = "";
                 if(hasNegative){
-                    res.redirect('/admin/orders');    
+                    req.session.message = {
+                        type: "danger",
+                        message: "Order for Order ID: " + orderId + ", could not proceed to confirmation as an item had negative values when it was changed to confirm."
+                    };
+                    res.redirect('/admin/orders'); 
                 } else{
                     Order.findByIdAndUpdate(orderId, {$set : {orderStatus: "Confirmed"}}, function(err, order){});
                     for(let i = 0; i < itemsLength; i++){
@@ -242,6 +248,11 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 
                         Product.findOneAndUpdate(conditions, update, function(err){});
                     };
+
+                    req.session.message = {
+                        type: "success",
+                        message: "Order for Order ID: " + orderId + ", was successfully Confirmed."
+                    }; 
                     res.redirect('/admin/orders');
                 }
             }
@@ -327,7 +338,10 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
             };
 
             if(errorCount > 0){
-                console.log("Order must be declined as an item or variation in order was removed or changed by admin.")
+                req.session.message = {
+                    type: "danger",
+                    message: "Order for Order ID: " + orderId + ", must be declined as an item or variation in order was removed or changed by admin."
+                };
                 res.redirect('/admin/orders');
             } else{
                 let status = "";
@@ -357,6 +371,11 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                     };
                     Product.findOneAndUpdate(conditions, update, function(err){});
                 };
+
+                req.session.message = {
+                    type: "success",
+                    message: "Order for Order ID: " + orderId + ", was successfully Cancelled."
+                }; 
                 res.redirect('/admin/orders');
             }
         }
@@ -423,7 +442,10 @@ router.post("/complete-order", isAuth, isAdmin, function(req, res){
             };
 
             if(errorCount > 0){
-                console.log("Order must be declined as an item or variation in order was removed or changed by admin.")
+                req.session.message = {
+                    type: "danger",
+                    message: "Order for Order ID: " + orderId + ", must be declined as an item or variation in order was removed or changed by admin."
+                };
                 res.redirect('/admin/orders');
             } else{
                 Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Completed"}}, async function(err, order){});
@@ -460,6 +482,11 @@ router.post("/complete-order", isAuth, isAdmin, function(req, res){
                         console.log("save success");
                     }
                 });
+
+                req.session.message = {
+                    type: "success",
+                    message: "Order for Order ID: " + orderId + ", was successfully Completed."
+                }; 
                 res.redirect('/admin/orders');
             }
         }
@@ -506,6 +533,14 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
                 earnings.push(cart.price);
             });
 
+            const itemsArr = [];
+            const orders = await Order.find({});
+            for(let i = 0; i < orders.length; i++){
+                cart = new Cart(orders[i].cart);
+                items = cart.generateArray();
+                itemsArr.push(items);
+            };
+
             let errorCount = 0;
             for(let i = 0; i < itemsLength; i++){
                 let j = orderedList[i]; 
@@ -533,7 +568,10 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
             };
             
             if(errorCount > 0){
-                console.log("Order must be declined as an item or variation in order was removed or changed by admin.")
+                req.session.message = {
+                    type: "danger",
+                    message: "Order for Order ID: " + orderId + ", must be declined as an item or variation in order was removed or changed by admin."
+                };
                 res.redirect('/admin/orders');
             } else{
                 let status = "";
@@ -576,6 +614,11 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
                         if(err){ console.log(err) }
                     }); 
                 };
+
+                req.session.message = {
+                    type: "success",
+                    message: "Order for Order ID: " + orderId + ", was successfully Refunded."
+                }; 
                 res.redirect('/admin/orders');
             }
         }
@@ -650,15 +693,20 @@ router.post("/add-payment-:orderId", isAuth, isAdmin, async function(req, res){
 
     //Checks if amount paid exceeds amount remaining.
     if (parseInt(amountPaid) > parseInt(amountRemaining)) {
-        let order = await Order.findById({_id: orderId});
-        cart = new Cart(order.cart);
-        order.items = cart.generateArray();
-        res.render('admin/add-payment', {error: "Oops... the entered amount exceeds the amount due!", order: order, fullName: req.session.firstName + " " + req.session.lastName});
+        req.session.message = {
+            type: "danger",
+            message: "Oops.. the amount entered for Order ID: " + orderId + ", exceeds the amount due."
+        };
+        res.redirect('/admin/orders/add-payment-' + orderId);
     } else {
         Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(oldBalance) + parseInt(amountPaid), amountRemaining: parseInt(balanceRemaining), paymentStatus: paymentStatus }}, function(err, order){
             if(err){
                 console.log(err);
             } else {
+                req.session.message = {
+                    type: "success",
+                    message: "Amount paid for Order ID: " + orderId + ", was successfully Updated."
+                }; 
                 res.redirect('/admin/orders');
             }
         });
@@ -687,15 +735,20 @@ router.post("/reverse-payment-:orderId", isAuth, isAdmin, async function(req, re
 
     //Checks if amount returned exceeds amount remaining.
     if (parseInt(updatedPayment) < 0) {
-        let order = await Order.findById({_id: orderId});
-        cart = new Cart(order.cart);
-        order.items = cart.generateArray();
-        res.render('admin/reverse-payment', {error: "Oops... the entered amount exceeds the amount due!", order:order, fullName: req.session.firstName + " " + req.session.lastName});
+        req.session.message = {
+            type: "danger",
+            message: "Oops.. the amount entered for Order ID: " + orderId + ", exceeds the amount due."
+        };
+        res.redirect('/admin/orders/reverse-payment-' + orderId);
     } else {
         Order.findByIdAndUpdate(orderId, {$set: {amountPaid: parseInt(updatedPayment), amountRemaining: parseInt(balanceRemaining), paymentStatus: paymentStatus }}, function(err, order){
             if(err){
                 console.log(err);
             } else {
+                req.session.message = {
+                    type: "success",
+                    message: "Amount paid for Order ID: " + orderId + ", was successfully Updated."
+                }; 
                 res.redirect('/admin/orders');
             }
         });

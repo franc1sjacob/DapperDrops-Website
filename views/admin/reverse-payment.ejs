@@ -3,9 +3,10 @@
     <form action="/admin/orders/reverse-payment-<%= order._id %>" method="post">
         <h1 class="fw-bold text-center mt-2 mb-3">Reverse Payment</h1>
         
-        <% if(typeof error !== "undefined"){ %>
-            <div class="alert alert-danger d-flex justify-content-center" role="alert">
-                <p><%= error %></p>
+        <% if(message){ %>
+            <div class="alert alert-dismissable fade show alert-<%= message.type %>" role="alert">
+                <strong><%= message.message %></strong>
+                <button class="btn-close ms-3 float-end" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <% } %>
 
@@ -27,7 +28,7 @@
             <input type="hidden" name="amountRemaining" value="<%= order.amountRemaining %>">
         </div>
 
-        <div class="col-lg col-md">
+        <div class="col-lg col-md mb-3">
             <div class="card bg-body rounded">
                 <div class="card-body">
                     <div class="table table-responsive">

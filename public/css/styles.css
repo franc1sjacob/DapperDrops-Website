@@ -45,8 +45,9 @@ body{
 }
 
 .paymentImage {
-    aspect-ratio: 1/1;
     width: 50%;
+    aspect-ratio: 1/1;
+    object-fit: contain;
 }
 
 .card-img-top {

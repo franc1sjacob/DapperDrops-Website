@@ -25,7 +25,7 @@
         </div>
         <div class="mb-3">
             <label for="inputImage" class="form-label">Image:</label>
-            <input type="file" class="form-control" id="inputImage" name="image" value="<%= image %>" >
+            <input type="file" class="form-control" id="inputImage" name="image" accept="image/png, image/jpeg" value="<%= image %>" >
             <img src="<%= image %>" width="100" class="img-thumbnail mt-1">
         </div>
         <input type="hidden" name="productOldImage" value="<%= image %>">

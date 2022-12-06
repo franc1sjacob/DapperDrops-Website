@@ -177,6 +177,7 @@ router.post("/place-order", isAuth, async function(req, res){
     const orderId = new mongoose.Types.ObjectId();
     const { paymentMethod, termsCheckbox } = req.body;
     const userId = req.session.userId;
+    const shippingFee = req.session.shippingFee;
     const cart = new Cart(req.session.cart);
 
     var today = new Date();
@@ -186,6 +187,8 @@ router.post("/place-order", isAuth, async function(req, res){
             if(err){
                 console.log(err);
             } else {
+
+                console.log('tot', cart.totalPrice + shippingFee)
                 const order = new Order({
                     _id: orderId,
                     userId: userId,
@@ -193,7 +196,8 @@ router.post("/place-order", isAuth, async function(req, res){
                     address: result.defaultAddress,
                     paymentMethod: paymentMethod,
                     dateCreated: today,
-                    amountRemaining: cart.totalPrice
+                    shippingFee: shippingFee,
+                    amountRemaining: cart.totalPrice + shippingFee
                 });
             
                 order.save(function(err, result){
@@ -209,7 +213,7 @@ router.post("/place-order", isAuth, async function(req, res){
         });
     } else {
         User.findById({ _id: userId }, function(err, user){
-            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: "Please read and accept the terms and conditions to proceed with your order.", content: content, isAdmin: isAdmin });
+            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, shippingFee: shippingFee, message: "Please read and accept the terms and conditions to proceed with your order.", content: content, isAdmin: isAdmin });
         });
     }
 });
@@ -273,6 +277,7 @@ router.post('/add-default-address', isAuth, function(req, res){
         } else {
             const cart = new Cart(req.session.cart);
             req.session.paymentMethod = paymentMethod;
+            req.session.region = region;
             res.redirect('/cart/checkout-confirmation');
         }
     });
@@ -282,16 +287,24 @@ router.get('/checkout-confirmation', isAuth, async function(req, res){
     const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
-    if(!req.session.cart){
+
+    if(!req.session.cart || !req.session.region){
         res.redirect('/cart/view-cart');
     }
+
+    if(req.session.region == "NCR – National Capital Region") {
+        req.session.shippingFee = 150;
+    } else {
+        req.session.shippingFee = 300;
+    }
+
     User.findById({ _id: userId }, function(err, user){
         if(err){
             console.log(err);
         } else {
             const cart = new Cart(req.session.cart);
            
-            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: null, content: content, isAdmin: isAdmin});
+            res.render('checkout-confirmation', {usercart: cart.generateArray(), cart: cart, user: user, paymentMethod: req.session.paymentMethod, message: null, content: content, shippingFee: req.session.shippingFee, isAdmin: isAdmin});
         }
     })
 });

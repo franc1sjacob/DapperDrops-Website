@@ -19,7 +19,7 @@
                     <td><%= order.dateCreated.toISOString().slice(0, 10) %></td>
                     <td><%= order.orderStatus %></td>
                     <td><%= cart.totalQty %></td>
-                    <td>₱<%= cart.totalPrice %>.00</td>
+                    <td>₱<%= cart.totalPrice + order.shippingFee %>.00</td>
                 </tr>
             </tbody>
         </table>
@@ -96,8 +96,16 @@
                 <%})%>
                 </tr>
                 <tr>
+                    <td colspan="4" class="text-end text-secondary">Subtotal: </td>
+                    <td class="text-secondary">₱<%= cart.totalPrice %>.00</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-end text-secondary">Shipping Fee: </td>
+                    <td class="text-secondary">₱<%= order.shippingFee %>.00</td>
+                </tr>
+                <tr>
                     <td colspan="4" class="text-end fw-bold">Total: </td>
-                    <td class="fw-bold">₱<%= cart.totalPrice %>.00</td>
+                    <td class="fw-bold">₱<%= cart.totalPrice + order.shippingFee %>.00</td>
                 </tr>
             </tbody>
         </table>

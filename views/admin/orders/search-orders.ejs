@@ -77,22 +77,22 @@
                                     <ul class="dropdown-menu">
                                         <form action="/admin/orders/shipping-Pending" method="post">
                                             <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <li><button class="dropdown-item">Pending</button></li>
+                                            <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to mark the Shipping status of this order as Pending?')">Pending</button></li>
                                             <li><hr class="dropdown-divider"></li>
                                         </form>
                                         <form action="/admin/orders/shipping-Processing" method="post">
                                             <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <li><button class="dropdown-item">Processing</button></li>
+                                            <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to mark the Shipping status of this order as Processing?')">Processing</button></li>
                                             <li><hr class="dropdown-divider"></li>
                                         </form>
                                         <form action="/admin/orders/shipping-In-transit" method="post">
                                             <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <li><button class="dropdown-item">In-transit</button></li>
+                                            <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to mark the Shipping status of this order as In-transit?')">In-transit</button></li>
                                             <li><hr class="dropdown-divider"></li>
                                         </form>
                                         <form action="/admin/orders/shipping-Delivered" method="post">
                                             <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <li><button class="dropdown-item">Delivered</button></li>
+                                            <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to mark the Shipping status of this order as Delivered?')">Delivered</button></li>
                                         </form>
                                     </ul>
                                 </div>
@@ -108,58 +108,58 @@
                                                 
                                             <form action="/admin/orders/confirm-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Confirm</button></li>
+                                                <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to Confirm this order?')">Confirm</button></li>
                                                 <li><hr class="dropdown-divider"></li>
                                             </form>
 
                                             <form action="/admin/orders/decline-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Decline</button></li>
+                                                <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to Decline this order?')">Decline</button></li>
                                                 <li><hr class="dropdown-divider"></li>
                                             </form>
 
                                             <form action="/admin/orders/delete-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Delete</button></li>
+                                                <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to Delete this order?')">Delete</button></li>
                                             </form>
 
                                             <% } else if(order.orderStatus === "Confirmed"){%>
 
                                             <form action="/admin/orders/complete-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Complete</button></li>
+                                                <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to Complete this order?')">Complete</button></li>
                                                 <li><hr class="dropdown-divider"></li>
                                             </form>
     
                                             <form action="/admin/orders/cancel-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Cancel</button></li>
+                                                <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to Cancel this order?')">Cancel</button></li>
                                             </form>
 
                                         <% } else if(order.orderStatus === "Completed"){%>    
     
                                             <form action="/admin/orders/refund-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Refund</button></li>
+                                                <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to Refund this order?')">Refund</button></li>
                                                 <li><hr class="dropdown-divider"></li>
                                             </form>
 
                                             <form action="/admin/orders/delete-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Delete</button></li>
+                                                <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to Delete this order?')">Delete</button></li>
                                             </form>
 
                                         <% } else if(order.orderStatus === "Cancelled" || order.orderStatus === "Declined" || order.orderStatus === "Refunded" || order.orderStatus === "Cancelled by Customer"){%>   
 
                                             <form action="/admin/orders/pending-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Pending</button></li>
+                                                <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to mark this order as Pending?')">Pending</button></li>
                                                 <li><hr class="dropdown-divider"></li>
                                             </form>
 
                                             <form action="/admin/orders/delete-order" method="post">
                                                 <input type="hidden" name="orderId" value="<%= order._id %>">
-                                                <li><button class="dropdown-item">Delete</button></li>
+                                                <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to Delete this order?')">Delete</button></li>
                                             </form>
 
                                         <% } %>

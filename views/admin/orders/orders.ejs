@@ -80,22 +80,22 @@
                                     <ul class="dropdown-menu">
                                         <form action="/admin/orders/shipping-Pending" method="post">
                                             <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <li><button class="dropdown-item">Pending</button></li>
+                                            <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to mark the Shipping status of this order as Pending?')">Pending</button></li>
                                             <li><hr class="dropdown-divider"></li>
                                         </form>
                                         <form action="/admin/orders/shipping-Processing" method="post">
                                             <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <li><button class="dropdown-item">Processing</button></li>
+                                            <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to mark the Shipping status of this order as Processing?')">Processing</button></li>
                                             <li><hr class="dropdown-divider"></li>
                                         </form>
                                         <form action="/admin/orders/shipping-In-transit" method="post">
                                             <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <li><button class="dropdown-item">In-transit</button></li>
+                                            <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to mark the Shipping status of this order as In-transit?')">In-transit</button></li>
                                             <li><hr class="dropdown-divider"></li>
                                         </form>
                                         <form action="/admin/orders/shipping-Delivered" method="post">
                                             <input type="hidden" name="orderId" value="<%= order._id %>">
-                                            <li><button class="dropdown-item">Delivered</button></li>
+                                            <li><button class="dropdown-item" onclick="return confirm('Are you sure you want to mark the Shipping status of this order as Delivered?')">Delivered</button></li>
                                         </form>
                                     </ul>
                                 </div>

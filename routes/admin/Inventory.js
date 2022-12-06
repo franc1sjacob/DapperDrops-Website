@@ -331,7 +331,7 @@ router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
             req.session.message = {
                 type:'success',
                 message:'Product deleted successfully!'
-            }      
+            };      
             res.redirect('/admin/inventory')
         }
     
@@ -395,7 +395,7 @@ router.post("/:productId/add-new-variation-inventory", isAuth, isAdmin, function
             req.session.message = {
                 type:'success',
                 message:'Product variation added successfully!'
-            }             
+            };             
                res.redirect("/admin/inventory/"+productId+"/inventoryview")
             }
         });
@@ -427,7 +427,7 @@ router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, functi
             req.session.message = {
                 type:'success',
                 message:'Product variation updated successfully!'
-            }    
+            };    
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
         }
     });
@@ -493,7 +493,7 @@ router.post("/add-quantity-variation-inventory/:variationId-:productId", isAuth,
             req.session.message = {
                 type:'success',
                 message:'Product quantity added successfully!'
-            }    
+            };    
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
         }
     });
@@ -564,7 +564,7 @@ router.post("/minus-quantity-variation-inventory/:variationId-:productId", isAut
             req.session.message = {
                 type:'success',
                 message:'Product quantity subtracted successfully!'
-            }    
+            };    
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
         }
     });
@@ -600,7 +600,7 @@ router.get("/delete-variation/:variationId-:productId", isAuth, isAdmin, functio
             req.session.message = {
                 type:'success',
                 message:'Product variation deleted successfully!'
-            }      
+            };      
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
         }
     });

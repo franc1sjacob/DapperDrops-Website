@@ -242,18 +242,34 @@ router.post("/add-variations", isAuth, isAdmin, function(req, res){
         variations: [variation]
     }}, function(err, product){
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'})
         } else {
            if(product.category == "On-Hand"){
-            res.redirect('/admin/products/category-onhand')
-           }
+            req.session.message = {
+                type:'success',
+                message:'Product added successfully!'
+            };       
+             res.redirect('/admin/products/category-onhand')    
+             }
            else if(product.category == "Pre-Order"){
+            req.session.message = {
+                type:'success',
+                message:'Product added successfully!'
+            };       
             res.redirect('/admin/products/category-preorder')
            }
            else if(product.category == "Apparel"){
+            req.session.message = {
+                type:'success',
+                message:'Product added successfully!'
+            };       
             res.redirect('/admin/products/category-apparel')
            }
            else if(product.category == "Accessories"){
+            req.session.message = {
+                type:'success',
+                message:'Product added successfully!'
+            };       
             res.redirect('/admin/products/category-accessories')
            }
             
@@ -272,11 +288,15 @@ router.get("/:productId/add-to-featured", isAuth, isAdmin, function(req, res){
     })
 });
 
-router.post("/:productId/add-to-featured", isAuth, isAdmin, async function(req, res){
+router.post("/:productId/add-to-featured", isAuth, isAdmin, async function(req, res, err){
     const productId = req.params.productId;
 
     const featured = new Featured({ productId: productId })
     featured.save()
+        req.session.message = {
+            type:'success',
+            message:'Product added to featured successfully!'
+        };      
     res.redirect('/admin/products')
 
 });
@@ -316,8 +336,12 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
         variations: [variation],
     }}, function(err, product){
             if(err){
-                console.log(err);
+                res.json({message: err.message, type: 'danger'})
             } else {           
+                req.session.message = {
+                    type:'success',
+                    message:'Product variation added successfully!'
+                };    
                res.redirect("/admin/products/"+productId+"/view")
             }
         });
@@ -405,19 +429,35 @@ router.post("/:productId", isAuth, isAdmin, upload, async function(req, res){
         }}, function(err, results){
             if(!err){
                 if(req.body.category == "On-Hand"){
+                    req.session.message = {
+                        type:'success',
+                        message:'Product updated successfully!'
+                    };      
                     res.redirect('/admin/products/category-onhand')
                    }
                    else if(req.body.category == "Pre-Order"){
+                    req.session.message = {
+                        type:'success',
+                        message:'Product updated successfully!'
+                    };     
                     res.redirect('/admin/products/category-preorder')
                    }
                    else if(req.body.category == "Apparel"){
+                    req.session.message = {
+                        type:'success',
+                        message:'Product updated successfully!'
+                    };      
                     res.redirect('/admin/products/category-apparel')
                    }
                    else if(req.body.category == "Accessories"){
+                    req.session.message = {
+                        type:'success',
+                        message:'Product updated successfully!'
+                    };      
                     res.redirect('/admin/products/category-accessories')
                    }
             } else {
-                console.log(err);
+                res.json({message: err.message, type: 'danger'})
             }
         }
     ); 
@@ -436,19 +476,35 @@ router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
             }
         }
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'})
         } else {
             console.log("Deleted!" + productId);
             if(result.category == "On-Hand"){
+                req.session.message = {
+                    type:'success',
+                    message:'Product deleted successfully!'
+                }      
                 res.redirect('/admin/products/category-onhand')
                }
                else if(result.category == "Pre-Order"){
+                req.session.message = {
+                    type:'success',
+                    message:'Product deleted successfully!'
+                }      
                 res.redirect('/admin/products/category-preorder')
                }
                else if(result.category == "Apparel"){
+                req.session.message = {
+                    type:'success',
+                    message:'Product deleted successfully!'
+                }      
                 res.redirect('/admin/products/category-apparel')
                }
                else if(result.category == "Accessories"){
+                req.session.message = {
+                    type:'success',
+                    message:'Product deleted successfully!'
+                };      
                 res.redirect('/admin/products/category-accessories')
                }
         }
@@ -508,9 +564,13 @@ router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, functi
 
 	Product.findOneAndUpdate(conditions, update, function(err){
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'});
         }
         else{
+            req.session.message = {
+                type:'success',
+                message:'Product variation updated successfully!'
+            };    
             res.redirect("/admin/products/"+productId+"/view");
         }
     });
@@ -573,9 +633,13 @@ router.post("/add-quantity-variation/:variationId-:productId", isAuth, isAdmin, 
 
 	Product.findOneAndUpdate(conditions, update, function(err){
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'});
         }
         else{
+            req.session.message = {
+                type:'success',
+                message:'Product quantity added successfully!'
+            };    
             res.redirect("/admin/products/"+productId+"/view");
         }
     });
@@ -640,9 +704,13 @@ router.post("/minus-quantity-variation/:variationId-:productId", isAuth, isAdmin
 
 	Product.findOneAndUpdate(conditions, update, function(err){
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'});
         }
         else{
+            req.session.message = {
+                type:'success',
+                message:'Product quantity subtracted successfully!'
+            }    
             res.redirect("/admin/products/"+productId+"/view");
         }
     });
@@ -672,9 +740,13 @@ router.get("/delete-variation/:variationId-:productId", isAuth, isAdmin, functio
 
 	Product.updateOne(conditions, remove, function(err){
         if(err){
-            console.log(err);
+            res.json({message: err.message, type: 'danger'});
         }
         else{
+            req.session.message = {
+                type:'success',
+                message:'Product variation deleted successfully!'
+            };
             res.redirect("/admin/products/"+productId+"/view");
         }
     });

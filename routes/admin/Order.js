@@ -266,6 +266,10 @@ router.post("/pending-order", isAuth, isAdmin, function(req, res){
         if(err){
             console.log(err);
         } else {
+            req.session.message = {
+                type: "success",
+                message: "Order for Order ID: " + orderId + ", was successfully changed to Pending."
+            }; 
             res.redirect('/admin/orders');
         }
     });
@@ -277,6 +281,10 @@ router.post("/decline-order", isAuth, isAdmin, function(req, res){
         if(err){
             console.log(err);
         } else {
+            req.session.message = {
+                type: "success",
+                message: "Order for Order ID: " + orderId + ", was successfully Declined."
+            }; 
             res.redirect('/admin/orders');
         }
     });
@@ -631,6 +639,10 @@ router.post("/delete-order", isAuth, isAdmin, function(req, res){
         if(err){
             console.log(err);
         } else {
+            req.session.message = {
+                type: "success",
+                message: "Order for Order ID: " + orderId + ", was successfully Deleted."
+            }; 
             res.redirect('/admin/orders');
         }
     });
@@ -778,6 +790,10 @@ router.post('/shipping-:status', isAuth, isAdmin, function(req, res){
             if(err) {
                 console.log(err)
             } else {
+                req.session.message = {
+                    type: "success",
+                    message: "Shipping for Order ID: " + orderId + ", was successfully marked as " + status
+                };
                 res.redirect('/admin/orders');
             }
         });
@@ -813,7 +829,10 @@ router.post("/send-mail-shipped-:orderId", isAuth, isAdmin, async function(req, 
                 }
                 else{
                     sendShippingMail(foundUser.firstName, foundUser.email, foundOrder._id, shippingCompany, trackNumber, shippingLink);
-                    console.log(foundUser.firstName + foundUser.email);
+                    req.session.message = {
+                        type: "success",
+                        message: "Shipping details for Order ID: " + orderId + ", was successfully sent."
+                    }; 
                     res.redirect('/admin/orders');
                 }
             });

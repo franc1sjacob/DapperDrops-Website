@@ -123,6 +123,7 @@ router.get('/edit-text-:field', isAuth, isAdmin, function(req, res){
     if(check) {
         res.render('admin/content/edit-text-content', { fullName: req.session.firstName + " " + req.session.lastName, field: field, title: title });
     } else {
+      
         res.redirect('/admin/content')
     }
 
@@ -146,9 +147,14 @@ router.post('/add-homepageImage', isAuth, isAdmin, upload.single('homeImage') ,a
     };
 
     Content.findOneAndUpdate({ status: 'active' }, { $push: { homeImage: [homeImage] } }, function(err, result){
-        if(err) {
-            console.log(err);
-        } else {
+        if(err){
+            res.json({message: err.message, type: 'danger'});
+        }
+        else{
+            req.session.message = {
+                type:'success',
+                message:'Home Image added successfully!'
+            };    
             res.redirect('/admin/content/view-homepageImage');
         }
     });
@@ -156,9 +162,14 @@ router.post('/add-homepageImage', isAuth, isAdmin, upload.single('homeImage') ,a
 router.post('/delete-homeimageImage/:homeimageImageId', isAuth, isAdmin, function(req, res){
     const { homeimageImageId } = req.params;
     Content.findOneAndUpdate({ status: 'active' }, { $pull: { homeImage: { _id: homeimageImageId } } }, function(err, result){
-        if(err) {
-            console.log(err);
-        } else {
+        if(err){
+            res.json({message: err.message, type: 'danger'});
+        }
+        else{
+            req.session.message = {
+                type:'success',
+                message:'Home Image deleted successfully!'
+            };    
             res.redirect('/admin/content/view-homepageImage');
         }
     });
@@ -182,19 +193,32 @@ router.post('/add-aboutusImage1', isAuth, isAdmin, upload.single('aboutUsImage1'
     };
 
     Content.findOneAndUpdate({ status: 'active' }, { $push: { aboutUsImage: [aboutUsImage] } }, function(err, result){
-        if(err) {
-            console.log(err);
-        } else {
+        if(err){
+            res.json({message: err.message, type: 'danger'});
+        }
+        else{
+            req.session.message = {
+                type:'success',
+                message:'About Us Image added successfully!'
+            };    
             res.redirect('/admin/content/view-aboutusImage');
         }
+        
+       
+           
     });
 });
 router.post('/delete-aboutusImage/:aboutusImageId', isAuth, isAdmin, function(req, res){
     const { aboutusImageId } = req.params;
     Content.findOneAndUpdate({ status: 'active' }, { $pull: { aboutUsImage: { _id: aboutusImageId } } }, function(err, result){
-        if(err) {
-            console.log(err);
-        } else {
+        if(err){
+            res.json({message: err.message, type: 'danger'});
+        }
+        else{
+            req.session.message = {
+                type:'success',
+                message:'About Us Image deleted successfully!'
+            };    
             res.redirect('/admin/content/view-aboutusImage');
         }
     });
@@ -220,9 +244,14 @@ router.post('/add-faqs', isAuth, isAdmin, function(req, res){
     };
 
     Content.findOneAndUpdate({ status: 'active' }, { $push: { faqs: [faq] } }, function(err, result){
-        if(err) {
-            console.log(err);
-        } else {
+        if(err){
+            res.json({message: err.message, type: 'danger'});
+        }
+        else{
+            req.session.message = {
+                type:'success',
+                message:'FAQ added successfully!'
+            };    
             res.redirect('/admin/content/view-faqs');
         }
     });
@@ -231,9 +260,14 @@ router.post('/add-faqs', isAuth, isAdmin, function(req, res){
 router.post('/delete-faq/:faqId', isAuth, isAdmin, function(req, res){
     const { faqId } = req.params;
     Content.findOneAndUpdate({ status: 'active' }, { $pull: { faqs: { _id: faqId } } }, function(err, result){
-        if(err) {
-            console.log(err);
-        } else {
+        if(err){
+            res.json({message: err.message, type: 'danger'});
+        }
+        else{
+            req.session.message = {
+                type:'success',
+                message:'FAQ added successfully!'
+            };    
             res.redirect('/admin/content/view-faqs');
         }
     });
@@ -264,21 +298,31 @@ router.post('/add-payment-details', isAuth, isAdmin, upload.single('qrCodeImage'
     };
 
     Content.findOneAndUpdate({ status: 'active' }, { $push: { payment: [payment] } }, function(err, result){
-        if(err) {
-            console.log(err);
-        } else {
+        if(err){
+            res.json({message: err.message, type: 'danger'});
+        }
+        else{
+            req.session.message = {
+                type:'success',
+                message:'Payment Details added successfully!'
+            };    
             res.redirect('/admin/content/view-payment-details');
         }
+        
     });
 });
 
 router.post('/delete-payment-details/:paymentId', isAuth, isAdmin, function(req, res){
     const { paymentId } = req.params;
     Content.findOneAndUpdate({ status: 'active' }, { $pull: { payment: { _id: paymentId } } }, function(err, result){
-        if(err) {
-            console.log(err);
-        } else {
-            var image = result.payment.find(item => item._id == paymentId);
+        if(err){
+            res.json({message: err.message, type: 'danger'});
+        }
+        else{
+            req.session.message = {
+                type:'success',
+                message:'Payment Details deleted successfully!'
+            };    
             res.redirect('/admin/content/view-payment-details');
         }
     });
@@ -291,7 +335,52 @@ router.post('/edit-text-:field', isAuth, isAdmin, function(req, res){
         if(err) {
             console.log(err);
         } else {
-            res.redirect('/admin/content');
+            if(field == 'homeText') {
+                req.session.message = {
+                    type:'success',
+                    message:'Home Text updated successfully!'
+                };   
+                res.redirect('/admin/content')
+            } else if (field == 'aboutUsParagraph1') {
+                req.session.message = {
+                    type:'success',
+                    message:'About Us Paragraph 1 updated successfully!'
+                };   
+                res.redirect('/admin/content')
+            } else if (field == 'aboutUsParagraph2') {
+                req.session.message = {
+                    type:'success',
+                    message:'About Us Paragraph 2 updated successfully!'
+                };   
+                res.redirect('/admin/content')
+            } else if (field == 'aboutUsParagraph3') {
+                req.session.message = {
+                    type:'success',
+                    message:'About Us Paragraph 3 updated successfully!'
+                };   
+                res.redirect('/admin/content')
+            } else if (field == 'footerText') {
+                req.session.message = {
+                    type:'success',
+                    message:'Footer Text updated successfully!'
+                };   
+                res.redirect('/admin/content')
+            } else if (field == 'footerContactEmail') {
+                req.session.message = {
+                    type:'success',
+                    message:'Footer Email updated successfully!'
+                };   
+                res.redirect('/admin/content')
+            } else if (field == 'footerContactNumber') {
+                req.session.message = {
+                    type:'success',
+                    message:'Footer Contact Number updated successfully!'
+                };   
+                res.redirect('/admin/content')
+            } else {
+                check = false;
+            }
+            
         }
     });
 });
@@ -372,7 +461,10 @@ router.post('/add', isAuth, isAdmin,  function(req, res){
     })
 
     content.save();
-
+    req.session.message = {
+        type:'success',
+        message:'Webpage details successfully added!'
+    };     
     res.redirect('/admin/content')
 });
 

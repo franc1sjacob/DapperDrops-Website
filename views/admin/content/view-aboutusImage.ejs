@@ -2,13 +2,19 @@
 
 <div class="container">
     <h1 class="fw-bold text-center mt-2 mb-3">View About Us Image</h1>
+    <% if(message) { %>
+        <div class="alert alert-dismissable fade show alert-<%= message.type %>" role="alert">
+            <strong><%= message.message %></strong>
+            <button class="btn-close float-end" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% } %> 
     <% if(content.aboutUsImage.length == 0) { %>
         <h3 class="fw-bold text-center">There are no home images yet</h3>
         <a class="btn btn-outline-secondary mb-3" href="/admin/content"><i class="fa-solid fa-left-long"></i> Back</a>
         <a class="btn btn-outline-success mb-3 float-end" href="add-aboutusImage1"><i class="fa-solid fa-plus"></i></a>
     <% }  else if(content.aboutUsImage.length == 3) { %>
         <a class="btn btn-outline-secondary mb-3" href="/admin/content"  ><i class="fa-solid fa-left-long"></i> Back</a>
-        <a class="btn btn-outline-success mb-3 float-end" disabled><i class="fa-solid fa-plus"></i></a>
+        <a class="btn btn-outline-success mb-3 float-end"  disabled><i class="fa-solid fa-plus"></i></a>
          <div class="row">
             <%content.aboutUsImage.forEach(function(aboutUsImage){%>
                 <div class="col-lg-4 mb-4">
@@ -38,7 +44,7 @@
                     <div class="card-header d-flex">
                         <div class="ms-auto">
                             <form action="/admin/content/delete-aboutusImage/<%= aboutUsImage._id %>" method="POST">
-                                <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
+                                <button type="submit" class="btn btn-danger"onclick="return confirm('Are you sure you want to delete this image');"><i class="fa-solid fa-trash"></i></button>
                             </form>
                         </div>
                     </div>

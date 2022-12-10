@@ -2,6 +2,7 @@
 
      <div class="container">
         <h1 class="text-center mt-2 mb-3">View Product</h1> 
+        <a class="btn btn-outline-success mb-3 float-end" href="/admin/products/<%= newListProducts._id %>/add-new-variation" name=""><i class="fa-solid fa-add"></i></a><br>
         <a href="/admin/products" class="text-body"><i class="fas fa-long-arrow-alt-left me-2 mb-3"></i>Back to products</a></h6>
         <% if(message) { %>
             <div class="alert alert-dismissable fade show alert-<%= message.type %>" role="alert">

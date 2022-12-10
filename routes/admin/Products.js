@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
         cb(null, 'public/uploads')
     },
     filename: (req, file, cb) => {
-        cb(null, file.fieldname + '_' + Date.now() + "_" + file.originalname)
+        cb(null, file.fieldname + '' + Date.now() + "" + file.originalname)
     }
 });
   
@@ -312,10 +312,10 @@ router.get("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
     })
 });
 
-router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res){
+router.post("/:productId/add-new-variation", isAuth, isAdmin, async function(req, res){
     const {productId, name, quantity} = req.body;
     let status="";
-    console.log(req.body);
+    const variations = "";
     if(quantity >= 6){
         status = "In-Stock";
    }
@@ -325,15 +325,24 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
    else if(quantity == 0){
         status = "Out-of-Stock";
    }
+   
    const variation = {
     name: name,
     quantity: quantity,
     status: status,
     stockAcquired: quantity
 };
-   console.log(variation);
-    Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
-        variations: [variation],
+let product = await Product.findOne({_id:productId,"variations.name": variation.name});
+if(product){
+    return res.render('admin/add-new-variation', { message: "The variation size you've entered is already existing.",  fullName: req.session.firstName + " " + req.session.lastName,
+    product:product});
+}   
+   
+
+    
+//    console.log(variation);
+    Product.findByIdAndUpdate({"_id" : productId }, { $addToSet: { 
+        variations: [variation], 
     }}, function(err, product){
             if(err){
                 res.json({message: err.message, type: 'danger'})
@@ -345,7 +354,7 @@ router.post("/:productId/add-new-variation", isAuth, isAdmin, function(req, res)
                res.redirect("/admin/products/"+productId+"/view")
             }
         });
-   
+    
    
 });
 
@@ -546,10 +555,19 @@ router.get("/update-variation/:variationId-:productId", isAuth, isAdmin, upload,
     });     
 });
 
-router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, function(req, res){
+router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, async function(req, res){
     const variationId = req.params.variationId;
     const productId = req.params.productId;
     const { variationName } = req.body;
+
+let product = await Product.findOne({_id:productId,"variations.name": variationName});
+if(product){
+    req.session.message = {
+        type:'danger',
+        message:"The variation size you've entered is already existing."
+    };  
+     return res.redirect('/admin/products/update-variation/'+ variationId +'-'+ productId);
+}
 
     const conditions = {
         _id: productId,

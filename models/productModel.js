@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema({
     variations: [{
         name: {
             type: String,
-            required: true
+            required: true,
         },
         stockAcquired: {
             type: Number,

@@ -367,7 +367,7 @@ router.get("/:productId/add-new-variation-inventory", isAuth, isAdmin, function(
     })
 });
 
-router.post("/:productId/add-new-variation-inventory", isAuth, isAdmin, function(req, res){
+router.post("/:productId/add-new-variation-inventory", isAuth, isAdmin, async function(req, res){
     const {productId, name, quantity} = req.body;
     let status="";
     console.log(req.body);
@@ -384,7 +384,15 @@ router.post("/:productId/add-new-variation-inventory", isAuth, isAdmin, function
     name: name,
     quantity: quantity,
     status: status
+
+    
 };
+
+let product = await Product.findOne({_id:productId,"variations.name": variation.name});
+if(product){
+    return res.render('admin/add-new-variation', { message: "The variation size you've entered is already existing.",  fullName: req.session.firstName + " " + req.session.lastName,
+    product:product});
+}   
    console.log(variation);
     Product.findByIdAndUpdate({"_id" : productId }, { $push: { 
         variations: [variation],
@@ -403,10 +411,19 @@ router.post("/:productId/add-new-variation-inventory", isAuth, isAdmin, function
    
 });
 
-router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, function(req, res){
+router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, async function(req, res){
     const variationId = req.params.variationId;
     const productId = req.params.productId;
     const { variationName } = req.body;
+
+    let product = await Product.findOne({_id:productId,"variations.name": variationName});
+if(product){
+    req.session.message = {
+        type:'danger',
+        message:"The variation size you've entered is already existing."
+    };  
+     return res.redirect('/admin/products/update-variation/'+ variationId +'-'+ productId);
+}
 
     const conditions = {
         _id: productId,

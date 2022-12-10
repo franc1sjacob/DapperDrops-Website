@@ -2,6 +2,13 @@
 
 <div class="container">
     <h1 class="text-center mt-2 mb-3">Add New Variation</h1> 
+    <%
+    if(typeof message !== "undefined"){ %>
+    <div class="alert alert-dismissable fade show alert-danger %>" role="alert">
+        <strong><%= message %></strong>
+        <button class="btn-close float-end" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <% } %>
     <form action="/admin/inventory/<%= product._id %>/add-new-variation-inventory" method="POST" id="variation_form">
             <div class="mb-3" id="row">
                 <label for="productId" class="form-label">Product: ID</label>

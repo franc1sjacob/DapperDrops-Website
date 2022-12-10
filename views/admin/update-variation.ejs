@@ -2,6 +2,13 @@
 
 <div class="container">
     <h1 class="text-center mt-2 mb-3">Update Variation</h1> 
+    <%
+    if(message){ %>
+    <div class="alert alert-dismissable fade show alert-<%= message.type %>" role="alert">
+        <strong><%= message.message %></strong>
+        <button class="btn-close float-end" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <% } %>
     <form action="/admin/products/update-variation/<%= variation._id %>-<%= product._id %>" method="POST">
         <div class="mb-3">
             <label for="inputIdName" class="form-label">ID:</label>

@@ -266,7 +266,7 @@ router.post('/delete-faq/:faqId', isAuth, isAdmin, function(req, res){
         else{
             req.session.message = {
                 type:'success',
-                message:'FAQ added successfully!'
+                message:'FAQ deleted successfully!'
             };    
             res.redirect('/admin/content/view-faqs');
         }

@@ -1,0 +1,16 @@
+<%- include('../../partials/admin/header', {name: fullName}); %>
+    <div class="container">
+        <h1 class="fw-bold text-center mt-2 mb-3">Logs</h1>
+        <% if(logs.length == 0) { %>
+            <h4 class="text-center">No logs yet...</h4>
+        <% } else { %>
+            <% logs.forEach(function(log){ %>
+                <div class="card rounded-0">
+                    <div class="card-body">
+                      <span class="fw-bold"><%= log.user %> </span> <%= log.action %> "<span class="fw-bold"><%= log.productName %></span>" <% if(log.category == 'edit'){ %> Reason: <span class="fst-italic">"<%= log.reason %>"</span> <% } %> <%= " " + log.dateLog %> 
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+<%- include('../../partials/admin/footer'); %>

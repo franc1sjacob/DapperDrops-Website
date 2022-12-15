@@ -9,12 +9,17 @@
         </div>
         <div class="mb-3">
             <label for="inputName" class="form-label">Size:</label>
-            <input type="text" class="form-control" id="inputName" name="variationName" value="<%= variation.name %>" disabled>
+            <input type="text" class="form-control" id="inputName" value="<%= variation.name %>" disabled>
+            <input type="hidden" class="form-control" id="inputName" name="variationName" value="<%= variation.name %>">
         </div>
         <div class="mb-3">
             <label for="inputQuantity" class="form-label">Quantity:</label>
             <input type="number" class="form-control" id="inputQuantity" name="variationQuantity" min="1" required>
             <input type="hidden" class="form-control" id="inputQuantity" name="origVariationQuantity" value="<%= variation.quantity %>">
+        </div>
+        <div class="mb-3">
+            <label for="reason" class="form-label">Reason for updating:</label>
+            <input type="text" class="form-control" id="reason" name="reason" required>
         </div>
         
 

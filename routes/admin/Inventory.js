@@ -21,6 +21,7 @@ const isAdmin = function(req, res, next){
 }
 
 const Product = require("../../models/productModel");
+const Log = require("../../models/logModel");
 
 
 var fs = require('fs');
@@ -341,7 +342,6 @@ router.get("/:productId/delete", isAuth, isAdmin, function(req, res){
 router.get("/update-variation/:variationId-:productId", isAuth, isAdmin, upload, function(req, res){
     const variationId = req.params.variationId;
     const productId = req.params.productId;
-    console.log(variationId);
 
     Product.findById({_id: productId}, function(err, product){
         if(err){
@@ -414,7 +414,7 @@ if(product){
 router.post("/update-variation/:variationId-:productId", isAuth, isAdmin, async function(req, res){
     const variationId = req.params.variationId;
     const productId = req.params.productId;
-    const { variationName } = req.body;
+    const { variationName, reason } = req.body;
 
     let product = await Product.findOne({_id:productId,"variations.name": variationName});
 if(product){
@@ -436,11 +436,19 @@ if(product){
         }
     }
 
-	Product.findOneAndUpdate(conditions, update, function(err){
+	Product.findOneAndUpdate(conditions, update, function(err, result){
         if(err){
             res.json({message: err.message, type: 'danger'});
         }
         else{
+            const log = new Log({
+                productName: result.brand + " " + result.name, 
+                user: req.session.firstName + " " + req.session.lastName,
+                action: "edited product variation name of",
+                reason: reason,
+                category: "edit"
+            });
+            log.save();
             req.session.message = {
                 type:'success',
                 message:'Product variation updated successfully!'
@@ -471,7 +479,7 @@ router.get("/add-quantity-variation-inventory/:variationId-:productId", isAuth, 
 router.post("/add-quantity-variation-inventory/:variationId-:productId", isAuth, isAdmin, function(req, res){
     const variationId = req.params.variationId;
     const productId = req.params.productId;
-    const { variationQuantity, origVariationQuantity } = req.body;
+    const { variationQuantity, origVariationQuantity, variationName, reason } = req.body;
     console.log(variationId);
     let status="";
     
@@ -502,11 +510,18 @@ router.post("/add-quantity-variation-inventory/:variationId-:productId", isAuth,
         }
     }
 
-	Product.findOneAndUpdate(conditions, update, function(err){
+	Product.findOneAndUpdate(conditions, update, function(err, result){
         if(err){
             res.json({message: err.message, type: 'danger'});
-        }
-        else{
+        } else {
+            const log = new Log({
+                productName: result.brand + " " + result.name, 
+                user: req.session.firstName + " " + req.session.lastName,
+                action: "added " + variationQuantity + " stocks for product variation: " + variationName + ", ",
+                reason: reason,
+                category: "edit"
+            });
+            log.save();
             req.session.message = {
                 type:'success',
                 message:'Product quantity added successfully!'
@@ -540,7 +555,7 @@ router.get("/minus-quantity-variation-inventory/:variationId-:productId", isAuth
 router.post("/minus-quantity-variation-inventory/:variationId-:productId", isAuth, isAdmin, function(req, res){
     const variationId = req.params.variationId;
     const productId = req.params.productId;
-    const { variationQuantity, origVariationQuantity } = req.body;
+    const { variationQuantity, origVariationQuantity, variationName, reason } = req.body;
     console.log(variationId);
     let status="";
     
@@ -573,11 +588,18 @@ router.post("/minus-quantity-variation-inventory/:variationId-:productId", isAut
         }
     }
 
-	Product.findOneAndUpdate(conditions, update, function(err){
+	Product.findOneAndUpdate(conditions, update, function(err, result){
         if(err){
             res.json({message: err.message, type: 'danger'});
-        }
-        else{
+        } else {
+            const log = new Log({
+                productName: result.brand + " " + result.name, 
+                user: req.session.firstName + " " + req.session.lastName,
+                action: "subtracted " + variationQuantity + " stocks for product variation: " + variationName + ", ",
+                reason: reason,
+                category: "edit"
+            });
+            log.save();
             req.session.message = {
                 type:'success',
                 message:'Product quantity subtracted successfully!'

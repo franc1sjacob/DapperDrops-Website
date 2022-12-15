@@ -25,9 +25,9 @@ const Content = require("./models/contentModel");
 const Featured = require("./models/featuredModel");
 
 //MongoDB
-// const mongoUri = "mongodb+srv://admin-dapperdrops:admin123@cluster0.i5opsug.mongodb.net/dapperdropsDB";
+//const mongoUri = "mongodb+srv://admin-dapperdrops:admin123@cluster0.i5opsug.mongodb.net/dapperdropsDB";
 // const mongoUri = "mongodb://localhost:27017/dapperdropsDB";
- const mongoUri = "mongodb://admin-dapperdrops:admin123@ac-urowtdl-shard-00-00.i5opsug.mongodb.net:27017,ac-urowtdl-shard-00-01.i5opsug.mongodb.net:27017,ac-urowtdl-shard-00-02.i5opsug.mongodb.net:27017/dapperdropsDB?ssl=true&replicaSet=atlas-6r1cqm-shard-0&authSource=admin&retryWrites=true&w=majority";
+const mongoUri = "mongodb://admin-dapperdrops:admin123@ac-urowtdl-shard-00-00.i5opsug.mongodb.net:27017,ac-urowtdl-shard-00-01.i5opsug.mongodb.net:27017,ac-urowtdl-shard-00-02.i5opsug.mongodb.net:27017/dapperdropsDB?ssl=true&replicaSet=atlas-6r1cqm-shard-0&authSource=admin&retryWrites=true&w=majority";
 
 main().catch(err => console.log(err));
 
@@ -100,6 +100,9 @@ app.use("/admin/feedback/", adminFeedbackRoute);
 
 const adminContentRoute = require("./routes/admin/Content");
 app.use("/admin/content/", adminContentRoute);
+
+const adminLogRoute = require("./routes/admin/Log");
+app.use("/admin/logs/", adminLogRoute);
 
 //INDEX
 app.get("/", async function(req, res){

@@ -155,6 +155,12 @@ app.get("/tos", async function(req, res){
     res.render('tos', { content: content, isAdmin: isAdmin });
 });
 
+app.get("/bulk", async function(req, res){
+    const isAdmin = req.session.isAdmin;
+    const content = await Content.findOne({ status: 'active'});
+    res.render('bulk', { content: content, isAdmin: isAdmin });
+});
+
 app.get("*", async function(req, res){
     const isAdmin = req.session.isAdmin;
     const content = await Content.findOne({ status: 'active' });

@@ -486,10 +486,26 @@ router.get('/wishlist', isAuth, async function(req, res){
     const content = await Content.findOne({ status: 'active' });
     const userId = req.session.userId;
     const wishlist = await Wishlist.findOne({ userId: userId })
+    const user = await User.findOne({ _id: userId });
 
     if(wishlist != null){
         for(let i = 0; i < wishlist.products.length; i++){
             foundProduct = await Product.findById(wishlist.products[i].productId);
+            const fPIR = await Product.aggregate([
+                { $match: {
+                    _id: foundProduct._id
+                } },
+                { $project:{
+                    "itemsRemaining":{
+                        $sum: "$variations.quantity"
+                    }
+                } }
+            ]);
+
+            const wishitems = Object.values(fPIR);
+            console.log(wishitems[0].itemsRemaining);
+
+
             if(foundProduct == null) {
                 nullProduct = {
                     _id: wishlist.products[i].productId,
@@ -502,15 +518,31 @@ router.get('/wishlist', isAuth, async function(req, res){
                 }
                 items.push(nullProduct);
             } else {
-                items.push(foundProduct);
+                if(wishitems[0].itemsRemaining < 1){
+                    outofstockProduct = {
+                        _id: wishlist.products[i].productId,
+                        brand: foundProduct.brand,
+                        name: foundProduct.name,
+                        price: foundProduct.price,
+                        image: {
+                            url: "/images/icons/outofstock.jpg"
+                        }
+                    }
+                    sendWishlistMail(user.email, wishlist.userId, user.firstName, foundProduct.brand, foundProduct.name);
+                    items.push(outofstockProduct); 
+                }
+                else{
+                    items.push(foundProduct); 
+                }
+                console.log("item is out of stock");
             }
         }
         res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content, isAdmin: isAdmin });
     } else {
         res.render('profile/wishlist', { wishlist: wishlist, items: items, content: content, isAdmin: isAdmin });
     }
-    
-    
+
+
 });
 
 router.post('/delete-wishlist', isAuth, function(req, res){
@@ -715,4 +747,63 @@ router.post('/cancel-customer/:orderId', isAuth, function(req, res){
     });
 });
 
+const sendWishlistMail = async function(email, userId, firstName, brand, name){
+    try {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth:{
+                user: process.env.SECRETEMAIL,
+                pass: process.env.SECRETPASSWORD
+            },
+            tls:{
+                rejectUnauthorized: false
+            }
+        });
+
+        const handlebarOptions = {
+            viewEngine: {
+                extName: ".handlebars",
+                partialsDir: path.resolve('./views'),
+                defaultLayout: false
+            },
+            viewPath: path.resolve('./views'),
+            extName: ".handlebars"
+        }
+    
+        transporter.use('compile', hbs(handlebarOptions));
+        
+        const mailOptions= {
+            from: {
+                name: 'DapperDrops',
+                address: process.env.SECRETEMAIL
+            },
+            to: email,
+            subject: "Wishlist Item",
+            template: 'email-templates/wishlist-notification',
+            context: {
+                userId: userId,
+                firstName: firstName,
+                brand: brand,
+                name: name
+
+            }
+        }
+
+        transporter.use('compile', hbs(handlebarOptions));
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            }
+            else{
+                console.log("Email has been sent:- ", info.response);
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
 module.exports = router;

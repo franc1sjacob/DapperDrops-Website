@@ -10,6 +10,7 @@ const Product = require("../../models/productModel");
 const Cart = require("../../models/cartModel");
 const Order = require("../../models/orderModel");
 const Sale = require("../../models/salesModel");
+const Notification = require("../../models/notificationModel");
 const { parseConnectionUrl } = require('nodemailer/lib/shared');
 
 const isAuth = function(req, res, next){
@@ -149,7 +150,7 @@ router.get('/search-orders', async function(req, res){
 });
 
 router.post("/confirm-order", isAuth, isAdmin, function(req, res){
-    const{ orderId } = req.body;
+    const{ orderId , userId} = req.body;
     Order.findById(orderId, async function(err, order){
         if(err){
             console.log(err);
@@ -231,10 +232,28 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
                             status = "In-Stock";
                         }
                         else if(minusedValues[i] <= 5 && minusedValues[i] >=1){
+                            const notif = new Notification({
+                                productName:  itemName[i], 
+                                productVariation: variations[i],
+                                reason: "Stock is at Critical Level",
+                                category: "Few"
+                            });
+                            req.session.message = {
+                                type:'danger',
+                                message:itemName[i] +" Size "+ variations[i] +' is at critical level'
+                            };  
+                            notif.save();
                             status = "Few-Stocks";
                             sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], minusedValues[i], status);
                         }
                         else{
+                            const notif = new Notification({
+                                productName:  itemName[i], 
+                                productVariation: variations[i],
+                                reason: "Out of Stock",
+                                category: "Out"
+                            });
+                            notif.save();
                             status = "Out-of-Stock";
                             sendStockMail('dapperdrops@gmail.com', itemId[i], itemName[i], variations[i], minusedValues[i], status);
                         }
@@ -248,10 +267,14 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 
                         Product.findOneAndUpdate(conditions, update, function(err){});
                     };
-
+                    let userMail = await User.findById({_id: userId});
+                    console.log('ganyan preee',userMail.email);
+                    orderStatus = "Confirmed"
+                    sendOrderStatusMail(userMail.firstName, userMail.email, order._id, orderStatus);
+                    var link = '/admin/inventory'
                     req.session.message = {
                         type: "success",
-                        message: "Order for Order ID: " + orderId + ", was successfully Confirmed."
+                        message: 'Order for Order ID: ' + orderId + ', was successfully Confirmed.' + '<a href="'+ link +'"> Click here</a> to view changes in inventory.'
                     }; 
                     res.redirect('/admin/orders');
                 }
@@ -261,11 +284,15 @@ router.post("/confirm-order", isAuth, isAdmin, function(req, res){
 });
 
 router.post("/pending-order", isAuth, isAdmin, function(req, res){
-    const {orderId} = req.body;
+    const {orderId, userId} = req.body;
     Order.findByIdAndUpdate(orderId, {$set: {orderStatus: "Pending"}}, async function(err, order){
         if(err){
             console.log(err);
         } else {
+            let userMail = await User.findById({_id: userId});
+            console.log('ganyan preee',userMail.email);
+            orderStatus = "Pending";
+            sendOrderStatusMail(userMail.firstName, userMail.email, order._id, orderStatus);
             req.session.message = {
                 type: "success",
                 message: "Order for Order ID: " + orderId + ", was successfully changed to Pending."
@@ -291,7 +318,7 @@ router.post("/decline-order", isAuth, isAdmin, function(req, res){
 });
 
 router.post("/cancel-order", isAuth, isAdmin, function(req, res){
-    const{ orderId } = req.body;
+    const{ orderId, userId } = req.body;
 
     Order.findById(orderId, async function(err, order){
         if(err){
@@ -379,7 +406,10 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
                     };
                     Product.findOneAndUpdate(conditions, update, function(err){});
                 };
-
+                let userMail = await User.findById({_id: userId});
+                    console.log('ganyan preee',userMail.email);
+                    orderStatus = "Cancelled"
+                    sendOrderStatusMail(userMail.firstName, userMail.email, order._id, orderStatus);
                 req.session.message = {
                     type: "success",
                     message: "Order for Order ID: " + orderId + ", was successfully Cancelled."
@@ -391,7 +421,7 @@ router.post("/cancel-order", isAuth, isAdmin, function(req, res){
 });
 
 router.post("/complete-order", isAuth, isAdmin, function(req, res){
-    const {orderId} = req.body;
+    const {orderId, userId} = req.body;
     Order.findById(orderId, async function(err, order){
         if(err){
             console.log(err);
@@ -490,7 +520,10 @@ router.post("/complete-order", isAuth, isAdmin, function(req, res){
                         console.log("save success");
                     }
                 });
-
+                let userMail = await User.findById({_id: userId});
+                    console.log('ganyan preee',userMail.email);
+                    orderStatus = "Complete"
+                    sendOrderStatusMail(userMail.firstName, userMail.email, order._id, orderStatus);
                 req.session.message = {
                     type: "success",
                     message: "Order for Order ID: " + orderId + ", was successfully Completed."
@@ -502,7 +535,7 @@ router.post("/complete-order", isAuth, isAdmin, function(req, res){
 });
 
 router.post("/refund-order", isAuth, isAdmin, function(req, res){
-    const{ orderId } = req.body;
+    const{ orderId, userId } = req.body;
 
     Order.findById(orderId, async function(err, order){
         if(err){
@@ -622,7 +655,10 @@ router.post("/refund-order", isAuth, isAdmin, function(req, res){
                         if(err){ console.log(err) }
                     }); 
                 };
-
+                let userMail = await User.findById({_id: userId});
+                    console.log('ganyan preee',userMail.email);
+                    orderStatus = "Refunded"
+                    sendOrderStatusMail(userMail.firstName, userMail.email, order._id, orderStatus);
                 req.session.message = {
                     type: "success",
                     message: "Order for Order ID: " + orderId + ", was successfully Refunded."
@@ -782,14 +818,18 @@ router.get("/view-payment-info-:orderId-:paymentId", isAuth, isAdmin, function(r
     });
 });
 
-router.post('/shipping-:status', isAuth, isAdmin, function(req, res){
+router.post('/shipping-:status', isAuth, isAdmin, async function(req, res){
     const status = req.params.status;
-    const { orderId } = req.body;
+    const { orderId, userId } = req.body;
     if(status == "Pending" || status == "Processing" || status == "In-transit" || status == "Delivered"){
-        Order.findByIdAndUpdate(orderId, {$set: { shippingStatus: status }}, function(err, orders){
+        Order.findByIdAndUpdate(orderId, {$set: { shippingStatus: status }}, async function(err, orders){
             if(err) {
                 console.log(err)
             } else {
+                let userMail = await User.findById({_id: userId});
+                console.log('ganyan preee',userMail.email);
+                shippingStatus = status;
+                sendShippingMail(userMail.firstName, userMail.email, orders._id, shippingStatus);
                 req.session.message = {
                     type: "success",
                     message: "Shipping for Order ID: " + orderId + ", was successfully marked as " + status
@@ -828,7 +868,7 @@ router.post("/send-mail-shipped-:orderId", isAuth, isAdmin, async function(req, 
                     console.log(err);
                 }
                 else{
-                    sendShippingMail(foundUser.firstName, foundUser.email, foundOrder._id, shippingCompany, trackNumber, shippingLink);
+                    sendTrackingMail(foundUser.firstName, foundUser.email, foundOrder._id, shippingCompany, trackNumber, shippingLink);
                     req.session.message = {
                         type: "success",
                         message: "Shipping details for Order ID: " + orderId + ", was successfully sent."
@@ -840,7 +880,7 @@ router.post("/send-mail-shipped-:orderId", isAuth, isAdmin, async function(req, 
     });
 });
 
-const sendShippingMail = async function(name, email, orderID, company, track, shipLink){
+const sendShippingMail = async function(firstName, email, orderID, shippingStatus){
     try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -876,6 +916,124 @@ const sendShippingMail = async function(name, email, orderID, company, track, sh
             subject: "Shipping Information",
             template: 'email-templates/shipping',
             context: {
+                firstName: firstName,
+                orderId: orderID,
+                shippingStatus: shippingStatus
+            }
+            // html:'<p>Hi ' + name + ', your order with the Order ID of ' + orderID + ' is now shipped through the company courier services of ' + company + ' please click at this link <a href="'+shipLink+'"> View Shipping Courier Services</a> and view details of your shipped order, by entering your received tracking number: ' + track + ' in the link.</p>'
+        }
+
+        transporter.use('compile', hbs(handlebarOptions));
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            }
+            else{
+                console.log("Email has been sent:- ", info.response);
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+const sendOrderStatusMail = async function(firstName, email, orderID, orderStatus){
+    try {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth:{
+                user: process.env.SECRETEMAIL,
+                pass: process.env.SECRETPASSWORD
+            },
+            tls:{
+                rejectUnauthorized: false
+            }
+        });
+
+        const handlebarOptions = {
+            viewEngine: {
+                extName: ".handlebars",
+                partialsDir: path.resolve('./views'),
+                defaultLayout: false
+            },
+            viewPath: path.resolve('./views'),
+            extName: ".handlebars"
+        }
+    
+        transporter.use('compile', hbs(handlebarOptions));
+        
+        const mailOptions= {
+            from: {
+                name: 'DapperDrops',
+                address: process.env.SECRETEMAIL
+            },
+            to: email,
+            subject: "Order Status",
+            template: 'email-templates/order',
+            context: {
+                firstName: firstName,
+                orderId: orderID,
+                orderStatus:orderStatus
+            }
+            // html:'<p>Hi ' + name + ', your order with the Order ID of ' + orderID + ' is now shipped through the company courier services of ' + company + ' please click at this link <a href="'+shipLink+'"> View Shipping Courier Services</a> and view details of your shipped order, by entering your received tracking number: ' + track + ' in the link.</p>'
+        }
+
+        transporter.use('compile', hbs(handlebarOptions));
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            }
+            else{
+                console.log("Email has been sent:- ", info.response);
+            }
+        });
+    }
+    catch (error){
+        console.log(error);
+    }
+}
+
+const sendTrackingMail = async function(name, email, orderID, company, track, shipLink){
+    try {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth:{
+                user: process.env.SECRETEMAIL,
+                pass: process.env.SECRETPASSWORD
+            },
+            tls:{
+                rejectUnauthorized: false
+            }
+        });
+
+        const handlebarOptions = {
+            viewEngine: {
+                extName: ".handlebars",
+                partialsDir: path.resolve('./views'),
+                defaultLayout: false
+            },
+            viewPath: path.resolve('./views'),
+            extName: ".handlebars"
+        }
+    
+        transporter.use('compile', hbs(handlebarOptions));
+        
+        const mailOptions= {
+            from: {
+                name: 'DapperDrops',
+                address: process.env.SECRETEMAIL
+            },
+            to: email,
+            subject: "Shipping Information",
+            template: 'email-templates/tracking',
+            context: {
                 name: name,
                 orderId: orderID,
                 company: company,
@@ -900,5 +1058,4 @@ const sendShippingMail = async function(name, email, orderID, company, track, sh
         console.log(error);
     }
 }
-
 module.exports = router;

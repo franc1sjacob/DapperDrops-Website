@@ -23,6 +23,7 @@ const isAdmin = function(req, res, next){
 const Product = require("../../models/productModel");
 const Featured = require("../../models/featuredModel");
 const Log = require("../../models/logModel");
+const Notification = require("../../models/notificationModel");
 
 var fs = require('fs');
 var path = require('path');
@@ -651,16 +652,15 @@ router.post("/add-quantity-variation/:variationId-:productId", isAuth, isAdmin, 
     console.log(variationId);
     let status="";
     
-    if(variationQuantity + origVariationQuantity >= 6){
+    if(origVariationQuantity + variationQuantity >= 6){
         status = "In-Stock";
     }
-    else if(variationQuantity + origVariationQuantity <= 5 && variationQuantity + origVariationQuantity >=1){
+    else if(origVariationQuantity + variationQuantity <= 5 && origVariationQuantity + variationQuantity >=1){
         status = "Few-Stocks";
     }
-    else if(variationQuantity + origVariationQuantity == 0){
+    else if(origVariationQuantity + variationQuantity== 0){
         status = "Out-of-Stock";
     }
-
     const conditions = {
         _id: productId,
         'variations._id': {$eq: variationId}
@@ -690,12 +690,51 @@ router.post("/add-quantity-variation/:variationId-:productId", isAuth, isAdmin, 
                 reason: reason,
                 category: "edit"
             });
+            
+            if(origVariationQuantity + variationQuantity >= 6){
+                const notif = new Notification({
+                    productName: result.brand + " " + result.name, 
+                    productVariation: variationName,
+                    reason: "Stock has been replenished",
+                    category: "Replenished"
+                });
+                notif.save();
+                req.session.message = {
+               type:'success',
+               message:'Product quantity added successfully!'
+           };    
+           res.redirect("/admin/products/"+productId+"/view");
+           }
+            else if(origVariationQuantity + variationQuantity <= 5 &&  origVariationQuantity + variationQuantity >=1){
+               const notif = new Notification({
+                   productName: result.brand + " " + result.name, 
+                   productVariation: variationName,
+                   reason: "Stock is still at Critical Level",
+                   category: "Few"
+               });
+               notif.save();
+               req.session.message = {
+                   type:'danger',
+                   message:result.brand + " "+ result.name +" Size "+ variationName +' is at critical level'
+               };    
+               res.redirect("/admin/products/"+productId+"/view");
+           }
+           else if(origVariationQuantity - variationQuantity == 0){
+               const notif = new Notification({
+                   productName: result.brand + " " + result.name, 
+                   productVariation: variationName,
+                   reason: "Out of stock",
+                   category: "Out"
+               });
+               notif.save();
+               req.session.message = {
+                   type:'danger',
+                   message: result.brand + " "+ result.name +" Size "+ variationName +' is Out of stock'
+               };    
+               res.redirect("/admin/products/"+productId+"/view");
+           }
             log.save();
-            req.session.message = {
-                type:'success',
-                message:'Product quantity added successfully!'
-            };    
-            res.redirect("/admin/products/"+productId+"/view");
+            
         }
     });
 });
@@ -757,7 +796,7 @@ router.post("/minus-quantity-variation/:variationId-:productId", isAuth, isAdmin
         }
     }
 
-	Product.findOneAndUpdate(conditions, update, function(err){
+	Product.findOneAndUpdate(conditions, update, function(err, result){
         if(err){
             res.json({message: err.message, type: 'danger'});
         } else {
@@ -768,12 +807,42 @@ router.post("/minus-quantity-variation/:variationId-:productId", isAuth, isAdmin
                 reason: reason,
                 category: "edit"
             });
-            log.save();
-            req.session.message = {
+            if(origVariationQuantity - variationQuantity >= 6){
+                 req.session.message = {
                 type:'success',
                 message:'Product quantity subtracted successfully!'
-            }    
+            };    
             res.redirect("/admin/products/"+productId+"/view");
+            }
+             else if(origVariationQuantity - variationQuantity <= 5 &&  origVariationQuantity - variationQuantity >=1){
+                const notif = new Notification({
+                    productName: result.brand + " " + result.name, 
+                    productVariation: variationName,
+                    reason: "Stock is at Critical Level",
+                    category: "Few"
+                });
+                notif.save();
+                req.session.message = {
+                    type:'danger',
+                    message:result.brand + " "+ result.name +" Size "+ variationName +' is at critical level'
+                };    
+                res.redirect("/admin/products/"+productId+"/view");
+            }
+            else if(origVariationQuantity - variationQuantity == 0){
+                const notif = new Notification({
+                    productName: result.brand + " " + result.name, 
+                    productVariation: variationName,
+                    reason: "Out of stock",
+                    category: "Out"
+                });
+                notif.save();
+                req.session.message = {
+                    type:'danger',
+                    message: result.brand + " "+ result.name +" Size "+ variationName +' is Out of stock'
+                };    
+                res.redirect("/admin/products/"+productId+"/view");
+            }
+            log.save();
         }
     });
 });

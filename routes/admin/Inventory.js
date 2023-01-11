@@ -22,6 +22,7 @@ const isAdmin = function(req, res, next){
 
 const Product = require("../../models/productModel");
 const Log = require("../../models/logModel");
+const Notification = require("../../models/notificationModel");
 
 
 var fs = require('fs');
@@ -56,30 +57,8 @@ const upload = multer({
 
 
 router.get("/", isAuth, isAdmin, async function (req, res) {   
-    // Product.find({}, function (err, allInventory) {
-    //     if (err) {
-    //         console.log(err);
-    //     } else {
-    //         res.render('admin/inventory', { newListInventory: allInventory })
-    //     }
-    // });
-      //     $lookup: {
-    //         from: "inventories", // collection to join
-    //         localField: "_id",//field from the input documents
-    //         foreignField: "_id",//field from the documents of the "from" collection
-    //         as: "productDetails"// output array field
-    //     }
-    // }, 
-    // {
-    //     $unwind:'$productDetails'
-    // },
-    // {
-    //     $addFields:{
-    //         sales:'$productDetails.sales', sold:'$productDetails.sold',status:'$productDetails.status'
-    //     }
-    //     },
-    //unwide and addfields removes array and adds it to the products collection.
     let { stype, sdir, ftype, fvalue } = req.query;
+    const notification = await Notification.find({});
     if(!stype && !sdir && !ftype && !fvalue){
         products = await Product.aggregate([{
             $project:{
@@ -208,6 +187,7 @@ router.get("/", isAuth, isAdmin, async function (req, res) {
     
     res.render('admin/inventory', {
         newListInventory: products,
+        notification: notification,
         brands: brands,
         stype: stype,
         sdir: sdir,
@@ -483,13 +463,13 @@ router.post("/add-quantity-variation-inventory/:variationId-:productId", isAuth,
     console.log(variationId);
     let status="";
     
-    if(variationQuantity + origVariationQuantity >= 6){
+    if(origVariationQuantity + variationQuantity >= 6){
         status = "In-Stock";
     }
-    else if(variationQuantity + origVariationQuantity <= 5 && variationQuantity + origVariationQuantity >=1){
+    else if(origVariationQuantity + variationQuantity <= 5 && origVariationQuantity + variationQuantity >=1){
         status = "Few-Stocks";
     }
-    else if(variationQuantity + origVariationQuantity == 0){
+    else if(origVariationQuantity + variationQuantity== 0){
         status = "Out-of-Stock";
     }
 
@@ -521,12 +501,50 @@ router.post("/add-quantity-variation-inventory/:variationId-:productId", isAuth,
                 reason: reason,
                 category: "edit"
             });
+            if(origVariationQuantity + variationQuantity >= 6){
+                const notif = new Notification({
+                    productName: result.brand + " " + result.name, 
+                    productVariation: variationName,
+                    reason: "Stock has been replenished",
+                    category: "Replenished"
+                });
+                notif.save();
+                    req.session.message = {
+                        type:'success',
+                        message:result.brand + " "+ result.name +" Size "+ variationName +' quantity added successfully!'
+                    };    
+                    res.redirect("/admin/inventory/"+productId+"/inventoryview");
+           }
+            else if(origVariationQuantity + variationQuantity <= 5 &&  origVariationQuantity + variationQuantity >=1){
+               const notif = new Notification({
+                   productName: result.brand + " " + result.name, 
+                   productVariation: variationName,
+                   reason: "Stock is at Critical Level",
+                   category: "Few"
+               });
+               notif.save();
+               req.session.message = {
+                   type:'danger',
+                   message:result.brand + " "+ result.name +" Size "+ variationName +' is at critical level'
+               };    
+               res.redirect("/admin/inventory/"+productId+"/inventoryview");
+           }
+           else if(origVariationQuantity - variationQuantity == 0){
+               const notif = new Notification({
+                   productName: result.brand + " " + result.name, 
+                   productVariation: variationName,
+                   reason: "Out of stock",
+                   category:"Out"
+               });
+               notif.save();
+               req.session.message = {
+                   type:'danger',
+                   message: result.brand + " "+ result.name +" Size "+ variationName +' is Out of stock'
+               };    
+               res.redirect("/admin/inventory/"+productId+"/inventoryview");
+           }
             log.save();
-            req.session.message = {
-                type:'success',
-                message:'Product quantity added successfully!'
-            };    
-            res.redirect("/admin/inventory/"+productId+"/inventoryview");
+            
         }
     });
 });
@@ -599,12 +617,43 @@ router.post("/minus-quantity-variation-inventory/:variationId-:productId", isAut
                 reason: reason,
                 category: "edit"
             });
-            log.save();
-            req.session.message = {
+            if(origVariationQuantity - variationQuantity >= 6){
+                req.session.message = {
                 type:'success',
                 message:'Product quantity subtracted successfully!'
             };    
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
+            }
+             else if(origVariationQuantity - variationQuantity <= 5 &&  origVariationQuantity - variationQuantity >=1){
+                const notif = new Notification({
+                    productName: result.brand + " " + result.name, 
+                    productVariation: variationName,
+                    reason: "Stock is at Critical Level",
+                    category: "Few"
+                });
+                notif.save();
+                req.session.message = {
+                    type:'danger',
+                    message:result.brand + " "+ result.name +" Size "+ variationName +' is at critical level'
+                };    
+                res.redirect("/admin/inventory/"+productId+"/inventoryview");
+            }
+            else if(origVariationQuantity - variationQuantity == 0){
+                const notif = new Notification({
+                    productName: result.brand + " " + result.name, 
+                    productVariation: variationName,
+                    reason: "Out of stock",
+                    category: "Out"
+                });
+                notif.save();
+                req.session.message = {
+                    type:'danger',
+                    message: result.brand + " "+ result.name +" Size "+ variationName +' is Out of stock'
+                };    
+                res.redirect("/admin/inventory/"+productId+"/inventoryview");
+            }
+            log.save();
+           
         }
     });
 });
@@ -641,6 +690,19 @@ router.get("/delete-variation/:variationId-:productId", isAuth, isAdmin, functio
                 message:'Product variation deleted successfully!'
             };      
             res.redirect("/admin/inventory/"+productId+"/inventoryview");
+        }
+    });
+
+});
+router.post('/:notificationId/notif-delete', isAuth, isAdmin, function(req, res){
+    const { notificationId } = req.params;
+    Notification.findByIdAndRemove(   { _id: notificationId }  , function(err, result){
+        if(err){
+            res.json({message: err.message, type: 'danger'});
+        }
+        else{
+            
+            res.redirect('/admin/inventory');
         }
     });
 });

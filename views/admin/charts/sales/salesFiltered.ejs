@@ -34,8 +34,8 @@
         <div class="chartBox mb-5">
             <canvas id="myChart"></canvas>
             <form action="/admin/reports/sales-Date-Filtered" method="POST">
-                Start: <input type="date" id="start" name="dateStart">
-                End: <input type="date" id="end" name="dateEnd">
+                Start: <input type="date" id="start" name="dateStart" value="<%= dateStart %>">
+                End: <input type="date" id="end" name="dateEnd" value="<%= dateEnd %>">
                 <button class="btn btn-primary" type="submit">Filter</button>
             </form>
 
@@ -59,7 +59,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script>
 
-    let filename = '../../charts/sales.csv';
+    let filename = '../../charts/sales.csv';    
 
     d3.csv(filename).then(function(datapoints){
         console.log(datapoints);
@@ -71,15 +71,12 @@
         });
 
         const datesArray = dateCreated.map( dateString => new Date(dateString))
-        const convertedDates = dateCreated.map(dateString => new Date(dateString).setHours(0, 0, 0, 0));
         
         start.min = setDateFormat(datesArray[0]);
         start.max = setDateFormat(dateCreated.slice(-1).pop());
-        start.value = setDateFormat(dateCreated[0]);
 
         end.min = setDateFormat(dateCreated[0]);
         end.max = setDateFormat(dateCreated.slice(-1).pop());
-        end.value = setDateFormat(dateCreated.slice(-1).pop());
         const data = {
     
     
@@ -109,6 +106,7 @@
         }]
     };
 
+    
     // config 
     const config = {
     type: 'line',
@@ -127,10 +125,23 @@
             }
         }
     };
+    
 
     // render init block
     const myChart = new Chart(document.getElementById('myChart'),config
     );
+
+    let start1 = new Date(document.getElementById('start').value).setHours(0, 0, 0, 0);
+    let end1 = new Date(document.getElementById('end').value).setHours(0, 0, 0, 0);
+
+    const convertedDates = dateCreated.map(date => new Date(date).setHours(0, 0, 0, 0));
+    const filterDates = convertedDates.filter(date => date >= start1 && date <= end1);
+    console.log('filter', filterDates)
+    myChart.config.data.labels = filterDates;
+    myChart.update();
+
+
+
 
     });
     // setup

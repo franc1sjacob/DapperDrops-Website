@@ -63,6 +63,45 @@ router.get('/', isAuth, isAdmin, async function(req, res){
     
 });
 
+router.post('/sales-Date-Filtered', isAuth, isAdmin, async function(req, res){
+    const { dateStart, dateEnd } = req.body;
+    let data = [];
+    const result = await Sale.aggregate([
+        { $group: {
+            _id: {
+                month: { $month : "$dateSold" },
+                day: { $dayOfMonth : "$dateSold" },
+                year: { $year : "$dateSold" },
+                date : { $toDate: { $dateToString:{ format: "%Y-%m-%d", date: "$dateSold"} } },
+                dayOf : { $dayOfYear : "$dateSold" }
+            },
+            earnings: { $sum : "$earnings" }
+        }},
+        { $sort: { '_id.date': 1 }},
+    ]);
+
+    result.forEach(function(sale){
+        data.push({
+            date: sale._id.year + "-" + sale._id.month + "-" + sale._id.day,
+            earnings: sale.earnings
+        });
+    });
+
+    const fields = ['date', 'earnings'];
+        const opts = { fields };
+
+    try{
+        const csv = parse(data, opts);
+        fs.writeFile('./public/charts/sales.csv', csv, function(error){
+            if(error) throw error;
+        });
+    } catch (err) {
+        console.log(err);
+    }
+    res.render('admin/charts/sales/salesFiltered', { fullName: req.session.firstName + " " + req.session.lastName, dateStart: dateStart, dateEnd: dateEnd });
+    
+});
+
 router.get('/sales-sortByMonth', isAuth, isAdmin, async function(req, res){
     let data = [];
     const result = await Sale.aggregate([

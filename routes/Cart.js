@@ -151,6 +151,9 @@ router.get("/checkout", isAuth, async function(req, res){
                     });
                 })
 
+                // Item Quantity for SHIPPING FEE CALCULATION
+                req.session.itemQuantity = cart.totalQty;
+
                 if(errorValues.length > 0){
                     throw errorValues
                 }
@@ -292,10 +295,37 @@ router.get('/checkout-confirmation', isAuth, async function(req, res){
         res.redirect('/cart/view-cart');
     }
 
-    if(req.session.region == "NCR – National Capital Region") {
+    if(req.session.region == "NCR – National Capital Region" && req.session.itemQuantity == 1) {
         req.session.shippingFee = 150;
-    } else {
+    } else if(req.session.region == "NCR – National Capital Region" && req.session.itemQuantity > 1 && req.session.itemQuantity <= 3){
+        req.session.shippingFee = 350;
+    } else if(req.session.region == "NCR – National Capital Region" && req.session.itemQuantity > 3 && req.session.itemQuantity <= 6){
+        req.session.shippingFee = 550;
+    } else if(req.session.region == "NCR – National Capital Region" && req.session.itemQuantity > 6 && req.session.itemQuantity <= 8){
+        req.session.shippingFee = 750;
+    } else if(req.session.region == "NCR – National Capital Region" && req.session.itemQuantity > 8 && req.session.itemQuantity <= 10){
+        req.session.shippingFee = 950;
+    } else if(req.session.region == "NCR – National Capital Region" && req.session.itemQuantity > 10 && req.session.itemQuantity <= 12){
+        req.session.shippingFee = 1150;
+    } else if(req.session.region == "NCR – National Capital Region" && req.session.itemQuantity > 12){
+        req.session.shippingFee = 1350;
+    //OTHER REGION BESIDE NCR
+    } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity == 1) {
         req.session.shippingFee = 300;
+    } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity > 1 && req.session.itemQuantity <= 3){
+        req.session.shippingFee = 500;
+    } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity > 3 && req.session.itemQuantity <= 6){
+        req.session.shippingFee = 700;
+    } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity > 6 && req.session.itemQuantity <= 8){
+        req.session.shippingFee = 900;
+    } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity > 8 && req.session.itemQuantity <= 10){
+        req.session.shippingFee = 1100;
+    } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity > 10 && req.session.itemQuantity <= 12){
+        req.session.shippingFee = 1300;
+    } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity < 12){
+        req.session.shippingFee = 1500;
+    } else {
+        req.session.shippingFee = 2500;
     }
 
     User.findById({ _id: userId }, function(err, user){

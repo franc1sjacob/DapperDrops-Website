@@ -295,6 +295,7 @@ router.get('/checkout-confirmation', isAuth, async function(req, res){
         res.redirect('/cart/view-cart');
     }
 
+    //If NCR
     if(req.session.region == "NCR – National Capital Region" && req.session.itemQuantity == 1) {
         req.session.shippingFee = 150;
     } else if(req.session.region == "NCR – National Capital Region" && req.session.itemQuantity > 1 && req.session.itemQuantity <= 3){
@@ -322,7 +323,7 @@ router.get('/checkout-confirmation', isAuth, async function(req, res){
         req.session.shippingFee = 1100;
     } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity > 10 && req.session.itemQuantity <= 12){
         req.session.shippingFee = 1300;
-    } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity < 12){
+    } else if(req.session.region != "NCR – National Capital Region" && req.session.itemQuantity > 12){
         req.session.shippingFee = 1500;
     } else {
         req.session.shippingFee = 2500;
